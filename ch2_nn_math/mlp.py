@@ -64,7 +64,7 @@ class DenseLayer:
         Args:
             x: Input vector (1 BY num_ele_in_x).
             W: Weight matrix (num_ele_in_x BY num_hidden_units).
-            b: Bias vector (num_hidden_units). 
+            b: Bias vector (num_hidden_units).
 
         Returns:
             Scalar output of activation.
@@ -85,7 +85,7 @@ class DenseLayer:
         """Layer computation.
 
         Should compute output for each `j` neuron and for all `i`
-        in `inputs` vector. 
+        in `inputs` vector.
 
         Args:
             Vector of inputs from previous layer.
@@ -125,7 +125,7 @@ class MLP:
         and the bias vector.
 
         Args:
-            input_dims: 
+            input_dims:
             hidden_units: Number of neurons in hidden layer.
             targets: Target dimensional output.
             loss_function: Function object for loss computations.
@@ -149,7 +149,18 @@ class MLP:
             num_units=targets,
             activation_function=target_activation)
 
-    def forward_pass(self, inputs: np.ndarray) -> np.ndarray:
+    def fit(self, x: np.ndarray, y: np.ndarray, batch_size: int, ) -> None:
+        """Fit the MLP to data.
+
+        TODO: Flatten x and y.
+        """
+        pass
+
+    def _train_step(self,):
+        """"""
+        pass
+
+    def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network."""
 
         # Call hidden layer
@@ -159,22 +170,15 @@ class MLP:
         # Result of forward pass
         return targets
 
-    def compute_loss(self, inputs: np.ndarray) -> np.float64:
+    def _compute_loss(self, inputs: np.ndarray) -> np.float64:
         """Compute loss."""
 
         return self.loss_function(inputs)
 
-    def backpropagation(self,):
+    def _backpropagation(self,):
         """Compute the gradient."""
         pass
 
-    def stochastic_gradient_descent(self,):
+    def _stochastic_gradient_descent(self,):
         """Uses gradient to minimize loss."""
-        pass
-
-    def fit(self, x: np.ndarray, y: np.ndarray, batch_size: int, ) -> None:
-        """Fit the MLP to data.
-
-        TODO: Flatten x and y.
-        """
         pass
