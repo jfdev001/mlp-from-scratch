@@ -103,8 +103,12 @@ class DenseLayer:
             Scalar output of activation.
         """
 
-        # x^T @ W + b
-        transform = np.dot(np.expand_dims(x, axis=0), W) + b
+        # Transpose to row vector for single sample
+        if len(x.shape) == 1:
+            x = np.expand_dims(x, axis=0)
+
+        # Affine transformation
+        transform = np.dot(x, W) + b
 
         # Optional activation function
         if activation_function is not None:
@@ -135,7 +139,7 @@ class DenseLayer:
             activation_function=self.activation_function)
 
         # Result of layer call
-        return np.squeeze(layer_output, axis=0)
+        return layer_output
 
 
 class MLP:
@@ -182,16 +186,37 @@ class MLP:
             num_units=targets,
             activation_function=target_activation)
 
-    def fit(self, x: np.ndarray, y: np.ndarray, batch_size: int, ) -> None:
+    def fit(self, x: np.ndarray, y: np.ndarray, batch_size: int, epochs: int) -> None:
         """Fit the MLP to data.
 
-        TODO: Flatten x and y.
+        Args:
+            x: Input data with `n` samples and `m` features.
+            y: Target data with `n` samples, and `m` features. 
+            batch_size: Size of batch for mini-batch gradient descent.
+                Drops remainder batch by default.
+            epochs: Number of epochs to train neural network.
         """
+
+        # TODO: Flatten x and y along last dimension?
         pass
 
-    def _train_step(self,):
-        """"""
-        pass
+        # Get the number of samples
+        samples = x.shape[0]
+
+        # Get batch indices
+        batch_indices = np.random.choice(
+            a=samples, size=(samples//batch_size, batch_size), replace=False)
+
+        # Batch the data
+        batch_data = zip(x[batch_indices], y[batch_indices])
+
+        # Training loop
+        for epoch in epochs:
+            for batch_step, (x_batch, y_batch) in enumerate(batch_data):
+                preds = self._forward_pass(x_batch)
+                loss = self._compute_loss(y_true=y_batch, y_pred=preds)
+                grads = self._backpropagation()
+                self._gradient_descent()
 
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network."""
@@ -203,15 +228,23 @@ class MLP:
         # Result of forward pass
         return targets
 
-    def _compute_loss(self, inputs: np.ndarray) -> np.float64:
-        """Compute loss."""
+    def _compute_loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.float64:
+        """Compute loss.
 
-        return self.loss_function(inputs)
+        Args:
+            y_true: Targets.
+            y_pred: Predictions.
 
-    def _backpropagation(self,):
+        Returns:
+            Scalar loss.
+        """
+
+        return self.loss_function(y_true, y_pred)
+
+    def _backpropagation(self,) -> np.ndarray:
         """Compute the gradient."""
         pass
 
-    def _stochastic_gradient_descent(self,):
+    def _gradient_descent(self,) -> None:
         """Uses gradient to minimize loss."""
         pass
