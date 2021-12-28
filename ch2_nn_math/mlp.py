@@ -12,6 +12,7 @@ ML Mastery Backprop: https://machinelearningmastery.com/implement-backpropagatio
 Climkovic & Jl: Neural Networks & Back Propagation Algorithm (Academia, 2015)
 Nielsen (Ch. 2, 2015) http://neuralnetworksanddeeplearning.com/chap2.html
 Simple Backprop: https://www.youtube.com/watch?v=khUVIZ3MON8&t=20s
+Derivative of Activation Fxns: https://www.analyticsvidhya.com/blog/2021/04/activation-functions-and-their-derivatives-a-quick-complete-guide/
 """
 
 from abc import ABCMeta, abstractmethod
