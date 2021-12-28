@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  28 DEC 2021 13:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  28 DEC 2021 13:33
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -97,73 +97,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 7.
 LaTeX Font Info:    ... okay on input line 7.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 7.
 LaTeX Font Info:    ... okay on input line 7.
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.tex:11: Undefined control sequence.
-l.11 each parametrized by $W \in \mathbb
-                                        {R}^{n_x \times n_h}$
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.tex:12: Undefined control sequence.
-l.12 on $X \in \mathbb
-                      {R}^{m \times n_x}$. Note that $m$ is the number of ex...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.tex:18: Missing { inserted.
-<inserted text> 
-                {
-l.18 		NeuralNet_{\theta}(X}) &
-                                =
-I've put in what seems to be necessary to fix
-the current column of the current alignment.
-Try to go on, since this might almost work.
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.tex:20: Undefined control sequence.
-\math@cr@@@ ...t@ {&\kern -\alignsep@ }\fi \next@ 
-                                                  \cr 
-l.20 ...2]} + \vec{b}^{[2]})                    \\
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.tex:20: Missing { inserted.
-<inserted text> 
-                {
-l.20 ...2]} + \vec{b}^{[2]})                    \\
-                                                  
-I've put in what seems to be necessary to fix
-the current column of the current alignment.
-Try to go on, since this might almost work.
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.tex:22: Missing { inserted.
-<inserted text> 
-                {
-l.22 		g_{\theta^{[2]}}(A})   &
-                                = AW^{[2]} + \vec{b}^{[2]}         \\
-I've put in what seems to be necessary to fix
-the current column of the current alignment.
-Try to go on, since this might almost work.
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.tex:23: Missing { inserted.
-<inserted text> 
-                {
-l.23 		w_{\theta^{[1]}}(A})   &
-                                = AW^{[1]} + \vec{b}^{[1]}         \\
-I've put in what seems to be necessary to fix
-the current column of the current alignment.
-Try to go on, since this might almost work.
-
-[1
+ [1
 
 {c:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.aux) ) 
 Here is how much of TeX's memory you used:
@@ -173,9 +107,9 @@ Here is how much of TeX's memory you used:
  18301 multiletter control sequences out of 15000+600000
  403884 words of font info for 29 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 67i,9n,74p,267b,124s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 67i,9n,74p,267b,127s stack positions out of 5000i,500n,10000p,200000b,80000s
 <c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
-Output written on c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.pdf (1 page, 79496 bytes).
+Output written on c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.pdf (1 page, 79384 bytes).
 PDF statistics:
  40 PDF objects out of 1000 (max. 8388607)
  28 compressed objects within 1 object stream
