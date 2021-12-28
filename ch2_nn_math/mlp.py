@@ -4,6 +4,8 @@ Deep Learning with Python 2ed (pp. 26-67)
 Goodfellow et al. Deep Learning  (Ch. 6.5 pp. 200-220)
 """
 
+from typing import Callable
+
 import numpy as np
 
 
@@ -14,12 +16,13 @@ class DenseLayer:
             self,
             input_dims: int,
             num_units: int,
-            activation_function: function = None):
+            activation_function: Callable = None):
         """Define state for neural network layer.
 
         Args:
             input_dims: Number of units in the previous layer.
             num_units: Number of hidden units.
+            activation_function: Activation function for neurons.
         """
 
         # Save function arg
@@ -53,7 +56,7 @@ class DenseLayer:
             x: np.ndarray,
             W: np.ndarray,
             b: np.ndarray,
-            activation_function: function = None) -> np.float64:
+            activation_function: Callable = None) -> np.float64:
         """Activation of hidden units.
 
         Args:
@@ -97,7 +100,7 @@ class DenseLayer:
             activation_function=self.activation_function)
 
         # Result of layer call
-        return layer_output
+        return np.squeeze(layer_output, axis=0)
 
 
 class MLP:
@@ -107,7 +110,7 @@ class MLP:
             self,
             hidden_units: int,
             targets: int,
-            loss_function: function,
+            loss_function: Callable,
             learning_rate: float):
         """Define state for Multilayer Perceptron.
 
