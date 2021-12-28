@@ -228,6 +228,10 @@ class MLP:
         # Result of forward pass
         return targets
 
+    def _backward_pass(self,):
+        """"""
+        pass
+
     def _compute_loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.float64:
         """Compute loss.
 
