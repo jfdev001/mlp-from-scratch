@@ -1,4 +1,4 @@
-"""Module for multilayer perceptron (single hidden layer) from scratch.
+"""Module for multilayer perceptron from scratch.
 
 General Backprop (Goodfellow et al., Deep Learning 6.5.6 p. 211):
     Should each element of the weight matrix and bias vector
@@ -11,6 +11,7 @@ Wiki: https://en.wikipedia.org/wiki/Backpropagation
 ML Mastery Backprop: https://machinelearningmastery.com/implement-backpropagation-algorithm-scratch-python/
 Climkovic & Jl: Neural Networks & Back Propagation Algorithm (Academia, 2015)
 Nielsen (Ch. 2, 2015) http://neuralnetworksanddeeplearning.com/chap2.html
+Simple Backprop: https://www.youtube.com/watch?v=khUVIZ3MON8&t=20s
 """
 
 from abc import ABCMeta, abstractmethod
@@ -19,28 +20,18 @@ from typing import Callable, Optional
 import numpy as np
 
 
-class Activation(metaclass=ABCMeta):
-    """Abstract class for activation functions."""
+class Operation(metaclass=ABCMeta):
+    """Abstract class for operations with derivatives needed for backprop."""
 
     @abstractmethod
-    def derivative_call(self, inputs: np.ndarray) -> np.ndarray:
-        """Call using derivative of activation function.
-
-        Args:
-            inputs: Vector of inputs.
-
-        Returns:
-            Vector of derived outputs.
-        """
-
-        pass
-
-    @abstractmethod
-    def call(self, inputs: np.ndarray) -> np.ndarray:
+    def call(
+            self,
+            inputs: tuple[np.ndarray, np.ndarray] or np.ndarray) -> np.ndarray:
         """Normal call for activation function.
 
         Args:
-            inputs: Vector of inputs.
+            inputs: Inputs for use during operation call.
+                Tuple for error functions, otherwise single input.
 
         Returns:
             Vector of activated outputs.
@@ -48,11 +39,30 @@ class Activation(metaclass=ABCMeta):
 
         pass
 
+    @abstractmethod
+    def derivative(
+            self,
+            inputs: tuple[np.ndarray, np.ndarray] or np.ndarray) -> np.ndarray:
+        """Call using derivative of activation function.
 
-class Sigmoid(Activation):
+        Args:
+            inputs: Inputs for use during operation derivative call.
+                Tuple for error functions, otherwise single input.
+
+        Returns:
+            Vector of derived outputs.
+        """
+
+        pass
+
+
+class Sigmoid(Operation):
     """Sigmoid activation function."""
 
-    def derivative_call(self, inputs: np.ndarray) -> np.ndarray:
+    def call(self, inputs: np.ndarray) -> np.ndarray:
+        return 1 / (1 + np.exp(-inputs))
+
+    def derivative(self, inputs: np.ndarray) -> np.ndarray:
         """
         @MISC {1225116,
             TITLE = {Derivative of sigmoid function $\sigma (x) = \frac{1}{1+e^{-x}}$},
@@ -65,8 +75,23 @@ class Sigmoid(Activation):
         """
         return self.call(inputs=inputs) * (1 - self.call(inputs=inputs))
 
-    def call(self, inputs: np.ndarray) -> np.ndarray:
-        return 1 / (1 + np.exp(-inputs))
+
+class MeanSquaredError(Operation):
+    """Mean squared error cost (loss) function.
+
+    The predictions are the activations of the network. The order of
+    arguments in the `derivative_call` was based on
+    `Four fundamental equations behind backpropagation` from
+    Nielsen (Ch.2, 2015).
+    """
+
+    def call(self, inputs) -> np.ndarray:
+        targets, predictions = inputs
+        return np.mean(np.square(targets - predictions))
+
+    def derivative(self, inputs: np.ndarray) -> np.ndarray:
+        targets, predictions = inputs
+        return 2 * np.mean(predictions - targets)
 
 
 class DenseLayer:
@@ -132,6 +157,8 @@ class DenseLayer:
         if self.activation_function is not None:
             activation_a = np.apply_along_axis(
                 self.activation_function, axis=-1, arr=weighted_input_z)
+        else:
+            activation_a = weighted_input_z
 
         # Result of layer computation
         return activation_a, weighted_input_z
@@ -147,6 +174,7 @@ class MLP:
             targets: int,
             loss_function: Callable,
             learning_rate: float,
+            l_layers: int = 1,
             hidden_activation: Optional[Callable] = None,
             target_activation: Optional[Callable] = None,):
         """Define state for Multilayer Perceptron.
@@ -168,6 +196,7 @@ class MLP:
         # Save args
         self.loss_function = loss_function
         self.learning_rate = learning_rate
+        self.l_layers = l_layers
 
         # Define layers
         self.hidden = DenseLayer(
@@ -175,10 +204,32 @@ class MLP:
             num_units=hidden_units,
             activation_function=hidden_activation)
 
+        self.deep_hidden = [
+            DenseLayer(
+                input_dims=hidden_units,
+                num_units=hidden_units,
+                activation_function=hidden_activation)
+            for lyr in range(l_layers - 1)]
+
         self.output = DenseLayer(
             input_dims=hidden_units,
             num_units=targets,
             activation_function=target_activation)
+
+        self.sequential = [self.hidden, *self.deep_hidden, self.output]
+
+        # The i^th element of each of these caches corresponds
+        # to the outputs of the l^th layer...
+        # for two layers (hidden and output) there are only
+        # two elements of each cache.
+        self.activations_cache = []
+        self.weighted_inputs_cache = []
+
+    @property
+    def cache(self,) -> tuple[list, list]:
+        """Returns activation and weighted inputs caches."""
+
+        return self.activations_cache, self.weighted_inputs_cache
 
     def fit(self, x: np.ndarray, y: np.ndarray, batch_size: int, epochs: int) -> None:
         """Fit the MLP to data.
@@ -212,12 +263,35 @@ class MLP:
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network."""
 
-        # Call hidden layer
-        hidden_output = self.hidden(inputs)
-        targets = self.output(hidden_output)
+        # Dump cache
+        self._clear_cache()
+
+        # Call layers in model and cache layer outputs
+        activations = inputs
+        for lyr in self.sequential:
+            activations, weighted_inputs = lyr(activations)
+            self._cache(activations=activations,
+                        weighted_inputs=weighted_inputs)
 
         # Result of forward pass
-        return targets
+        return activations
+
+    def _cache(self, activations: np.ndarray, weighted_inputs: np.ndarray) -> None:
+        """Caches activations and weighted inputs from layer for backprop.
+
+        Args:
+            activations:
+            weighted_inputs:
+        """
+
+        self.activations_cache.append(activations)
+        self.weighted_inputs_cache.append(activations)
+
+    def _clear_cache(self,) -> None:
+        """Sets cache lists to empty."""
+
+        self.activations_cache = []
+        self.weighted_inputs_cache = []
 
     def _backward_pass(self, loss: np.float64, ):
         """"""
@@ -235,6 +309,11 @@ class MLP:
         """
 
         return self.loss_function(y_true, y_pred)
+
+    def _compute_output_lyr_error(self, ):
+        """Computes delta for output layer for backprop."""
+
+        return
 
     def _backpropagation(self,) -> np.ndarray:
         """Compute the gradient."""
