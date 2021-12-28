@@ -1,48 +1,72 @@
 """Module for multilayer perceptron (single hidden layer) from scratch.
 
-Could make layer shapes dynamic.
-
 General Backprop (Goodfellow et al., Deep Learning 6.5.6 p. 211):
     Should each element of the weight matrix and bias vector
     be a <class `Parameter`> in order to implement the operations
     described for general backprop on the above page?
 
-Deep Learning with Python 2ed (pp. 26-67)
-Goodfellow et al. Deep Learning  (Ch. 6.5 pp. 200-220)
-https://en.wikipedia.org/wiki/Backpropagation
+Deep Learning with Python 2ed (pp. 26-67, 2021)
+Goodfellow et al. Deep Learning  (Ch. 6.5 pp. 200-220, 2016)
+Wiki: https://en.wikipedia.org/wiki/Backpropagation
+ML Mastery Backprop: https://machinelearningmastery.com/implement-backpropagation-algorithm-scratch-python/
+Climkovic & Jl: Neural Networks & Back Propagation Algorithm (Academia, 2015)
+Nielsen (Ch. 2, 2015) http://neuralnetworksanddeeplearning.com/chap2.html
 """
 
+from abc import ABCMeta, abstractmethod
 from typing import Callable, Optional
 
 import numpy as np
 
 
-class AffineTransform:
-    """Operation class for affine transformation (XW + b)."""
+class Activation(metaclass=ABCMeta):
+    """Abstract class for activation functions."""
 
-    def __init__(self,):
-        """"""
+    @abstractmethod
+    def derivative_call(self, inputs: np.ndarray) -> np.ndarray:
+        """Call using derivative of activation function.
+
+        Args:
+            inputs: Vector of inputs.
+
+        Returns:
+            Vector of derived outputs.
+        """
+
+        pass
+
+    @abstractmethod
+    def call(self, inputs: np.ndarray) -> np.ndarray:
+        """Normal call for activation function.
+
+        Args:
+            inputs: Vector of inputs.
+
+        Returns:
+            Vector of activated outputs.
+        """
+
         pass
 
 
-class Parameter:
-    """Variable (parameter) to be updated by backprop."""
+class Sigmoid(Activation):
+    """Sigmoid activation function."""
 
-    def __init__(self,):
-        """"""
-        pass
+    def derivative_call(self, inputs: np.ndarray) -> np.ndarray:
+        """
+        @MISC {1225116,
+            TITLE = {Derivative of sigmoid function $\sigma (x) = \frac{1}{1+e^{-x}}$},
+            AUTHOR = {Michael Percy (https://math.stackexchange.com/users/229646/michael-percy)},
+            HOWPUBLISHED = {Mathematics Stack Exchange},
+            NOTE = {URL:https://math.stackexchange.com/q/1225116 (version: 2017-09-01)},
+            EPRINT = {https://math.stackexchange.com/q/1225116},
+            URL = {https://math.stackexchange.com/q/1225116}
+        }
+        """
+        return self.call(inputs=inputs) * (1 - self.call(inputs=inputs))
 
-    def get_operation(self,):
-        """"""
-        pass
-
-    def get_consumers(self,):
-        """"""
-        pass
-
-    def get_inputs(self,):
-        """"""
-        pass
+    def call(self, inputs: np.ndarray) -> np.ndarray:
+        return 1 / (1 + np.exp(-inputs))
 
 
 class DenseLayer:
@@ -52,7 +76,7 @@ class DenseLayer:
             self,
             input_dims: int,
             num_units: int,
-            activation_function: Callable = None):
+            activation_function: Optional[Callable] = None):
         """Define state for neural network layer.
 
         Args:
@@ -74,11 +98,11 @@ class DenseLayer:
     def glorot_uniform(self, input_dims: int, num_units: int) -> np.ndarray:
         """(Xavier) Glorot uniform initializer.
 
-        http://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf
+        http: // proceedings.mlr.press/v9/glorot10a/glorot10a.pdf
 
         Args:
             input_dims: Dimensions of previous layer.
-            num_units: Number of hidden units (i.e., output dims).
+            num_units: Number of hidden units(i.e., output dims).
 
         Returns:
             Array for weight initializer.
@@ -87,21 +111,14 @@ class DenseLayer:
         return np.random.uniform(-1/np.sqrt(input_dims), 1/np.sqrt(input_dims),
                                  size=(input_dims, num_units))
 
-    def activate(
-            self,
-            x: np.ndarray,
-            W: np.ndarray,
-            b: np.ndarray,
-            activation_function: Callable = None) -> np.float64:
-        """Activation of hidden units.
+    def __call__(self, x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """Compute layer activations and weighted inputs.
 
         Args:
-            x: Input vector (1 BY num_ele_in_x).
-            W: Weight matrix (num_ele_in_x BY num_hidden_units).
-            b: Bias vector (num_hidden_units).
+            x: Input vector(1 BY num_ele_in_x).
 
         Returns:
-            Scalar output of activation.
+            Activation vector and weighted inputs vector.
         """
 
         # Transpose to row vector for single sample
@@ -109,38 +126,15 @@ class DenseLayer:
             x = np.expand_dims(x, axis=0)
 
         # Affine transformation
-        transform = np.dot(x, W) + b
+        weighted_input_z = np.dot(x, self.W) + self.b
 
         # Optional activation function
-        if activation_function is not None:
-            transform = np.apply_along_axis(
-                activation_function, axis=-1, arr=transform)
+        if self.activation_function is not None:
+            activation_a = np.apply_along_axis(
+                self.activation_function, axis=-1, arr=weighted_input_z)
 
-        # Result of activation
-        return transform
-
-    def __call__(self, inputs: np.ndarray):
-        """Layer computation.
-
-        Should compute output for each `j` neuron and for all `i`
-        in `inputs` vector.
-
-        Args:
-            inputs: Vector of inputs from previous layer.
-
-        Returns:
-            Vector of outputs from neurons.
-        """
-
-        # The layer call should activate the hidden units abstraction
-        layer_output = self.activate(
-            x=inputs,
-            W=self.W,
-            b=self.b,
-            activation_function=self.activation_function)
-
-        # Result of layer call
-        return layer_output
+        # Result of layer computation
+        return activation_a, weighted_input_z
 
 
 class MLP:
@@ -159,15 +153,14 @@ class MLP:
 
         The parameters (params) of this hypothesis function are denoted
         in the literature as theta. Therefore, the MLP is a hypothesis
-        function parametrized by the weights (edges) of the weight matrix
-        and the bias vector.
+        function parametrized by the weights and biases.
 
         Args:
             input_dims:
             hidden_units: Number of neurons in hidden layer.
             targets: Target dimensional output.
             loss_function: Function object for loss computations.
-            learning_rate: Learning rate (eta) for weight updates.
+            learning_rate: Learning rate(eta) for weight updates.
             hidden_activation: Activation function for hidden layers.
             target_activation: Activation function for target layers.
         """
@@ -192,7 +185,7 @@ class MLP:
 
         Args:
             x: Input data with `n` samples and `m` features.
-            y: Target data with `n` samples, and `m` features. 
+            y: Target data with `n` samples, and `m` features.
             batch_size: Size of batch for mini-batch gradient descent.
                 Drops remainder batch by default.
             epochs: Number of epochs to train neural network.
@@ -226,7 +219,7 @@ class MLP:
         # Result of forward pass
         return targets
 
-    def _backward_pass(self,):
+    def _backward_pass(self, loss: np.float64, ):
         """"""
         pass
 
