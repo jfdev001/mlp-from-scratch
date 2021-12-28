@@ -24,26 +24,10 @@ class Operation(metaclass=ABCMeta):
     """Abstract class for operations with derivatives needed for backprop."""
 
     @abstractmethod
-    def call(
-            self,
-            inputs: tuple[np.ndarray, np.ndarray] or np.ndarray) -> np.ndarray:
-        """Normal call for activation function.
-
-        Args:
-            inputs: Inputs for use during operation call.
-                Tuple for error functions, otherwise single input.
-
-        Returns:
-            Vector of activated outputs.
-        """
-
-        pass
-
-    @abstractmethod
     def derivative(
             self,
             inputs: tuple[np.ndarray, np.ndarray] or np.ndarray) -> np.ndarray:
-        """Call using derivative of activation function.
+        """Call using derivative of operation.
 
         Args:
             inputs: Inputs for use during operation derivative call.
@@ -55,12 +39,35 @@ class Operation(metaclass=ABCMeta):
 
         pass
 
+    @abstractmethod
+    def __call__(
+            self,
+            inputs: tuple[np.ndarray, np.ndarray] or np.ndarray) -> np.ndarray:
+        """Normal call of operation.
+
+        Args:
+            inputs: Inputs for use during operation call.
+                Tuple for error functions, otherwise single input.
+
+        Returns:
+            Vector of outputs.
+        """
+
+        pass
+
+
+class ReLU(Operation):
+    """ReLU activation function."""
+
+    def derivative(self, inputs: tuple[np.ndarray, np.ndarray] or np.ndarray) -> np.ndarray:
+        return super().derivative(inputs)
+
+    def __call__(self, inputs: tuple[np.ndarray, np.ndarray] or np.ndarray) -> np.ndarray:
+        return super().__call__(inputs)
+
 
 class Sigmoid(Operation):
     """Sigmoid activation function."""
-
-    def call(self, inputs: np.ndarray) -> np.ndarray:
-        return 1 / (1 + np.exp(-inputs))
 
     def derivative(self, inputs: np.ndarray) -> np.ndarray:
         """
@@ -73,7 +80,10 @@ class Sigmoid(Operation):
             URL = {https://math.stackexchange.com/q/1225116}
         }
         """
-        return self.call(inputs=inputs) * (1 - self.call(inputs=inputs))
+        return self(inputs=inputs) * (1 - self(inputs=inputs))
+
+    def __call__(self, inputs: np.ndarray) -> np.ndarray:
+        return 1 / (1 + np.exp(-inputs))
 
 
 class MeanSquaredError(Operation):
@@ -85,13 +95,13 @@ class MeanSquaredError(Operation):
     Nielsen (Ch.2, 2015).
     """
 
-    def call(self, inputs) -> np.ndarray:
-        targets, predictions = inputs
-        return np.mean(np.square(targets - predictions))
-
     def derivative(self, inputs: np.ndarray) -> np.ndarray:
         targets, predictions = inputs
         return 2 * np.mean(predictions - targets)
+
+    def __call__(self, inputs) -> np.ndarray:
+        targets, predictions = inputs
+        return np.mean(np.square(targets - predictions))
 
 
 class DenseLayer:
@@ -176,7 +186,7 @@ class MLP:
             learning_rate: float,
             l_layers: int = 1,
             hidden_activation: Optional[Callable] = None,
-            target_activation: Optional[Callable] = None,):
+            target_activation: str = 'sigmoid',):
         """Define state for Multilayer Perceptron.
 
         The parameters (params) of this hypothesis function are denoted
@@ -191,6 +201,7 @@ class MLP:
             learning_rate: Learning rate(eta) for weight updates.
             hidden_activation: Activation function for hidden layers.
             target_activation: Activation function for target layers.
+                NOTE: Only support sigmoid for now.
         """
 
         # Save args
@@ -210,6 +221,10 @@ class MLP:
                 num_units=hidden_units,
                 activation_function=hidden_activation)
             for lyr in range(l_layers - 1)]
+
+        # Set activation
+        if target_activation == 'sigmoid':
+            target_activation = Sigmoid()
 
         self.output = DenseLayer(
             input_dims=hidden_units,
