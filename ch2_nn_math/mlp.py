@@ -76,7 +76,7 @@ class DenseLayer:
         # Optional activation function
         if activation_function is not None:
             transform = np.apply_along_axis(
-                activation_function, axis=1, arr=transform)
+                activation_function, axis=-1, arr=transform)
 
         # Result of activation
         return transform
@@ -88,7 +88,7 @@ class DenseLayer:
         in `inputs` vector.
 
         Args:
-            Vector of inputs from previous layer.
+            inputs: Vector of inputs from previous layer.
 
         Returns:
             Vector of outputs from neurons.
