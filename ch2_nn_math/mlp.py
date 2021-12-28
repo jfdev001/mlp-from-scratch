@@ -9,6 +9,7 @@ General Backprop (Goodfellow et al., Deep Learning 6.5.6 p. 211):
 
 Deep Learning with Python 2ed (pp. 26-67)
 Goodfellow et al. Deep Learning  (Ch. 6.5 pp. 200-220)
+https://en.wikipedia.org/wiki/Backpropagation
 """
 
 from typing import Callable, Optional
@@ -196,9 +197,6 @@ class MLP:
                 Drops remainder batch by default.
             epochs: Number of epochs to train neural network.
         """
-
-        # TODO: Flatten x and y along last dimension?
-        pass
 
         # Get the number of samples
         samples = x.shape[0]
