@@ -2,6 +2,11 @@
 
 Could make layer shapes dynamic.
 
+General Backprop (Goodfellow et al., Deep Learning 6.5.6 p. 211):
+    Should each element of the weight matrix and bias vector
+    be a <class `Parameter`> in order to implement the operations
+    described for general backprop on the above page?
+
 Deep Learning with Python 2ed (pp. 26-67)
 Goodfellow et al. Deep Learning  (Ch. 6.5 pp. 200-220)
 """
@@ -9,6 +14,34 @@ Goodfellow et al. Deep Learning  (Ch. 6.5 pp. 200-220)
 from typing import Callable, Optional
 
 import numpy as np
+
+
+class AffineTransform:
+    """Operation class for affine transformation (XW + b)."""
+
+    def __init__(self,):
+        """"""
+        pass
+
+
+class Parameter:
+    """Variable (parameter) to be updated by backprop."""
+
+    def __init__(self,):
+        """"""
+        pass
+
+    def get_operation(self,):
+        """"""
+        pass
+
+    def get_consumers(self,):
+        """"""
+        pass
+
+    def get_inputs(self,):
+        """"""
+        pass
 
 
 class DenseLayer:
