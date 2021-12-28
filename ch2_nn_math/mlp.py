@@ -1,10 +1,12 @@
 """Module for multilayer perceptron (single hidden layer) from scratch.
 
+Could make layer shapes dynamic.
+
 Deep Learning with Python 2ed (pp. 26-67)
 Goodfellow et al. Deep Learning  (Ch. 6.5 pp. 200-220)
 """
 
-from typing import Callable
+from typing import Callable, Optional
 
 import numpy as np
 
@@ -111,10 +113,10 @@ class MLP:
             input_dims: int,
             hidden_units: int,
             targets: int,
-            hidden_activation: Callable,
-            target_activation: Callable,
             loss_function: Callable,
-            learning_rate: float):
+            learning_rate: float,
+            hidden_activation: Optional[Callable] = None,
+            target_activation: Optional[Callable] = None,):
         """Define state for Multilayer Perceptron.
 
         The parameters (params) of this hypothesis function are denoted
@@ -126,11 +128,15 @@ class MLP:
             input_dims: 
             hidden_units: Number of neurons in hidden layer.
             targets: Target dimensional output.
-            hidden_activation: Activation function for hidden layers.
-            target_activation: Activation function for target layers.
             loss_function: Function object for loss computations.
             learning_rate: Learning rate (eta) for weight updates.
+            hidden_activation: Activation function for hidden layers.
+            target_activation: Activation function for target layers.
         """
+
+        # Save args
+        self.loss_function = loss_function
+        self.learning_rate = learning_rate
 
         # Define layers
         self.hidden = DenseLayer(
@@ -143,13 +149,20 @@ class MLP:
             num_units=targets,
             activation_function=target_activation)
 
-    def forward_pass(self,) -> np.ndarray:
+    def forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network."""
-        pass
 
-    def compute_loss(self,) -> np.float64:
+        # Call hidden layer
+        hidden_output = self.hidden(inputs)
+        targets = self.output(hidden_output)
+
+        # Result of forward pass
+        return targets
+
+    def compute_loss(self, inputs: np.ndarray) -> np.float64:
         """Compute loss."""
-        pass
+
+        return self.loss_function(inputs)
 
     def backpropagation(self,):
         """Compute the gradient."""
