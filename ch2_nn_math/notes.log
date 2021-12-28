@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  28 DEC 2021 13:33
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  28 DEC 2021 13:34
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.tex
-(c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.tex
+**c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.tex
+(c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.tex
 LaTeX2e <2020-10-01> patch level 4
 L3 programming layer <2021-01-09> xparse <2020-03-03> (c:/texlive/2020/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2020/04/10 v1.4m Standard LaTeX document class
@@ -80,8 +80,8 @@ LaTeX Info: Redefining \] on input line 2924.
 File: l3backend-pdftex.def 2020-01-29 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count197
 \l__pdf_internal_box=\box49
-) (c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.aux)
-\openout1 = `generic.aux'.
+) (c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.aux)
+\openout1 = `notes.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 7.
 LaTeX Font Info:    ... okay on input line 7.
@@ -99,17 +99,17 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 7.
 LaTeX Font Info:    ... okay on input line 7.
  [1
 
-{c:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.aux) ) 
+{c:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.aux) ) 
 Here is how much of TeX's memory you used:
  1046 strings out of 479304
- 15358 string characters out of 5871219
- 295234 words of memory out of 5000000
+ 15338 string characters out of 5871219
+ 295230 words of memory out of 5000000
  18301 multiletter control sequences out of 15000+600000
  403884 words of font info for 29 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 67i,9n,74p,267b,127s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 67i,9n,74p,265b,127s stack positions out of 5000i,500n,10000p,200000b,80000s
 <c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
-Output written on c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.pdf (1 page, 79384 bytes).
+Output written on c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.pdf (1 page, 79384 bytes).
 PDF statistics:
  40 PDF objects out of 1000 (max. 8388607)
  28 compressed objects within 1 object stream

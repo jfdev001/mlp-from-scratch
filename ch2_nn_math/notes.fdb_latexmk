@@ -1,7 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1640720006 "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.tex" "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.pdf" "generic" 1640720020
-  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.aux" 1640720007 32 3985256e7290058c681f74d7a3565a19 ""
-  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.tex" 1640720018 1391 bfefaac5fe36a02a34658cb1fcd5dc2e ""
+["pdflatex"] 1640720070 "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.tex" "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.pdf" "notes" 1640720071
+  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.aux" 1640720071 32 3985256e7290058c681f74d7a3565a19 ""
+  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.tex" 1640720068 1391 bfefaac5fe36a02a34658cb1fcd5dc2e ""
   "c:/texlive/2020/texmf-dist/fonts/map/fontname/texfonts.map" 1612119555 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "c:/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1612117679 1004 54797486969f23fa377b128694d548df ""
   "c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1612117679 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
@@ -24,11 +24,11 @@
   "c:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1612132193 5202855 2b8f7cc849fa973779ae636750430cd5 ""
   "c:/texlive/2020/texmf-var/web2c/pdftex/pdflatex.fmt" 1612132368 2568052 e3d9e945e8214d2a81f98ce14198eea0 ""
   "c:/texlive/2020/texmf.cnf" 1612132160 713 e69b156964470283e0530f5060668171 ""
-  "generic.aux" 1640720007 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
-  "generic.tex" 1640720018 1391 bfefaac5fe36a02a34658cb1fcd5dc2e ""
+  "notes.aux" 1640720071 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
+  "notes.tex" 1640720068 1391 bfefaac5fe36a02a34658cb1fcd5dc2e ""
   (generated)
-  "generic.pdf"
-  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.pdf"
-  "generic.aux"
-  "generic.log"
-  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/generic.log"
+  "notes.pdf"
+  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.pdf"
+  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.log"
+  "notes.log"
+  "notes.aux"
