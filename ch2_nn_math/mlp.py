@@ -20,7 +20,7 @@ class Neuron:
 
         self.activation_function = activation_function
 
-    def activate(self, x: np.array, W: np.array, b: np.array) -> np.float64:
+    def activate(self, x: np.ndarray, W: np.ndarray, b: np.ndarray) -> np.float64:
         """Activation of hidden unit.
 
         Args:
@@ -35,40 +35,59 @@ class Neuron:
         # x^T @ W + b
         geometric_transformation = np.dot(np.expand_dims(x, axis=0), W) + b
 
-        # Optional activation
+        # Optional activation function
         if self.activation_function is not None:
             geometric_transformation = self.activation_function(
                 geometric_transformation)
 
+        # Result of activation
         return geometric_transformation
 
 
 class Layer:
-    """"""
+    """A layer in the neural network."""
 
     def __init__(self, num_units: int):
-        """"""
+        """Define state for neural network layer.
 
-    def __call__(self, inputs):
-        """"""
+        Args:
+            num_units: Number of hidden units.
+        """
+        pass
+
+    def __call__(self, inputs: np.ndarray):
+        """Layer computation.
+
+        Args:
+            Vector of inputs from previous layer.
+
+        Returns:
+            Vector of outputs from neurons.
+        """
         pass
 
 
 class MLP:
     """Feedforward neural net with single hidden layer (Multilayer Perceptron)."""
 
-    def __init__(self, hidden_units: int, targets: int):
+    def __init__(
+            self,
+            hidden_units: int,
+            targets: int,
+            loss_function: function,
+            learning_rate: float):
         """Define state for Multilayer Perceptron.
 
-        The parameters (param) of this hypothesis function are denoted
+        The parameters (params) of this hypothesis function are denoted
         in the literature as theta. Therefore, the MLP is a hypothesis
         function parametrized by the weights (edges) of the weight matrix
-        and the bias vector. For vector input, the weight "matrix" is not
-        a matrix but rather a vector only.
+        and the bias vector.
 
         Args:
             hidden_units: Number of neurons in hidden layer.
             targets: Target dimensional output.
+            loss_function: Function object for loss computations.
+            learning_rate: Learning rate (eta) for weight updates.
         """
 
         # Initialize the weight matrix
@@ -77,18 +96,25 @@ class MLP:
         # Initialize the bias vector
         pass
 
-    def forward_pass(self,):
-        """"""
+    def forward_pass(self,) -> np.ndarray:
+        """Perform forward pass through network."""
         pass
 
-    def compute_loss(self,):
-        """"""
+    def compute_loss(self,) -> np.float64:
+        """Compute loss."""
         pass
 
-    def compute_gradient(self,):
-        """"""
+    def backpropagation(self,):
+        """Compute the gradient."""
         pass
 
-    def backpropagate(self,):
-        """"""
+    def stochastic_gradient_descent(self,):
+        """Uses gradient to minimize loss."""
+        pass
+
+    def fit(self, x: np.ndarray, y: np.ndarray, batch_size: int, ) -> None:
+        """Fit the MLP to data.
+
+        TODO: Flatten x and y.
+        """
         pass
