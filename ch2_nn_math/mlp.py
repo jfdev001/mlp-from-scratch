@@ -108,8 +108,11 @@ class MLP:
 
     def __init__(
             self,
+            input_dims: int,
             hidden_units: int,
             targets: int,
+            hidden_activation: Callable,
+            target_activation: Callable,
             loss_function: Callable,
             learning_rate: float):
         """Define state for Multilayer Perceptron.
@@ -120,14 +123,25 @@ class MLP:
         and the bias vector.
 
         Args:
+            input_dims: 
             hidden_units: Number of neurons in hidden layer.
             targets: Target dimensional output.
+            hidden_activation: Activation function for hidden layers.
+            target_activation: Activation function for target layers.
             loss_function: Function object for loss computations.
             learning_rate: Learning rate (eta) for weight updates.
         """
 
         # Define layers
-        pass
+        self.hidden = DenseLayer(
+            input_dims=input_dims,
+            num_units=hidden_units,
+            activation_function=hidden_activation)
+
+        self.output = DenseLayer(
+            input_dims=hidden_units,
+            num_units=targets,
+            activation_function=target_activation)
 
     def forward_pass(self,) -> np.ndarray:
         """Perform forward pass through network."""
