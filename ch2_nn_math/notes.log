@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  28 DEC 2021 13:34
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  28 DEC 2021 13:52
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -101,18 +101,18 @@ LaTeX Font Info:    ... okay on input line 7.
 
 {c:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.aux) ) 
 Here is how much of TeX's memory you used:
- 1046 strings out of 479304
- 15338 string characters out of 5871219
- 295230 words of memory out of 5000000
- 18301 multiletter control sequences out of 15000+600000
- 403884 words of font info for 29 fonts, out of 8000000 for 9000
+ 1052 strings out of 479304
+ 15411 string characters out of 5871219
+ 298230 words of memory out of 5000000
+ 18305 multiletter control sequences out of 15000+600000
+ 405094 words of font info for 33 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 67i,9n,74p,265b,127s stack positions out of 5000i,500n,10000p,200000b,80000s
-<c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
-Output written on c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.pdf (1 page, 79384 bytes).
+ 67i,10n,74p,265b,125s stack positions out of 5000i,500n,10000p,200000b,80000s
+<c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb>
+Output written on c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/notes.pdf (1 page, 102498 bytes).
 PDF statistics:
- 40 PDF objects out of 1000 (max. 8388607)
- 28 compressed objects within 1 object stream
+ 48 PDF objects out of 1000 (max. 8388607)
+ 34 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

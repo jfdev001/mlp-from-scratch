@@ -6,35 +6,58 @@
 
 \begin{document}
 
-% Neural Network Definition
-Single Hidden Layer Neural Net with Sigmoid Output Layer: The neural network
+\section{Preamble}
+The neural network
 (function approximator) is just a chain of geometric transformations (functions)
 each parametrized by $W \in \mathcal{R}^{n_x \times n_h}$
 on $X \in \mathcal{R}^{m \times n_x}$.
 Note that $m$ is the number of examples
 in the dataset, $n_x$ is the input size (i.e., output of the previous layer),
 and $n_h$ is number of hidden units in the current layer. Also $\theta$ refers
-to the weights $W$ and biases $\vec{b}$ in the network.
+to the weights $W$ and biases ${b}$ in the network. Learning occurs by updating
+the parameters iteratively via mini-batch gradient descent.
+
+\section{Equations}
+Here I define the operations that occur for a single hidden layer fully
+connected neural network with the activation function of the last
+layer as the sigmoid function $\sigma(\cdot)$ during training.
+
+% Neural Network Definition
+\subsection{Single Hidden Layer Neural Network}
 \begin{equation}
 	\begin{aligned}
 		NeuralNet_{\theta}(X) & =
 		\sigma((XW^{[1]}
-		+ \vec{b}^{[1]})W^{[2]} + \vec{b}^{[2]})                   \\
-		                      & = f(g(w))                          \\
-		g_{\theta^{[2]}}(A)   & = AW^{[2]} + \vec{b}^{[2]}         \\
-		w_{\theta^{[1]}}(A)   & = AW^{[1]} + \vec{b}^{[1]}         \\
-		f(t)                  & = \sigma(t) = \frac{1}{1 + e^{-t}}
+		+ {b}^{[1]})W^{[2]} + {b}^{[2]})  \\
+		                      & = f(g(w))
 	\end{aligned}
 \end{equation}
 
+where $f$, $g$, and $w$ are defined as follows:
 
-Neural Network Prediction
+\begin{equation}
+	\begin{aligned}
+		g_{\theta^{[2]}}(A) & = AW^{[2]} + {b}^{[2]}             \\
+		w_{\theta^{[1]}}(A) & = AW^{[1]} + {b}^{[1]}             \\
+		f(t)                & = \sigma(t) = \frac{1}{1 + e^{-t}}
+	\end{aligned}
+\end{equation}
+
+\subsection{Neural Network Prediction (Forward Pass)}
 % Forward Pass
 \begin{align}
-	\hat{y} & \gets
+	\hat{y} & \gets NeuralNet_\theta(X)
 \end{align}
 
-Gradient Update
+% Loss function
+\subsection{Mean Squared Error Loss Function}
+\begin{align}
+	\mathcal{L}_\theta(X) =
+	\text{MSE}_\theta(X) =
+	\frac{1}{N} \sum_{i=1}^{N}{ (\hat{y}^{(i)} - y^{(i)} )}
+\end{align}
+
+\subsection{Gradient Update}
 % Weight updates
 \begin{align}
 	\theta_i & \gets \theta_i - \eta (\nabla_\theta \mathcal{L}_{\theta}(\hat{y}, y))
