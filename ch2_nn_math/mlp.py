@@ -47,16 +47,45 @@ class Neuron:
 class Layer:
     """A layer in the neural network."""
 
-    def __init__(self, num_units: int):
+    def __init__(self, input_dims: int, num_units: int):
         """Define state for neural network layer.
 
         Args:
+            input_dims: Number of units in the previous layer.
             num_units: Number of hidden units.
         """
-        pass
+
+        # Initialize weight matrix
+        self.W = self.glorot_uniform(
+            input_dims=input_dims, num_units=num_units)
+
+        # Initialize bias vector
+        self.b = np.zeros(shape=(num_units))
+
+        # Initialize list of neurons
+        self.hidden_units = [Neuron for j in num_units]
+
+    def glorot_uniform(self, input_dims: int, num_units: int) -> np.ndarray:
+        """(Xavier) Glorot uniform initializer.
+
+        http://proceedings.mlr.press/v9/glorot10a/glorot10a.pdf
+
+        Args:
+            input_dims: Dimensions of previous layer.
+            num_units: Number of hidden units (i.e., output dims).
+
+        Returns:
+            Array for weight initializer.
+        """
+
+        return np.random.uniform(-1/np.sqrt(input_dims), 1/np.sqrt(input_dims),
+                                 size=(input_dims, num_units))
 
     def __call__(self, inputs: np.ndarray):
         """Layer computation.
+
+        Should compute output for each `j` neuron and for all `i`
+        in `inputs` vector. 
 
         Args:
             Vector of inputs from previous layer.
@@ -90,10 +119,7 @@ class MLP:
             learning_rate: Learning rate (eta) for weight updates.
         """
 
-        # Initialize the weight matrix
-        pass
-
-        # Initialize the bias vector
+        # Define layers
         pass
 
     def forward_pass(self,) -> np.ndarray:
