@@ -15,11 +15,12 @@ Simple Backprop: https://www.youtube.com/watch?v=khUVIZ3MON8&t=20s
 Derivative of Activation Fxns: https://www.analyticsvidhya.com/blog/2021/04/activation-functions-and-their-derivatives-a-quick-complete-guide/
 """
 
+from __future__ import annotations
 from typing import Callable, Optional
 
 import numpy as np
 
-from ops import Sigmoid, ReLU, MeanSquaredError
+from ops import Operation, Sigmoid, ReLU, MeanSquaredError
 
 
 class DenseLayer:
@@ -130,10 +131,10 @@ class MLP:
 
         # Set functions
         if target_activation == 'sigmoid':
-            target_activation = Sigmoid()
+            self.target_activation = Sigmoid()
 
         if hidden_activation == 'relu':
-            hidden_activation = ReLU()
+            self.hidden_activation = ReLU()
         else:
             raise NotImplementedError
 
@@ -146,19 +147,19 @@ class MLP:
         self.hidden = DenseLayer(
             input_dims=input_dims,
             num_units=hidden_units,
-            activation_function=hidden_activation)
+            activation_function=self.hidden_activation)
 
         self.deep_hidden = [
             DenseLayer(
                 input_dims=hidden_units,
                 num_units=hidden_units,
-                activation_function=hidden_activation)
+                activation_function=self.hidden_activation)
             for lyr in range(l_layers - 1)]
 
         self.output = DenseLayer(
             input_dims=hidden_units,
             num_units=targets,
-            activation_function=target_activation)
+            activation_function=self.target_activation)
 
         self.sequential = [self.hidden, *self.deep_hidden, self.output]
 
@@ -254,10 +255,57 @@ class MLP:
 
         return self.loss_function(y_true, y_pred)
 
-    def _compute_output_lyr_error(self, ):
-        """Computes delta for output layer for backprop."""
+    def _compute_output_layer_error(
+            self,
+            output_activations: np.ndarray,
+            y_true: np.ndarray,
+            wted_input_of_final_lyr: np.ndarray) -> np.ndarray:
+        """Computes delta for output layer for backprop.
 
-        return
+        Args:
+            output_activations: Predictions (activations `a`) of the final layer.
+            y_true: Ground truth.
+            wted_input_of_final_lyr: Weighted input for the final layer in network.
+
+        Returns:
+            Delta vector of the output layer.
+        """
+
+        grad_cost_wrt_activation = self.loss_function.gradient(
+            output_activations, y_true)
+        deriv_of_activation_of_wted_input_of_final_lyr = self.target_activation.derivative(
+            wted_input_of_final_lyr)
+        delta_lyr = grad_cost_wrt_activation * \
+            deriv_of_activation_of_wted_input_of_final_lyr
+
+        return delta_lyr
+
+    def _compute_hidden_layer_error(
+            self,
+            wt_matrix_of_lyr_plus_one: np.ndarray,
+            delta_of_lyr_plus_one: np.ndarray,
+            wted_input_of_cur_lyr: np.ndarray,
+            hidden_activation: Operation) -> np.ndarray:
+        """Uses the `l+1` and `l` layer in cache to compute delta vector.
+
+        NOTE: This is equivalent to the rate of change of the loss (cost)
+        function with respect to the layer's bias vector.
+
+        Args:
+            wt_matrix_of_lyr_plus_one: Weight matrix of next layer.
+            delta_of_lyr_plus_one: Delta (error) of next layer.
+            wted_input_of_cur_lyr: Weighted input `z` of current layer.
+            hidden_activation: Activation function of hidden layer.
+
+        Returns:
+            The delta vector of the current layer.
+        """
+
+        wted_err = np.dot(wt_matrix_of_lyr_plus_one, delta_of_lyr_plus_one)
+        wted_derived_activation_err = wted_err * \
+            hidden_activation.derivative(wted_input_of_cur_lyr)
+
+        return wted_derived_activation_err
 
     def _backpropagation(self,) -> np.ndarray:
         """Compute the gradient."""

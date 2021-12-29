@@ -77,7 +77,7 @@ class ReLU(Operation):
 
 
 class Sigmoid(Operation):
-    """Sigmoid activation function.
+    """(Auto-vectorized) sigmoid activation function.
 
     @MISC {1225116,
         TITLE = {Derivative of sigmoid function $\sigma (x) = \frac{1}{1+e^{-x}}$},
@@ -102,7 +102,8 @@ class MeanSquaredError(Operation):
     The predictions are the activations of the network. The order of
     arguments in the `derivative` was based on
     `Four fundamental equations behind backpropagation` from
-    Nielsen (Ch.2, 2015).
+    Nielsen (Ch.2, 2015). Similarly, the gradient calculation in BP1a of 
+    is described in the same resource.
     """
 
     def derivative(
@@ -111,6 +112,13 @@ class MeanSquaredError(Operation):
 
         targets, predictions = inputs
         return 2 * np.mean(predictions - targets)
+
+    def gradient(
+            self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+        """Computes the gradient vector with respect to activations (preds)."""
+
+        targets, predictions = inputs
+        return 2 * (predictions - targets)
 
     def __call__(
             self,
