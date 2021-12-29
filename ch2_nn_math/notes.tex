@@ -9,37 +9,40 @@
 \section{Preamble}
 The neural network
 (function approximator) is just a chain of geometric transformations (functions)
-each parametrized by $W \in \mathcal{R}^{n_x \times n_h}$
-on $X \in \mathcal{R}^{m \times n_x}$.
+each parametrized by a weight matrix $W \in \mathcal{R}^{n_x \times n_h}$ and
+a bias vector $b \in \mathcal{R}^{n_h}$ on the input matrix $X \in \mathcal{R}^{m \times n_x}$.
 Note that $m$ is the number of examples
 in the dataset, $n_x$ is the input size (i.e., output of the previous layer),
 and $n_h$ is number of hidden units in the current layer. Also $\theta$ refers
 to the weights $W$ and biases ${b}$ in the network. Learning occurs by updating
-the parameters iteratively via mini-batch gradient descent.
+the parameters iteratively via mini-batch (stochastic) gradient descent.
 
 \section{Equations}
 Here I define the operations that occur for a single hidden layer fully
-connected neural network with the activation function of the last
-layer as the sigmoid function $\sigma(\cdot)$ during training.
+connected neural network (multilayer perceptron or MLP) with the activation function of the last
+layer as the sigmoid function $\sigma(\cdot)$ during training. \textbf{POSSIBLY NOT SIGMA?}
 
 % Neural Network Definition
 \subsection{Single Hidden Layer Neural Network}
 \begin{equation}
 	\begin{aligned}
 		NeuralNet_{\theta}(X) & =
-		\sigma((XW^{[1]}
-		+ {b}^{[1]})W^{[2]} + {b}^{[2]})  \\
-		                      & = f(g(w))
+		\sigma(ReLU(XW^{[1]}
+		+ {b}^{[1]})W^{[2]} + {b}^{[2]})                                                                  \\
+		                      & = \sigma(g(ReLU(w(X))))                                                   \\
+		A^{L}                 & = NeuralNet_{\theta}(X) & \text{Activation matrix $A$ for last layer $L$}
 	\end{aligned}
 \end{equation}
 
-where $f$, $g$, and $w$ are defined as follows:
+where $\sigma$, $ReLU$, $g$, and $w$ are defined as follows:
 
 \begin{equation}
 	\begin{aligned}
-		g_{\theta^{[2]}}(A) & = AW^{[2]} + {b}^{[2]}             \\
-		w_{\theta^{[1]}}(A) & = AW^{[1]} + {b}^{[1]}             \\
-		f(t)                & = \sigma(t) = \frac{1}{1 + e^{-t}}
+		\sigma(t)           & = \frac{1}{1 + e^{-t}}                                                         \\
+		ReLU(t)             & = max(0, t)                                                                    \\
+		g_{\theta^{[2]}}(A) & = AW^{[2]} + {b}^{[2]}                                                         \\
+		w_{\theta^{[1]}}(A) & = AW^{[1]} + {b}^{[1]}                                                         \\
+		u_{\theta^{[l]}}(A) & = AW^{[l]} + b^{[l]}   & \text{General form of $g$ and $w$ for $l^{th}$ layer}
 	\end{aligned}
 \end{equation}
 
@@ -51,11 +54,13 @@ where $f$, $g$, and $w$ are defined as follows:
 
 % Loss function
 \subsection{Mean Squared Error Loss Function}
-\begin{align}
-	\mathcal{L}_\theta(X) =
-	\text{MSE}_\theta(X) =
-	\frac{1}{N} \sum_{i=1}^{N}{ (\hat{y}^{(i)} - y^{(i)} )}
-\end{align}
+\begin{equation}
+	\begin{aligned}
+		\mathcal{L}_\theta(X) & =
+		\frac{1}{N} \sum_{i=1}^{N}{ (\hat{y}^{(i)} - y^{(i)} )^{2}}                                                                                                            \\
+		                      & = \frac{1}{N} \sum_{i=1}^{N}{(a^{(i)} + y^{(i)})^{2}} & \text{$a^{(i)}$ is the activation vector of the last layer $L$ for the $i^{th}$ input}
+	\end{aligned}
+\end{equation}
 
 \subsection{Gradient Update}
 % Weight updates
