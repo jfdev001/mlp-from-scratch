@@ -211,8 +211,12 @@ class MLP:
         # Dump cache
         self._clear_cache()
 
-        # Call layers in model and cache layer outputs
+        # Call layers in model and cache layer output
+        # The inputs have no weight matrix associated with them...
+        # but the inputs themselves have no activation (aka, linear)
+        # and need to be cached for backprop
         activations = inputs
+        self._cache(activations=activations, weighted_inputs=None)
         for lyr in self.sequential:
             activations, weighted_inputs = lyr(activations)
             self._cache(activations=activations,
@@ -230,7 +234,7 @@ class MLP:
         """
 
         self.activations_cache.append(activations)
-        self.weighted_inputs_cache.append(activations)
+        self.weighted_inputs_cache.append(weighted_inputs)
 
     def _clear_cache(self,) -> None:
         """Sets cache lists to empty."""
@@ -306,6 +310,25 @@ class MLP:
             hidden_activation.derivative(wted_input_of_cur_lyr)
 
         return wted_derived_activation_err
+
+    def _compute_deriv_cost_wrt_wt(
+            self,
+            activations_prev_lyr: np.ndarray,
+            delta_cur_lyr: np.ndarray) -> np.ndarray:
+        """Computes derivative of cost fxn with respect to layer weight.
+
+        Uses activation of previous layer and delta of current layer to
+        compute dC/dw_jk
+
+        Args:
+            activations_prev_lyr: Activations of previous layer.
+            delta_cur_lyr: 
+
+        Returns:
+            Derivative cost w.r.t to weight matrix vector.
+        """
+
+        return np.dot(activations_prev_lyr, delta_cur_lyr)
 
     def _backpropagation(self,) -> np.ndarray:
         """Compute the gradient."""
