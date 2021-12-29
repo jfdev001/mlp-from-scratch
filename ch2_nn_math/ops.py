@@ -36,7 +36,8 @@ class Operation(metaclass=ABCMeta):
 
         Args:
             inputs: Inputs for use during operation call.
-                Tuple for error functions, otherwise single input.
+                Tuple (target, pred) for error functions,
+                otherwise single input.
 
         Returns:
             Vector of outputs.

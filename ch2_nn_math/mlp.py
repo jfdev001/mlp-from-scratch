@@ -178,10 +178,16 @@ class MLP:
         return self.activations_cache, self.weighted_inputs_cache
 
     @property
-    def num_layers(self,):
+    def num_layers(self,) -> int:
         """Returns the number of layers (includes the input layer)."""
 
         return len(self.sequential)
+
+    @property
+    def layers(self,) -> list[DenseLayer]:
+        """Returns a list of dense layers in the network."""
+
+        return self.sequential[1:]
 
     def fit(self, x: np.ndarray, y: np.ndarray, batch_size: int, epochs: int) -> None:
         """Fit the MLP to data.
@@ -209,8 +215,9 @@ class MLP:
             for batch_step, (x_batch, y_batch) in enumerate(batch_data):
                 preds = self._forward_pass(x_batch)
                 loss = self._compute_loss(y_true=y_batch, y_pred=preds)
-                grads = self._backpropagation()
-                self._gradient_descent()
+                weight_grads, bias_grads = self._backpropagation(
+                    y_true=y_batch)
+                # self._gradient_descent()
 
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network."""
@@ -231,6 +238,98 @@ class MLP:
 
         # Result of forward pass
         return activations
+
+    def _compute_loss(
+            self, y_true: np.ndarray, y_pred: np.ndarray) -> np.float64:
+        """Compute scalar loss.
+
+        Args:
+            y_true: Vectors of targets.
+            y_pred: Vector of predictions.
+
+        Returns:
+            Scalar loss.
+        """
+
+        return self.loss_function((y_true, y_pred))
+
+    def _backward_pass(
+            self,
+            y_true: np.ndarray) -> tuple[list[np.ndarray], list[np.ndarray]]:
+        """Compute the gradient of the cost function.
+
+        After forward the pass occurs, use the cached outputs
+        to compute cost function gradients. The algorithm proceeds
+        as follows:
+
+        1. delta^{L} = grad_a(C) * deriv_activation(weighted_input_of_lyr)
+                     = `self._compute_output_layer_error`.
+                     = dCost/dBias
+            1.1 Compute cost w.r.t weight matrix using delta^{L}.
+        2. for L - 1 to 0:  # This is 'backpropagation' part.
+            2.1 Compute delta^{l} \
+                == dCost/dBias for the current layer
+                == self._compute_hidden_layer_error
+            2.2  Compute cost w.r.t weight matrix using delta^{l}
+        3. Make sure to save the delta computations for biases
+            and weights for each layer as these will be needed
+            to update the weights.
+
+        Args:
+            y_true: The ground truth needed for the final layer L.
+
+        Returns:
+            Tuple of lists of weight errors and bias errors for each layer.
+            The length of each list is equal to the number of layers
+            (including the input layer). Therefore, the first element of the
+            lists will be None since there are no errors for the input layer.
+        """
+
+        # Get cached activations and weighted inputs
+        activations, weighted_inputs = self.cache
+
+        # Compute errors for bias and then weight matrices
+        delta_L = self._compute_output_layer_error(
+            output_activations=activations[-1],
+            y_true=y_true,
+            wted_input_of_final_lyr=weighted_inputs[-1])
+
+        dCost_dW_L = self._compute_deriv_cost_wrt_wt(
+            activations_prev_lyr=activations[-2],
+            delta_cur_lyr=delta_L)
+
+        # Save deltas
+        deltas = [None for i in range(self.num_layers)]
+        deltas[-1] = delta_L
+
+        dCost_dWs = [None for i in range(self.num_layers)]
+        dCost_dWs[-1] = dCost_dW_L
+
+        # Backpropagate error through layers...
+        # this is the backward pass
+        for lyr in range(self.num_layers-1, 1, -1):
+
+            # Compute errors
+            delta_l = self._compute_hidden_layer_error(
+                wt_matrix_of_lyr_plus_one=self.sequential[lyr+1].W,
+                delta_of_lyr_plus_one=deltas[lyr+1],
+                wted_input_of_cur_lyr=weighted_inputs[lyr],
+                hidden_activation=self.sequential[lyr].activation_function)
+
+            dCost_dW_l = self._compute_deriv_cost_wrt_wt(
+                activations_prev_lyr=activations[lyr-1],
+                delta_cur_lyr=delta_l)
+
+            # Update lists
+            dCost_dWs[lyr] = delta_l
+            deltas[lyr] = delta_l
+
+        # Return the error lists
+        return dCost_dWs, deltas
+
+    def _gradient_descent(self,) -> None:
+        """Uses gradient to minimize loss. 1101006"""
+        pass
 
     def _cache(self, activations: np.ndarray, weighted_inputs: np.ndarray) -> None:
         """Caches activations and weighted inputs from layer for backprop.
@@ -319,81 +418,3 @@ class MLP:
         """
 
         return np.dot(activations_prev_lyr, delta_cur_lyr)
-
-    def _backpropagation(
-            self,
-            y_true: np.ndarray) -> tuple[list[np.ndarray], list[np.ndarray]]:
-        """Compute the gradient of the cost function.
-
-        After forward the pass occurs, use the cached outputs
-        to compute cost function gradients. The algorithm proceeds
-        as follows:
-
-        1. delta^{L} = grad_a(C) * deriv_activation(weighted_input_of_lyr)
-                     = `self._compute_output_layer_error`.
-                     = dCost/dBias
-            1.1 Compute cost w.r.t weight matrix using delta^{L}.
-        2. for L - 1 to 0:  # This is 'backpropagation' part.
-            2.1 Compute delta^{l} \
-                == dCost/dBias for the current layer
-                == self._compute_hidden_layer_error
-            2.2  Compute cost w.r.t weight matrix using delta^{l}
-        3. Make sure to save the delta computations for biases
-            and weights for each layer as these will be needed
-            to update the weights.
-
-        Args:
-            y_true: The ground truth needed for the final layer L.
-
-        Returns:
-            Tuple of lists of weight errors and bias errors for each layer.
-            The length of each list is equal to the number of layers 
-            (including the input layer). Therefore, the first element of the
-            lists will be None since there are no errors for the input layer.
-        """
-
-        # Get cached activations and weighted inputs
-        activations, weighted_inputs = self.cache
-
-        # Compute errors for bias and then weight matrices
-        delta_L = self._compute_output_layer_error(
-            output_activations=activations[-1],
-            y_true=y_true,
-            wted_input_of_final_lyr=weighted_inputs[-1])
-
-        dCost_dW_L = self._compute_deriv_cost_wrt_wt(
-            activations_prev_lyr=activations[-2],
-            delta_cur_lyr=delta_L)
-
-        # Save deltas
-        deltas = [None for i in range(self.num_layers)]
-        deltas[-1] = delta_L
-
-        dCost_dWs = [None for i in range(self.num_layers)]
-        dCost_dWs[-1] = dCost_dW_L
-
-        # Backpropagate error through layers...
-        # this is the backward pass
-        for lyr in range(self.num_layers-1, 1, -1):
-
-            # Compute errors
-            delta_l = self._compute_hidden_layer_error(
-                wt_matrix_of_lyr_plus_one=self.sequential[lyr+1].W,
-                delta_of_lyr_plus_one=deltas[lyr+1],
-                wted_input_of_cur_lyr=weighted_inputs[lyr],
-                hidden_activation=self.sequential[lyr].activation_function)
-
-            dCost_dW_l = self._compute_deriv_cost_wrt_wt(
-                activations_prev_lyr=activations[lyr-1],
-                delta_cur_lyr=delta_l)
-
-            # Update lists
-            dCost_dWs[lyr] = delta_l
-            deltas[lyr] = delta_l
-
-        # Return the error lists
-        return dCost_dWs, deltas
-
-    def _gradient_descent(self,) -> None:
-        """Uses gradient to minimize loss. 1101006"""
-        pass
