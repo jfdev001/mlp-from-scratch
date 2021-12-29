@@ -20,7 +20,7 @@ from typing import Callable, Optional
 
 import numpy as np
 
-from ops import Operation, Sigmoid, ReLU, MeanSquaredError
+from ops import Operation, Sigmoid, ReLU, Linear, MeanSquaredError
 
 
 class DenseLayer:
@@ -30,7 +30,7 @@ class DenseLayer:
             self,
             input_dims: int,
             num_units: int,
-            activation_function: Optional[Callable] = None):
+            activation_function: Optional[Callable] = Linear):
         """Define state for neural network layer.
 
         Args:
@@ -83,11 +83,8 @@ class DenseLayer:
         weighted_input_z = np.dot(x, self.W) + self.b
 
         # Optional activation function
-        if self.activation_function is not None:
-            activation_a = np.apply_along_axis(
-                self.activation_function, axis=-1, arr=weighted_input_z)
-        else:
-            activation_a = weighted_input_z
+        activation_a = np.apply_along_axis(
+            self.activation_function, axis=-1, arr=weighted_input_z)
 
         # Result of layer computation
         return activation_a, weighted_input_z
@@ -216,9 +213,10 @@ class MLP:
             for batch_step, (x_batch, y_batch) in enumerate(batch_data):
                 preds = self._forward_pass(x_batch)
                 loss = self._compute_loss(y_true=y_batch, y_pred=preds)
-                weight_grads, bias_grads = self._backpropagation(
+                weight_grads, bias_grads = self._backward_pass(
                     y_true=y_batch)
-                # self._gradient_descent()
+                self._gradient_descent(
+                    weight_grads=weight_grads, bias_grads=bias_grads)
 
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network."""
@@ -328,9 +326,16 @@ class MLP:
         # Return the error lists
         return dCost_dWs, deltas
 
-    def _gradient_descent(self,) -> None:
-        """Uses gradient to minimize loss. 1101006"""
-        pass
+    def _gradient_descent(
+            self, weight_grads: list, bias_grads: list) -> None:
+        """Uses gradient to minimize loss."""
+
+        for wt_grad, bias_grad in zip(weight_grads, bias_grads):
+            if wt_grad is None:
+                return
+            else:
+                # Sum over of some dimension....
+                pass
 
     def _cache(self, activations: np.ndarray, weighted_inputs: np.ndarray) -> None:
         """Caches activations and weighted inputs from layer for backprop.
@@ -408,7 +413,9 @@ class MLP:
         """Computes derivative of cost fxn with respect to layer weight.
 
         Uses activation of previous layer and delta of current layer to
-        compute dC/dw_jk
+        compute dC/dw_jk.
+
+        TODO: Is dot product appropriate here?
 
         Args:
             activations_prev_lyr: Activations of previous layer.

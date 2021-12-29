@@ -78,7 +78,7 @@ class ReLU(Operation):
 
 
 class Sigmoid(Operation):
-    """(Auto-vectorized) sigmoid activation function.
+    """Sigmoid activation function.
 
     @MISC {1225116,
         TITLE = {Derivative of sigmoid function $\sigma (x) = \frac{1}{1+e^{-x}}$},
@@ -95,6 +95,16 @@ class Sigmoid(Operation):
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
         return 1 / (1 + np.exp(-inputs))
+
+
+class Linear(Operation):
+    """Linear activation function."""
+
+    def derivative(self, inputs: np.ndarray) -> np.ndarray:
+        return np.ones_like(inputs)
+
+    def __call__(self, inputs: np.ndarray) -> np.ndarray:
+        return inputs
 
 
 class MeanSquaredError(Operation):
@@ -127,3 +137,23 @@ class MeanSquaredError(Operation):
 
         targets, predictions = inputs
         return np.mean(np.square(targets - predictions))
+
+
+class BinaryCrossEntropy(Operation):
+    """Binary cross entropy loss (cost) function."""
+
+    def derivative(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+        return super().derivative(inputs)
+
+    def __call__(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+        return super().__call__(inputs)
+
+
+class CategoricalCrossEntropy(Operation):
+    """Categorical cross entropy (aka, NLL) loss (cost) function."""
+
+    def derivative(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+        return super().derivative(inputs)
+
+    def __call__(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+        return super().__call__(inputs)
