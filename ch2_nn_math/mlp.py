@@ -176,11 +176,11 @@ class DenseLayer:
         return np.random.uniform(-1/np.sqrt(input_dims), 1/np.sqrt(input_dims),
                                  size=(input_dims, num_units))
 
-    def __call__(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def __call__(self, x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Compute layer activations and weighted inputs.
 
         Args:
-            x: Input vector(1 BY num_ele_in_x).
+            x: Input matrix.
 
         Returns:
             Activation vector and weighted inputs vector.
@@ -212,8 +212,8 @@ class MLP:
             input_dims: int,
             hidden_units: int,
             targets: int,
-            loss_function: Callable,
             learning_rate: float,
+            loss_function: str = 'mse',
             l_layers: int = 1,
             hidden_activation: str = 'relu',
             target_activation: str = 'sigmoid',):
@@ -235,9 +235,22 @@ class MLP:
         """
 
         # Save args
-        self.loss_function = loss_function
         self.learning_rate = learning_rate
         self.l_layers = l_layers
+
+        # Set functions
+        if target_activation == 'sigmoid':
+            target_activation = Sigmoid()
+
+        if hidden_activation == 'relu':
+            hidden_activation = ReLU()
+        else:
+            raise NotImplementedError
+
+        if loss_function == 'mse':
+            loss_function = MeanSquaredError()
+        else:
+            raise NotImplementedError
 
         # Define layers
         self.hidden = DenseLayer(
@@ -251,10 +264,6 @@ class MLP:
                 num_units=hidden_units,
                 activation_function=hidden_activation)
             for lyr in range(l_layers - 1)]
-
-        # Set activation
-        if target_activation == 'sigmoid':
-            target_activation = Sigmoid()
 
         self.output = DenseLayer(
             input_dims=hidden_units,
