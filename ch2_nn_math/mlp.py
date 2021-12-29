@@ -78,7 +78,7 @@ class ReLU(Operation):
         # Compute a boolean tensor where the elements
         # that are greater than 0 are set to 1 while
         # elements <= 0 are set to 0.
-        greater_than_zero_tensor = np.greater(inputs, 0, dtype=np.uint8)
+        greater_than_zero_tensor = np.greater(inputs, 0).astype(np.float64)
         return greater_than_zero_tensor
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
@@ -87,7 +87,7 @@ class ReLU(Operation):
         # that are greater than 0 are set to true while
         # elements <= 0 are set to false.
         greater_than_zero_tensor = np.greater(inputs, 0)
-        return np.bitwise_and(greater_than_zero_tensor, inputs)
+        return greater_than_zero_tensor * inputs
 
 
 class Sigmoid(Operation):
@@ -216,7 +216,7 @@ class MLP:
             loss_function: str = 'mse',
             l_layers: int = 1,
             hidden_activation: str = 'relu',
-            target_activation: str = 'sigmoid',):
+            target_activation: Optional[str] = None,):
         """Define state for Multilayer Perceptron.
 
         The parameters (params) of this hypothesis function are denoted
@@ -227,11 +227,13 @@ class MLP:
             input_dims:
             hidden_units: Number of neurons in hidden layer.
             targets: Target dimensional output.
-            loss_function: Function object for loss computations.
+            loss_function: Specify loss function.
+                NOTE: Only supports 'mse'.
             learning_rate: Learning rate(eta) for weight updates.
             hidden_activation: Activation function for hidden layers.
+                NOTE: Only supports 'relu'.
             target_activation: Activation function for target layers.
-                NOTE: Only support sigmoid for now.
+                NOTE: Only support 'sigmoid' or None for now.
         """
 
         # Save args
@@ -248,7 +250,7 @@ class MLP:
             raise NotImplementedError
 
         if loss_function == 'mse':
-            loss_function = MeanSquaredError()
+            self.loss_function = MeanSquaredError()
         else:
             raise NotImplementedError
 
