@@ -19,6 +19,8 @@ from typing import Callable, Optional
 
 import numpy as np
 
+from ops import Sigmoid, ReLU, MeanSquaredError
+
 
 class DenseLayer:
     """A densely connected layer in a neural network."""
