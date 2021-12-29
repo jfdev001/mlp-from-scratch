@@ -102,8 +102,8 @@ class MLP:
             hidden_units: int,
             targets: int,
             learning_rate: float,
-            loss_function: str = 'mse',
             l_layers: int = 1,
+            loss_function: str = 'mse',
             hidden_activation: str = 'relu',
             target_activation: Optional[str] = None,):
         """Define state for Multilayer Perceptron.
@@ -116,9 +116,10 @@ class MLP:
             input_dims:
             hidden_units: Number of neurons in hidden layer.
             targets: Target dimensional output.
+            learning_rate: Learning rate(eta) for weight updates.
+            l_layers: Number of layers 
             loss_function: Specify loss function.
                 NOTE: Only supports 'mse'.
-            learning_rate: Learning rate(eta) for weight updates.
             hidden_activation: Activation function for hidden layers.
                 NOTE: Only supports 'relu'.
             target_activation: Activation function for target layers.
