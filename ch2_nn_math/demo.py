@@ -79,7 +79,7 @@ def cli(description: str):
         '--m-examples',
         help='number of training examples. (default: 32)',
         type=int,
-        default=32)
+        default=16)
 
     random_data.add_argument(
         '--n-features',
@@ -114,13 +114,13 @@ def cli(description: str):
         '--num-hidden-units',
         help='number of hidden units in hidden layers. (default: 32)',
         type=int,
-        default=32)
+        default=2)
 
     hparams.add_argument(
         '--batch-size',
         help='batch size for training. (default: 32)',
         type=int,
-        default=32)
+        default=4)
 
     hparams.add_argument(
         '--num-epochs',

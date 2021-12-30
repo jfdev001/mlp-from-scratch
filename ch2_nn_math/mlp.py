@@ -84,8 +84,7 @@ class DenseLayer:
         # Affine transformation
         # W (hidden_units, input_dims) * (samples, input_dims).T + (hidden_units, )
         # --> z (hidden_units, samples).T
-        weighted_input_z = np.transpose(
-            np.dot(self.W, np.transpose(x)) + self.b)
+        weighted_input_z = np.dot(x, np.transpose(self.W)) + self.b
 
         # Activation function
         activation_a = np.apply_along_axis(
@@ -131,7 +130,7 @@ class MLP:
         # Save args
         self.learning_rate = learning_rate
         self.l_layers = l_layers
-        self.num_samples = None
+        self.batch_size = None
 
         # Set final layer activation function
         if target_activation is None:
@@ -213,11 +212,14 @@ class MLP:
         """
 
         # Get the number of samples
-        self.num_samples = x.shape[0]
+        num_samples = x.shape[0]
+
+        # Save the batch size for computations later
+        self.batch_size = batch_size
 
         # Get batch indices
         batch_indices = np.random.choice(
-            a=self.num_samples, size=(self.num_samples//batch_size, batch_size), replace=False)
+            a=num_samples, size=(num_samples//batch_size, batch_size), replace=False)
 
         # Batch the data
         batch_data = zip(x[batch_indices], y[batch_indices])
@@ -234,7 +236,8 @@ class MLP:
                     y_true=y_batch)
 
                 self._gradient_descent(
-                    weight_grads=weight_grads, bias_grads=bias_grads)
+                    weight_grads=weight_grads,
+                    bias_grads=bias_grads)
 
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network."""
@@ -309,7 +312,7 @@ class MLP:
         delta_L_samples = []
         dCost_dW_L_samples = []
 
-        for sample in range(self.num_samples):
+        for sample in range(self.batch_size):
 
             # Compute errors for bias and then weight matrices
             delta_L_sample = self._compute_output_layer_error(
@@ -344,7 +347,7 @@ class MLP:
             # Arguments that are independent of training samples
             hidden_activation = self.sequential[lyr].activation_function
             w_of_lyr_plus_one = self.sequential[lyr+1].W
-            for sample in range(self.num_samples):
+            for sample in range(self.batch_size):
 
                 delta_of_lyr_plus_one = delta_lyrs[lyr+1][sample]
                 z_lyr = weighted_inputs[lyr][sample]
@@ -390,7 +393,7 @@ class MLP:
         next(grad_iterator)
 
         # Update gradients
-        for lyr, wt_grad, bias_grad in grad_iterator:
+        for cnt, (lyr, wt_grad, bias_grad) in enumerate(grad_iterator):
             lyr.W -= self.learning_rate * np.mean(wt_grad, axis=0)
             lyr.b -= self.learning_rate * np.mean(bias_grad, axis=0)
 
