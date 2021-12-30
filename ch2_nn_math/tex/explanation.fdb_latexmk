@@ -1,13 +1,13 @@
 # Fdb version 3
-["biber explanation"] 1640893884 "explanation.bcf" "explanation.bbl" "explanation" 1640894522
-  "explanation.bcf" 1640894196 106166 26d15b380c4575d80468ddf805a798a7 "pdflatex"
-  "sources.bib" 1640893850 917 9aa573605e40b26fa55831531b259752 ""
+["biber explanation"] 1640897213 "explanation.bcf" "explanation.bbl" "explanation" 1640900326
+  "explanation.bcf" 1640900241 106298 dd92ab7bae11643b9a6510528b4980b4 "pdflatex"
+  "sources.bib" 1640897199 1504 83e67e2dfd849229ed0e7b3093f01510 ""
   (generated)
   "explanation.bbl"
   "explanation.blg"
-["pdflatex"] 1640894195 "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex" "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf" "explanation" 1640894522
-  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.aux" 1640894196 2217 c12cde0962db1a752e782e7a33b4db3c ""
-  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex" 1640894521 7466 161679a23081b8492828ac22b4f253c2 ""
+["pdflatex"] 1640900239 "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex" "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf" "explanation" 1640900326
+  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.aux" 1640900241 2557 131f1bc5803136821042f2b23400d6a2 ""
+  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex" 1640900325 9672 91eeed9ef2b73103bf4c740903c59ef6 ""
   "c:/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1612118520 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "c:/texlive/2020/texmf-dist/fonts/map/fontname/texfonts.map" 1612119555 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "c:/texlive/2020/texmf-dist/fonts/tfm/jknappen/ec/tcrm0600.tfm" 1612119090 1536 12e8c510d3e158fdd0e9a42e75118bd9 ""
@@ -84,15 +84,15 @@
   "c:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1612132193 5202855 2b8f7cc849fa973779ae636750430cd5 ""
   "c:/texlive/2020/texmf-var/web2c/pdftex/pdflatex.fmt" 1612132368 2568052 e3d9e945e8214d2a81f98ce14198eea0 ""
   "c:/texlive/2020/texmf.cnf" 1612132160 713 e69b156964470283e0530f5060668171 ""
-  "explanation.aux" 1640894196 2217 c12cde0962db1a752e782e7a33b4db3c "pdflatex"
-  "explanation.bbl" 1640893887 5297 571689b48fb963af9c231ab08975f49e "biber explanation"
-  "explanation.run.xml" 1640894196 2351 2b86cff8c33f1511deb5b2ef6cad7a32 "pdflatex"
-  "explanation.tex" 1640894521 7466 161679a23081b8492828ac22b4f253c2 ""
+  "explanation.aux" 1640900241 2557 131f1bc5803136821042f2b23400d6a2 "pdflatex"
+  "explanation.bbl" 1640897216 7758 e0c4389892fb9b444f5d93b522b428f3 "biber explanation"
+  "explanation.run.xml" 1640900241 2351 2b86cff8c33f1511deb5b2ef6cad7a32 "pdflatex"
+  "explanation.tex" 1640900325 9672 91eeed9ef2b73103bf4c740903c59ef6 ""
   (generated)
-  "explanation.bcf"
-  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf"
-  "explanation.aux"
   "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.log"
+  "explanation.run.xml"
+  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf"
   "explanation.pdf"
   "explanation.log"
-  "explanation.run.xml"
+  "explanation.bcf"
+  "explanation.aux"

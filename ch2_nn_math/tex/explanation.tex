@@ -30,8 +30,8 @@ the computation of gradients via backpropagation (a concept that is often "handw
 or explained in so much detail as to be utterly confusing--at least in the author's experience),
 and the update of model parameters via mini-batch stochastic gradient descent.
 If the ideas such as \textit{layer} and \textit{backpropagation} are entirely unfamiliar
-to you, then the author encourages you to visit texts such as
-\textit{Deep Learning} (free, online) \cite{Goodfellow2016},
+to you, then the author encourages you to visit 3Blue1Brown's Deep Learning YouTube Series \cite{3Blue1BrownWhatIsANN2017}
+and peruse the first few chapters of texts such as \textit{Deep Learning} (free, online) \cite{Goodfellow2016},
 \textit{Neural Networks and Deep Learning} (free, online) \cite{Nielsen2015},
 \textit{Hands-on Machine Learning with Scikit-Learn, TensorFlow and Keras 2ed} (buy) \cite{Geron2020},
 and/or \textit{Deep Learning with Python 2ed} (buy) \cite{Chollet2021}. The present document
@@ -39,7 +39,7 @@ is not intended to be a comprehensive overview of neural networks nor an extreme
 in-depth explanation but rather a document that highlights certain concepts that the
 author found confusing or ambiguous when he was learning about neural networks.
 
-The explanations in the present document will essentially alternate between mathematics
+The format of explanations in the present document will essentially alternate between mathematics
 and concrete implementations using the Python3 programming language with
 the NumPy library. Note that the implementations here
 are not intended to be optimal. If you would like optimal implementations, the author
@@ -52,17 +52,51 @@ the present document.
 \quad The neural network (function approximator) is just a chain of geometric transformations (functions)
 each parametrized by a weight matrix $W \in \mathcal{R}^{n_x \times n_h}$ and
 a bias vector $b \in \mathcal{R}^{n_h}$ on the input vector $x \in \mathcal{R}^{n_x}$.
-With this single sentence the author makes several claims and uses notation that may
-or may not be familiar to the reader.
 Note that $n_x$ is the input size (i.e., output size of the previous layer in a network with $L$ total layers)
-and $n_h$ is the number of hidden units in the current layer. The weights and biases
-are collectively known as parameters in the literature. Hence, the use of the
-phrase a \textit{function} that is \textit{parametrized} by \textit{weights} and \textit{biases}.
-Also, note that the input vector $x$ is a \textit{column vector}, which is important
-to understand since vector/matrix operations (dot product, Hadamard (element-wise)
-product, addition, etc.) restrict their operands to particular shapes. When
-using the term \textit{vector}, the author is always referring to a
-\textit{column vector} unless otherwise specified. Also, note that $x \in \mathcal{R}^{n_x}$ indicates
+and $n_h$ is the number of hidden units in the current layer.
+The following paragraphs will elucidate the claims in this sentence and notation.
+
+The author assumes you know what a function is; however, the term \textit{parametrized}
+is one that appears often in deep learning literature and should be well-understood by the student.
+Consider a generic quadratic function \cite{MathSEVarsParamsArgs2015} as
+% Quadratic function
+\begin{equation}
+	f(x) = ax^{2} + bx + c
+\end{equation}
+The \textit{variable} $x$ is an \textit{argument} to the function $f$ that has
+\textit{parameters} $a$, $b$, and $c$. The parameters determine the behavior of
+the function (e.g., the steepness of slope, intercepts, shape, etc.) while the
+variable can take on some range of values. When a variable that takes on a particular
+value is passed as an argument to the function with defined parameters, the result
+is some other value $y$ if $y = f(x)$. This explanation of a function
+should not be anything new; however, the \textit{parameters} are quantities
+of particular interest for neural networks since the parameters are the quantities
+that are \textit{learned} by the neural network over time. What it means to learn
+parameters will be explaned later.
+
+A neural network can be denoted as a function $h$ with parameters $W$
+and $b$ of a variable $x$. This statement can be compactly written as
+$h_{W, b}(x)$. The subscript with $W$ and $b$
+means that the weights $W$ and biases $b$ are parameters of the neural network $h$.
+The claim that a neural network is a chain of functions is useful later during
+the updating of the parameters of the network. But to briefly illustrate the idea
+of chaining functions, the generic quadratic function in Equation 1 is decomposed
+into units called \textit{atomic functions}.
+\begin{align}
+	g_{a}(x)     & = ax^{2}                  \\
+	u_{b}(x)     & = bx                      \\
+	f_{a,b,c}(x) & = g_{a}(x) + u_{b}(x) + c
+\end{align}
+
+The input $x$ is not a single value as is conceived in the elementary
+formulations described above. Rather, the input $x$ is a list of
+values referred to as a \textit{column vector}. Each element of the vector
+is the value a particular feature, or independent variable, could take on.
+The shape of the vector $x$ is important to understand since the functions and operations
+performed by the neural network (dot product, Hadamard product, addition, etc.)
+restrict their vector/matrix operands to particular shapes. When using the term
+\textit{vector}, the author is always referring to a \textit{column vector}
+unless otherwise specified. Also, note that $x \in \mathcal{R}^{n_x}$ indicates
 that $x$ is a vector with $n_x$ elements and the $j^{th}$ is a real number.
 For example, the below vector $x$ is shown and a common vector operation
 known as transposition (converts a \textit{column vector} to a
@@ -97,11 +131,15 @@ since the author's implementation of the the neural network will use the Python
 programming language. If you wish to implement the same algorithms in a language
 such as R or Wolfram Mathematica, be wary of this index discrepancy.
 
+Lastly, a weight matrix $W_{jk}$ has weight edges between the $k^{th}$
+input neuron and the $j^{th}$ hidden neuron of $n_h$ total hidden neurons.
+
 \section{Equations}
 \quad Here the author defines the operations that occur for a multilayer perceptron (MLP). Note
 that the MLP can sometimes refer to any class of feedforward
 neural network, that is a network that applies affine transformations and
-activation functions to input from a previous layer in the network.
+activation functions to input from a previous layer in the network. The affine
+transformation is simply $xW^{\top} + b$.
 
 % Neural Network Definition
 \subsection{Single Hidden Layer Neural Network}
