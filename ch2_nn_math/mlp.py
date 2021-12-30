@@ -5,6 +5,8 @@ General Backprop (Goodfellow et al., Deep Learning 6.5.6 p. 211):
     be a <class `Parameter`> in order to implement the operations
     described for general backprop on the above page?
 
+NOTE: The weight matrix is of shape (output_dims, input_dims)
+
 Deep Learning with Python 2ed (pp. 26-67, 2021)
 Goodfellow et al. Deep Learning  (Ch. 6.5 pp. 200-220, 2016)
 Wiki: https://en.wikipedia.org/wiki/Backpropagation
@@ -63,7 +65,7 @@ class DenseLayer:
         """
 
         return np.random.uniform(-1/np.sqrt(input_dims), 1/np.sqrt(input_dims),
-                                 size=(input_dims, num_units))
+                                 size=(num_units, input_dims))
 
     def __call__(self, x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Compute layer activations and weighted inputs.
@@ -75,14 +77,17 @@ class DenseLayer:
             Activation vector and weighted inputs vector.
         """
 
-        # Transpose to row vector for single sample
-        if len(x.shape) == 1:
-            x = np.expand_dims(x, axis=0)
+        # # Transpose to row vector for single sample
+        # if len(x.shape) == 1:
+        #     x = np.expand_dims(x, axis=0)
 
         # Affine transformation
-        weighted_input_z = np.dot(x, self.W) + self.b
+        # W (hidden_units, input_dims) * (samples, input_dims).T + (hidden_units, )
+        # --> z (hidden_units, samples).T
+        weighted_input_z = np.transpose(
+            np.dot(self.W, np.transpose(x)) + self.b)
 
-        # Optional activation function
+        # Activation function
         activation_a = np.apply_along_axis(
             self.activation_function, axis=-1, arr=weighted_input_z)
 
@@ -221,9 +226,6 @@ class MLP:
         for epoch in range(epochs):
             for batch_step, (x_batch, y_batch) in enumerate(batch_data):
 
-                print(
-                    f'Batch Step: {batch_step}/{self.num_samples//batch_size}')
-
                 preds = self._forward_pass(x_batch)
 
                 loss = self._compute_loss(y_true=y_batch, y_pred=preds)
@@ -303,22 +305,31 @@ class MLP:
         # Get cached activations and weighted inputs
         activations, weighted_inputs = self.cache
 
-        # Compute errors for bias and then weight matrices
-        delta_L = self._compute_output_layer_error(
-            output_activations=activations[-1],
-            y_true=y_true,
-            wted_input_of_final_lyr=weighted_inputs[-1])
+        # Lists to track L computations
+        delta_L_samples = []
+        dCost_dW_L_samples = []
 
-        dCost_dW_L = self._compute_deriv_cost_wrt_wt(
-            activations_prev_lyr=activations[-2],
-            delta_cur_lyr=delta_L)
+        for sample in range(self.num_samples):
+
+            # Compute errors for bias and then weight matrices
+            delta_L_sample = self._compute_output_layer_error(
+                output_activations=activations[-1][sample],
+                y_true=y_true[sample],
+                wted_input_of_final_lyr=weighted_inputs[-1][sample])
+
+            dCost_dW_L_sample = self._compute_deriv_cost_wrt_wt(
+                activations_prev_lyr=activations[-2][sample],
+                delta_cur_lyr=delta_L_sample)
+
+            delta_L_samples.append(delta_L_sample)
+            dCost_dW_L_samples.append(dCost_dW_L_sample)
 
         # Save deltas
         delta_lyrs = [None for i in range(self.num_layers)]
-        delta_lyrs[-1] = delta_L
+        delta_lyrs[-1] = delta_L_samples
 
         dCost_dW_lyrs = [None for i in range(self.num_layers)]
-        dCost_dW_lyrs[-1] = dCost_dW_L
+        dCost_dW_lyrs[-1] = dCost_dW_L_samples
 
         # Backpropagate error through layers...
         # Must use `self.num_layers-2` because `len(lst)-1` is index `L`
@@ -333,7 +344,7 @@ class MLP:
             # Arguments that are independent of training samples
             hidden_activation = self.sequential[lyr].activation_function
             w_of_lyr_plus_one = self.sequential[lyr+1].W
-            for sample in self.num_samples:
+            for sample in range(self.num_samples):
 
                 delta_of_lyr_plus_one = delta_lyrs[lyr+1][sample]
                 z_lyr = weighted_inputs[lyr][sample]
@@ -380,10 +391,6 @@ class MLP:
 
         # Update gradients
         for lyr, wt_grad, bias_grad in grad_iterator:
-
-            print(type(lyr))
-            breakpoint()
-
             lyr.W -= self.learning_rate * np.mean(wt_grad, axis=0)
             lyr.b -= self.learning_rate * np.mean(bias_grad, axis=0)
 
@@ -423,11 +430,10 @@ class MLP:
         grad_cost_wrt_activation = self.loss_function.gradient(
             (output_activations, y_true))
 
-        deriv_of_activation_of_wted_input_of_final_lyr = self.target_activation.derivative(
+        deriv_activation_of_z = self.target_activation.derivative(
             wted_input_of_final_lyr)
 
-        delta_lyr = grad_cost_wrt_activation * \
-            deriv_of_activation_of_wted_input_of_final_lyr
+        delta_lyr = grad_cost_wrt_activation * deriv_activation_of_z
 
         return delta_lyr
 
@@ -452,11 +458,14 @@ class MLP:
             The delta vector of the current layer.
         """
 
+        # np.transpose if wt matrix is (output_dim, input_dim)...
         wted_err = np.dot(np.transpose(
             wt_matrix_of_lyr_plus_one), delta_of_lyr_plus_one)
 
-        wted_derived_activation_err = wted_err * \
-            hidden_activation.derivative(wted_input_of_cur_lyr)
+        deriv_hidden_activation_of_z = hidden_activation.derivative(
+            wted_input_of_cur_lyr)
+
+        wted_derived_activation_err = wted_err * deriv_hidden_activation_of_z
 
         return wted_derived_activation_err
 
@@ -479,9 +488,8 @@ class MLP:
             Derivative cost w.r.t to weight matrix vector.
         """
 
-        print('dC/dW')
-        print(activations_prev_lyr.shape)
-        print(delta_cur_lyr.shape)
-        breakpoint()
+        # Operations assume column vector (d, 1)
+        delta_cur_lyr = np.expand_dims(delta_cur_lyr, axis=-1)
+        activations_prev_lyr = np.expand_dims(activations_prev_lyr, axis=-1)
 
-        return np.dot(activations_prev_lyr, delta_cur_lyr)
+        return np.dot(delta_cur_lyr, np.transpose(activations_prev_lyr))
