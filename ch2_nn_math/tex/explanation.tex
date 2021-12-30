@@ -5,6 +5,8 @@
 % https://math.stackexchange.com/questions/2113138/what-is-the-difference-between-variable-argument-and-parameter
 
 \documentclass{article}
+\usepackage[sorting=none]{biblatex}
+\addbibresource{sources.bib}
 \usepackage{amsmath}
 
 % Titular information
@@ -13,11 +15,9 @@
 	An Undergraduate's Explanation of the Multilayer Perceptron: 
 	Mathematical Concepts and a Python3 Implementation}
 \date{2022 \\ January}
-\author{Jared Frazier\thanks{Not endorsed by or affiliated with any of the 
-authors or entities associated with references} 
-\\ Department of Computer Science\thanks{Undergraduate 2021-2022}, 
-Middle Tennessee State University}
-
+\author{Jared Frazier\thanks{Department of Computer Science (2021-2022), 
+Middle Tennessee State University} \thanks{Not endorsed by or affiliated with any of the 
+authors or entities associated with references}}
 \begin{document}
 \maketitle
 
@@ -26,14 +26,15 @@ Middle Tennessee State University}
 constructs/concepts behind feedforward neural networks, specifically the multilayer perceptron.
 This includes the layers that compose such networks, the cost (aka loss, error, or objective) function
 and activation functions, the forward pass through the network,
-the computation of gradients via backpropagation (a concept which is often "handwaved" to the extreme
-or explained in so much detail as to be confusing--at least in the author's experience),
+the computation of gradients via backpropagation (a concept that is often "handwaved" to the extreme
+or explained in so much detail as to be utterly confusing--at least in the author's experience),
 and the update of model parameters via mini-batch stochastic gradient descent.
 If the ideas such as \textit{layer} and \textit{backpropagation} are entirely unfamiliar
 to you, then the author encourages you to visit texts such as
-\textit{Deep Learning} (free, online), \textit{Neural Networks and Deep Learning} (free, online), 
-\textit{Hands-on Machine Learning with Scikit-Learn, TensorFlow and Keras 2ed} (buy),
-and/or \textit{Deep Learning with Python 2ed} (buy). The present document
+\textit{Deep Learning} (free, online) \cite{Goodfellow2016},
+\textit{Neural Networks and Deep Learning} (free, online) \cite{Nielsen2015},
+\textit{Hands-on Machine Learning with Scikit-Learn, TensorFlow and Keras 2ed} (buy) \cite{Geron2020},
+and/or \textit{Deep Learning with Python 2ed} (buy) \cite{Chollet2021}. The present document
 is not intended to be a comprehensive overview of neural networks nor an extremely
 in-depth explanation but rather a document that highlights certain concepts that the
 author found confusing or ambiguous when he was learning about neural networks.
@@ -147,5 +148,7 @@ where $\sigma$, $ReLU$, $g$, and $w$ are defined as follows:
 \begin{align}
 	\theta_i & \gets \theta_i - \eta (\nabla_\theta \mathcal{L}_{\theta}(\hat{y}, y))
 \end{align}
+
+\printbibliography
 
 \end{document}
