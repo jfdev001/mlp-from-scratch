@@ -126,6 +126,7 @@ class MLP:
         # Save args
         self.learning_rate = learning_rate
         self.l_layers = l_layers
+        self.num_samples = None
 
         # Set final layer activation function
         if target_activation is None:
@@ -207,11 +208,11 @@ class MLP:
         """
 
         # Get the number of samples
-        samples = x.shape[0]
+        self.num_samples = x.shape[0]
 
         # Get batch indices
         batch_indices = np.random.choice(
-            a=samples, size=(samples//batch_size, batch_size), replace=False)
+            a=self.num_samples, size=(self.num_samples//batch_size, batch_size), replace=False)
 
         # Batch the data
         batch_data = zip(x[batch_indices], y[batch_indices])
@@ -220,7 +221,8 @@ class MLP:
         for epoch in range(epochs):
             for batch_step, (x_batch, y_batch) in enumerate(batch_data):
 
-                print(f'Batch Step: {batch_step}/{samples//batch_size}')
+                print(
+                    f'Batch Step: {batch_step}/{self.num_samples//batch_size}')
 
                 preds = self._forward_pass(x_batch)
 
@@ -312,36 +314,52 @@ class MLP:
             delta_cur_lyr=delta_L)
 
         # Save deltas
-        deltas = [None for i in range(self.num_layers)]
-        deltas[-1] = delta_L
+        delta_lyrs = [None for i in range(self.num_layers)]
+        delta_lyrs[-1] = delta_L
 
-        dCost_dWs = [None for i in range(self.num_layers)]
-        dCost_dWs[-1] = dCost_dW_L
+        dCost_dW_lyrs = [None for i in range(self.num_layers)]
+        dCost_dW_lyrs[-1] = dCost_dW_L
 
         # Backpropagate error through layers...
         # Must use `self.num_layers-2` because `len(lst)-1` is index `L`
         # and iteration begins at `L-2`
         for lyr in range(self.num_layers-2, 0, -1):
 
-            print('Layer:', lyr)
+            # Lists for tracking errors accumulated for each
+            # training example
+            dCost_dW_lyrs_samples = []
+            delta_lyrs_samples = []
 
-            # Compute errors
-            delta_l = self._compute_hidden_layer_error(
-                wt_matrix_of_lyr_plus_one=self.sequential[lyr+1].W,
-                delta_of_lyr_plus_one=deltas[lyr+1],
-                wted_input_of_cur_lyr=weighted_inputs[lyr],
-                hidden_activation=self.sequential[lyr].activation_function)
+            # Arguments that are independent of training samples
+            hidden_activation = self.sequential[lyr].activation_function
+            w_of_lyr_plus_one = self.sequential[lyr+1].W
+            for sample in self.num_samples:
 
-            dCost_dW_l = self._compute_deriv_cost_wrt_wt(
-                activations_prev_lyr=activations[lyr-1],
-                delta_cur_lyr=delta_l)
+                delta_of_lyr_plus_one = delta_lyrs[lyr+1][sample]
+                z_lyr = weighted_inputs[lyr][sample]
+                a_lyr_minus_one = activations[lyr-1][sample]
 
-            # Update lists
-            dCost_dWs[lyr] = dCost_dW_l
-            deltas[lyr] = delta_l
+                # Compute errors
+                delta_lyr_sample = self._compute_hidden_layer_error(
+                    wt_matrix_of_lyr_plus_one=w_of_lyr_plus_one,
+                    delta_of_lyr_plus_one=delta_of_lyr_plus_one,
+                    wted_input_of_cur_lyr=z_lyr,
+                    hidden_activation=hidden_activation)
+
+                dCost_dW_lyr_sample = self._compute_deriv_cost_wrt_wt(
+                    activations_prev_lyr=a_lyr_minus_one,
+                    delta_cur_lyr=delta_lyr_sample)
+
+                # Append to samples list
+                delta_lyrs_samples.append(delta_lyr_sample)
+                dCost_dW_lyrs_samples.append(dCost_dW_lyr_sample)
+
+            # Update layer list
+            dCost_dW_lyrs[lyr] = dCost_dW_lyrs_samples
+            delta_lyrs[lyr] = delta_lyrs_samples
 
         # Return the error lists
-        return dCost_dWs, deltas
+        return dCost_dW_lyrs, delta_lyrs
 
     def _gradient_descent(
             self,
