@@ -15,14 +15,14 @@ def main():
     args = parser.parse_args()
 
     # Set random seed
-    np.random.seed(args.seed)
+    np.random.seed(args.random_seed)
 
     # Generate random data just in case
-    x = np.random.normal(size=(args.n_examples, args.m_features))
+    x = np.random.normal(size=(args.m_examples, args.n_features))
 
     # Determine task
     if args.task == 'random-regression':
-        y = np.random.normal(size=(args.n_examples, args.t_targets))
+        y = np.random.normal(size=(args.m_examples, args.t_targets))
 
         model = MLP(
             input_dims=args.n_features,

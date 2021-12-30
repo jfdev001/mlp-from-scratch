@@ -114,7 +114,7 @@ class MLP:
             hidden_units: Number of neurons in hidden layer.
             targets: Target dimensional output.
             learning_rate: Learning rate(eta) for weight updates.
-            l_layers: Number of layers 
+            l_layers: Number of layers
             loss_function: Specify loss function.
                 NOTE: Only supports 'mse'.
             hidden_activation: Activation function for hidden layers.
@@ -127,19 +127,27 @@ class MLP:
         self.learning_rate = learning_rate
         self.l_layers = l_layers
 
-        # Set functions
-        if target_activation == 'sigmoid':
+        # Set final layer activation function
+        if target_activation is None:
+            self.target_activation = Linear()
+        elif target_activation == 'sigmoid':
             self.target_activation = Sigmoid()
+        else:
+            raise ValueError
 
-        if hidden_activation == 'relu':
+        # Set hidden layer activation functions
+        if hidden_activation is None:
+            self.hidden_activation = Linear()
+        elif hidden_activation == 'relu':
             self.hidden_activation = ReLU()
         else:
-            raise NotImplementedError
+            raise ValueError
 
+        # Set loss function
         if loss_function == 'mse':
             self.loss_function = MeanSquaredError()
         else:
-            raise NotImplementedError
+            raise ValueError
 
         # Define layers
         self.hidden = DenseLayer(
@@ -209,12 +217,35 @@ class MLP:
         batch_data = zip(x[batch_indices], y[batch_indices])
 
         # Training loop
-        for epoch in epochs:
+        for epoch in range(epochs):
             for batch_step, (x_batch, y_batch) in enumerate(batch_data):
+
+                print(f'{batch_step}/{samples//batch_size}')
+                print(x_batch.shape, x_batch)
+                print(y_batch.shape, y_batch)
+
                 preds = self._forward_pass(x_batch)
+
+                print('Preds:')
+                print(preds.shape)
+                print(preds)
+
                 loss = self._compute_loss(y_true=y_batch, y_pred=preds)
+
+                print('Loss:')
+                print(loss)
+
                 weight_grads, bias_grads = self._backward_pass(
                     y_true=y_batch)
+
+                print('Weight Grads:')
+                print(len(weight_grads))
+                print(weight_grads)
+                print('Bias Grads:')
+                print(len(bias_grads))
+
+                breakpoint()
+
                 self._gradient_descent(
                     weight_grads=weight_grads, bias_grads=bias_grads)
 
@@ -305,8 +336,12 @@ class MLP:
         dCost_dWs[-1] = dCost_dW_L
 
         # Backpropagate error through layers...
-        # this is the backward pass
-        for lyr in range(self.num_layers-1, 1, -1):
+        # Must use `self.num_layers-2` because `len(lst)-1` is index `L`
+        # and iteration begins at `L-2`
+        # TODO: Issue with indexing
+        for lyr in range(self.num_layers-2, 0, -1):
+
+            print('Layer:', lyr)
 
             # Compute errors
             delta_l = self._compute_hidden_layer_error(
@@ -320,22 +355,39 @@ class MLP:
                 delta_cur_lyr=delta_l)
 
             # Update lists
-            dCost_dWs[lyr] = delta_l
+            dCost_dWs[lyr] = dCost_dW_l
             deltas[lyr] = delta_l
 
         # Return the error lists
         return dCost_dWs, deltas
 
     def _gradient_descent(
-            self, weight_grads: list, bias_grads: list) -> None:
-        """Uses gradient to minimize loss."""
+            self,
+            weight_grads: list[np.ndarray],
+            bias_grads: list[np.ndarray]) -> None:
+        """Uses gradient to minimize loss.
 
-        for wt_grad, bias_grad in zip(weight_grads, bias_grads):
-            if wt_grad is None:
-                return
-            else:
-                # Sum over of some dimension....
-                pass
+        Args:
+            weight_grads: List of weight gradient vectors
+            bias_grads: List of bias gradient vectors.
+        """
+
+        # Zipped model and gradients iterator
+        grad_iterator = zip(self.sequential, weight_grads, bias_grads)
+
+        # Skip the first element (None entry for input layer)
+        next(grad_iterator)
+
+        # Update gradients
+        for lyr, wt_grad, bias_grad in grad_iterator:
+
+            print(type(lyr))
+            print(type(wt_grad), wt_grad)
+            print(type(bias_grad), bias_grad)
+            breakpoint()
+
+            lyr.W -= self.learning_rate * np.mean(wt_grad, axis=0)
+            lyr.b -= self.learning_rate * np.mean(bias_grad, axis=0)
 
     def _cache(self, activations: np.ndarray, weighted_inputs: np.ndarray) -> None:
         """Caches activations and weighted inputs from layer for backprop.
@@ -371,7 +423,7 @@ class MLP:
         """
 
         grad_cost_wrt_activation = self.loss_function.gradient(
-            output_activations, y_true)
+            (output_activations, y_true))
         deriv_of_activation_of_wted_input_of_final_lyr = self.target_activation.derivative(
             wted_input_of_final_lyr)
         delta_lyr = grad_cost_wrt_activation * \
