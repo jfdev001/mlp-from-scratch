@@ -126,7 +126,14 @@ class MeanSquaredError(Operation):
 
     def gradient(
             self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
-        """Computes the gradient vector with respect to activations (preds)."""
+        """Computes the gradient vector with respect to activations (preds).
+
+        Args:
+            inputs: Targets, predictions vectors.
+
+        Returns:
+            Vector (gradient) of values.
+        """
 
         targets, predictions = inputs
         return 2 * (predictions - targets)

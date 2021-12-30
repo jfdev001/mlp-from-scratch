@@ -220,31 +220,14 @@ class MLP:
         for epoch in range(epochs):
             for batch_step, (x_batch, y_batch) in enumerate(batch_data):
 
-                print(f'{batch_step}/{samples//batch_size}')
-                print(x_batch.shape, x_batch)
-                print(y_batch.shape, y_batch)
+                print(f'Batch Step: {batch_step}/{samples//batch_size}')
 
                 preds = self._forward_pass(x_batch)
 
-                print('Preds:')
-                print(preds.shape)
-                print(preds)
-
                 loss = self._compute_loss(y_true=y_batch, y_pred=preds)
-
-                print('Loss:')
-                print(loss)
 
                 weight_grads, bias_grads = self._backward_pass(
                     y_true=y_batch)
-
-                print('Weight Grads:')
-                print(len(weight_grads))
-                print(weight_grads)
-                print('Bias Grads:')
-                print(len(bias_grads))
-
-                breakpoint()
 
                 self._gradient_descent(
                     weight_grads=weight_grads, bias_grads=bias_grads)
@@ -338,7 +321,6 @@ class MLP:
         # Backpropagate error through layers...
         # Must use `self.num_layers-2` because `len(lst)-1` is index `L`
         # and iteration begins at `L-2`
-        # TODO: Issue with indexing
         for lyr in range(self.num_layers-2, 0, -1):
 
             print('Layer:', lyr)
@@ -382,8 +364,6 @@ class MLP:
         for lyr, wt_grad, bias_grad in grad_iterator:
 
             print(type(lyr))
-            print(type(wt_grad), wt_grad)
-            print(type(bias_grad), bias_grad)
             breakpoint()
 
             lyr.W -= self.learning_rate * np.mean(wt_grad, axis=0)
@@ -424,8 +404,10 @@ class MLP:
 
         grad_cost_wrt_activation = self.loss_function.gradient(
             (output_activations, y_true))
+
         deriv_of_activation_of_wted_input_of_final_lyr = self.target_activation.derivative(
             wted_input_of_final_lyr)
+
         delta_lyr = grad_cost_wrt_activation * \
             deriv_of_activation_of_wted_input_of_final_lyr
 
@@ -452,7 +434,9 @@ class MLP:
             The delta vector of the current layer.
         """
 
-        wted_err = np.dot(wt_matrix_of_lyr_plus_one, delta_of_lyr_plus_one)
+        wted_err = np.dot(np.transpose(
+            wt_matrix_of_lyr_plus_one), delta_of_lyr_plus_one)
+
         wted_derived_activation_err = wted_err * \
             hidden_activation.derivative(wted_input_of_cur_lyr)
 
@@ -476,5 +460,10 @@ class MLP:
         Returns:
             Derivative cost w.r.t to weight matrix vector.
         """
+
+        print('dC/dW')
+        print(activations_prev_lyr.shape)
+        print(delta_cur_lyr.shape)
+        breakpoint()
 
         return np.dot(activations_prev_lyr, delta_cur_lyr)
