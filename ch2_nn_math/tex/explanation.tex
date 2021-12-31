@@ -52,9 +52,15 @@ the present document.
 \quad The neural network (function approximator) is just a chain of geometric transformations (functions)
 each parametrized by a weight matrix $W \in \mathcal{R}^{n_x \times n_h}$ and
 a bias vector $b \in \mathcal{R}^{n_h}$ on the input vector $x \in \mathcal{R}^{n_x}$.
-Note that $n_x$ is the input size (i.e., output size of the previous layer in a network with $L$ total layers)
-and $n_h$ is the number of hidden units in the current layer.
-The following paragraphs will elucidate the claims in this sentence and notation.
+The geometric transformations of the neural network are encapsulated by connecting
+layers (e.g., dense/fully connected layers) together. A neural network has $L$ total
+layers and the current layer $l$ receives the output from the previous layer $(l-1)$.
+Note that $n_x$ is the number of features (or independent variables) in the input
+and $n_h$ is the number of hidden units in the current layer. The following subsections will
+breifly elucidate the claims in of the first setnence of this section and the
+corresponding notation.
+
+\subsection{Parametrized Functions}
 
 The author assumes you know what a function is; however, the term \textit{parametrized}
 is one that appears often in deep learning literature and should be well-understood by the student.
@@ -87,6 +93,11 @@ into units called \textit{atomic functions}.
 	u_{b}(x)     & = bx                      \\
 	f_{a,b,c}(x) & = g_{a}(x) + u_{b}(x) + c
 \end{align}
+Decomposing functions into their constituent atomic functions is useful
+for applying rules of calculus--the basis of parameter learning via
+the backpropagation algorithm illustrated later.
+
+\subsection{Operand Types}
 
 The input $x$ is not a single value as is conceived in the elementary
 formulations described above. Rather, the input $x$ is a list of
@@ -131,15 +142,27 @@ since the author's implementation of the the neural network will use the Python
 programming language. If you wish to implement the same algorithms in a language
 such as R or Wolfram Mathematica, be wary of this index discrepancy.
 
-Lastly, a weight matrix $W_{jk}$ has weight edges between the $k^{th}$
-input neuron and the $j^{th}$ hidden neuron of $n_h$ total hidden neurons.
+Lastly, a weight matrix $W$ has weight edges between the $k^{th}$
+input neuron of $n^{(l-1)}$ total input neurons (i.e., neurons in the previous layer
+$(l-1)$) and the $j^{th}$ hidden neuron of $n_h^{l}$ total hidden neurons (i.e.,
+neurons in the current layer $l$). A weight matrix looks similar to the vector, except rather than having a single
+column, a matrix has a rows and columns--looking like a table. Vectors can
+be referred to as rank-1 tensors, matrices as rank-2 tensors, so and so forth
+for multiple index "lists" in higher dimensions. A sample weight matrix is
+shown below.
 
-\section{Equations}
-\quad Here the author defines the operations that occur for a multilayer perceptron (MLP). Note
-that the MLP can sometimes refer to any class of feedforward
+
+
+\section{The Multilayer Perceptron}
+\quad Here the author defines the operations that occur for a multilayer perceptron (MLP).
+Note that the MLP can sometimes refer to any class of feedforward
 neural network, that is a network that applies affine transformations and
-activation functions to input from a previous layer in the network. The affine
-transformation is simply $xW^{\top} + b$.
+activation functions to input from a previous layer in the network.
+
+The affine transformation is simply $W_{jk}^{l} a_{k}^{l-1} + b_{j}^{l}$. Here,
+the activation $a_k^{l-1}$ denotes the activation of the $k^{th}$ neuron of the
+previous layer $l$. Note that the input neuron has no activation function $\phi$
+associated with it.
 
 % Neural Network Definition
 \subsection{Single Hidden Layer Neural Network}
