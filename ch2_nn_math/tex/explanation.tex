@@ -7,6 +7,10 @@
 \documentclass{article}
 \usepackage[sorting=none]{biblatex}
 \addbibresource{sources.bib}
+
+%https://github.com/battlesnake/neural
+\usepackage{neuralnetwork}
+
 \usepackage{amsmath}
 
 % Titular information
@@ -169,9 +173,11 @@ Note that the MLP can sometimes refer to any class of feedforward
 neural network, that is a network that applies affine transformations and
 activation functions to input from a previous layer in the network.
 
-The affine transformation is simply $W_{jk}^{l} a_{k}^{l-1} + b_{j}^{l}$. Here,
+The affine transformation, which is the most fundamental transformation
+of the densely/fully connected layers that exist in the MLP
+is simply $W_{jk}^{l} a_{k}^{l-1} + b_{j}^{l}$. Here,
 the activation $a_k^{l-1}$ denotes the activation of the $k^{th}$ neuron of the
-previous layer $l$. Note that the input layer has no activation function $\phi$
+previous layer $l$. Importantly, the input layer has no activation function $\phi$
 associated with it. Moreover, the inner dimensions of the matrix product
 $Wx$ match, that is the subscripts $k$ are "adjacent" to one another. While you may
 observe that the activation vector $a \in \mathcal{R}^{n_a}$ is clearly not a matrix,
@@ -183,7 +189,16 @@ Until now the discussion of the MLP has been entirely in abstract mathematical
 notation, so now a visual of a single layer (meaning single hidden layer)
 MLP is shown.
 
-
+\begin{align}
+	\begin{neuralnetwork}[height=3, layertitleheight=5.0em]
+		\newcommand{\x}[2]{$a^{0}_#2$}
+		\newcommand{\hfirst}[2]{\small $a^{(1)}_#2$}
+		\newcommand{\y}[2]{$a^{2}_#2$}
+		\inputlayer[count=2, bias=false, title=Input Layer 0, text=\x, nodeclass={input neuron}]
+		\hiddenlayer[count=3, bias=false, title=Hidden Layer 1, text=\hfirst, nodeclass={hidden neuron}] \linklayers
+		\outputlayer[count=1, title=Output Layer 2, text=\y, nodeclass={output neuron}] \linklayers
+	\end{neuralnetwork}
+\end{align}
 
 % Neural Network Definition
 \subsection{Single Hidden Layer Neural Network}
