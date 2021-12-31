@@ -8,8 +8,21 @@
 \usepackage[sorting=none]{biblatex}
 \addbibresource{sources.bib}
 
-%https://github.com/battlesnake/neural
-\usepackage{neuralnetwork}
+%Graphics: https://www.overleaf.com/learn/latex/Inserting_Images
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+
+% https://tex.stackexchange.com/questions/2651/should-i-use-center-or-centering-for-figures-and-tables
+\makeatletter
+\g@addto@macro\@floatboxreset\centering
+\makeatother
+
+% https://tex.stackexchange.com/questions/268766/curly-braces-in-math-mode
+\usepackage{mathtools}
+\DeclarePairedDelimiter\set\{\}
+
+% https://github.com/battlesnake/neural
+% \usepackage{neuralnetwork}
 
 \usepackage{amsmath}
 
@@ -40,8 +53,9 @@ and peruse the first few chapters of texts such as \textit{Deep Learning} (free,
 \textit{Hands-on Machine Learning with Scikit-Learn, TensorFlow and Keras 2ed} (buy) \cite{Geron2020},
 and/or \textit{Deep Learning with Python 2ed} (buy) \cite{Chollet2021}. The present document
 is not intended to be a comprehensive overview of neural networks nor an extremely
-in-depth explanation but rather a document that highlights certain concepts that the
-author found confusing or ambiguous when he was learning about neural networks.
+in-depth mathematical treatise but rather a document that highlights certain concepts that the
+author found confusing or ambiguous when he was learning about neural networks
+(particularly regarding the backpropagation algorithm).
 
 The format of explanations in the present document will essentially alternate between mathematics
 and concrete implementations using the Python3 programming language with
@@ -173,12 +187,14 @@ Note that the MLP can sometimes refer to any class of feedforward
 neural network, that is a network that applies affine transformations and
 activation functions to input from a previous layer in the network.
 
+\subsection{The Dense/Fully Connected Layer}
 The affine transformation, which is the most fundamental transformation
-of the densely/fully connected layers that exist in the MLP
-is simply $W_{jk}^{l} a_{k}^{l-1} + b_{j}^{l}$. Here,
+of the densely/fully connected layers that exist in the MLP, yields
+a weighted input element $z_j^{l} = W_{jk}^{l} a_{k}^{l-1} + b_{j}^{l}$. Here,
 the activation $a_k^{l-1}$ denotes the activation of the $k^{th}$ neuron of the
-previous layer $l$. Importantly, the input layer has no activation function $\phi$
-associated with it. Moreover, the inner dimensions of the matrix product
+previous layer $(l-1)$. Importantly, the input layer has no activation function $\phi$
+associated with it, so the activation vector $a^{0}$ equal the input vector $x$.
+Moreover, the inner dimensions of the matrix product
 $Wx$ match, that is the subscripts $k$ are "adjacent" to one another. While you may
 observe that the activation vector $a \in \mathcal{R}^{n_a}$ is clearly not a matrix,
 numerical libraries will often treat a vector $v \in \mathcal{R}^{n_v}$ as equivalent
@@ -187,18 +203,30 @@ the purposes of performing fast matrix-matrix calculations.
 
 Until now the discussion of the MLP has been entirely in abstract mathematical
 notation, so now a visual of a single layer (meaning single hidden layer)
-MLP is shown.
+MLP is shown. The activation function $\phi$ is vectorized, meaning it
+applies to each element of a vector, matrix, or rank-n tensor. The weighted input
+vector $z^{l} = \set{ z_{j}^{l} }_{j=0}^{n_{h} - 1}$, meaning there is an element
+of the weighted input vector for the $j^{th}$ neuron in a layer. The number of
+neurons in a hidden layer (or output layer for that matter) $n_h$ does not have
+to be constant, and this is shown in the figure below where the output layer
+has only a single neuron while the hidden layer has three neurons.
 
-\begin{align}
-	\begin{neuralnetwork}[height=3, layertitleheight=5.0em]
-		\newcommand{\x}[2]{$a^{0}_#2$}
-		\newcommand{\hfirst}[2]{\small $a^{(1)}_#2$}
-		\newcommand{\y}[2]{$a^{2}_#2$}
-		\inputlayer[count=2, bias=false, title=Input Layer 0, text=\x, nodeclass={input neuron}]
-		\hiddenlayer[count=3, bias=false, title=Hidden Layer 1, text=\hfirst, nodeclass={hidden neuron}] \linklayers
-		\outputlayer[count=1, title=Output Layer 2, text=\y, nodeclass={output neuron}] \linklayers
-	\end{neuralnetwork}
-\end{align}
+% Multilayer perceptron figure
+\begin{figure}[h]
+	\includegraphics[scale=0.60]{mlp_larger_font_croppped.jpg}
+\end{figure}
+
+% Multilayer percetpron with useneuralnetwork pkg
+% \begin{align}
+% 	\begin{neuralnetwork}[height=3, layertitleheight=5.0em]
+% 		\newcommand{\x}[2]{$a^{0}_#2$}
+% 		\newcommand{\hfirst}[2]{\small $a^{(1)}_#2$}
+% 		\newcommand{\y}[2]{$a^{2}_#2$}
+% 		\inputlayer[count=2, bias=false, title=Input Layer 0, text=\x, nodeclass={input neuron}]
+% 		\hiddenlayer[count=3, bias=false, title=Hidden Layer 1, text=\hfirst, nodeclass={hidden neuron}] \linklayers
+% 		\outputlayer[count=1, title=Output Layer 2, text=\y, nodeclass={output neuron}] \linklayers
+% 	\end{neuralnetwork}
+% \end{align}
 
 % Neural Network Definition
 \subsection{Single Hidden Layer Neural Network}
