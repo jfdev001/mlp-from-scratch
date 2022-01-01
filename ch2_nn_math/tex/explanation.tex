@@ -57,14 +57,6 @@ in-depth mathematical treatise but rather a document that highlights certain con
 author found confusing or ambiguous when he was learning about neural networks
 (particularly regarding the backpropagation algorithm).
 
-The format of explanations in the present document will essentially alternate between mathematics
-and concrete implementations using the Python3 programming language with
-the NumPy library. Note that the implementations here
-are not intended to be optimal. If you would like optimal implementations, the author
-encourages you to use a machine learning API such as TensorFlow or PyTorch, the tutorials
-for which will abstract and make easily usable many of the concepts elucidated in
-the present document.
-
 \section{Introduction}
 
 \quad The neural network (function approximator) is just a chain of geometric transformations (functions)
@@ -229,7 +221,33 @@ has only a single neuron while the hidden layer has three neurons.
 % \end{align}
 
 % Neural Network Definition
-\subsection{Single Hidden Layer Neural Network}
+\subsection{The Forward Pass and Loss Function}
+\quad The MLP is a function approximator and the MLP learns the parameters of
+this function. Since the learning is just the determination of the values of the
+parameters of the MLP, then there must be some other function that determines
+how well the parameters of the MLP approximate the desired function. This other
+function is called or cost or loss function is denoted C, though sometimes
+it will be denoted $\mathcal{L}$. For regression problems, the most common
+cost function is the mean squared error. The cost function, unlike previous
+operations, returns a scalar and \textit{not} a vector.
+
+\begin{equation}
+	\begin{aligned}
+		\text{C} & = \frac{1}{N} \sum_{x} {\text{C}_x}            \\
+		         & = \frac{1}{N} \sum_{x} {(\hat{y} - y)^{2} }    \\
+		         & = \frac{1}{N} \sum_{x} {(h_{W,b}(x) - y)^{2} } \\
+		         & = \frac{1}{N} \sum_{x} {(a^{L} - y)^{2} }
+	\end{aligned}
+\end{equation}
+
+The activation vector $a^{L}$ for the last layer $L$ is the prediction
+that the MLP makes. Again, the MLP can be written as a function $h$ of an
+input vector $x$ with parameters $W$ and $b$.
+
+\begin{equation}
+
+\end{equation}
+
 \begin{equation}
 	\begin{aligned}
 		NeuralNet_{\theta}(X) & =
