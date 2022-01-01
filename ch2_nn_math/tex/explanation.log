@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  1 JAN 2022 09:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  1 JAN 2022 09:44
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -405,12 +405,11 @@ Package: blx-case-expl3 2020/12/31 v3.16 expl3 case changing code for biblatex
 \openout3 = `explanation.bcf'.
 
 Package biblatex Info: Trying to load bibliographic data...
-Package biblatex Info: ... file 'explanation.bbl' not found.
-
-No file explanation.bbl.
+Package biblatex Info: ... file 'explanation.bbl' found.
+ (c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.bbl)
 Package biblatex Info: Reference section=0 on input line 38.
 Package biblatex Info: Reference segment=0 on input line 38.
-(c:/texlive/2020/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+ (c:/texlive/2020/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count396
 \scratchdimen=\dimen160
@@ -428,29 +427,9 @@ Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
  (c:/texlive/2020/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
-))
-
-LaTeX Warning: Citation '3Blue1BrownWhatIsANN2017' on page 1 undefined on input line 50.
-
-
-LaTeX Warning: Citation 'Goodfellow2016' on page 1 undefined on input line 51.
-
-
-LaTeX Warning: Citation 'Nielsen2015' on page 1 undefined on input line 52.
-
-
-LaTeX Warning: Citation 'Geron2020' on page 1 undefined on input line 53.
-
-
-LaTeX Warning: Citation 'Chollet2021' on page 1 undefined on input line 54.
-
-[1
+)) [1
 
 {c:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-
-LaTeX Warning: Citation 'MathSEVarsParamsArgs2015' on page 2 undefined on input line 77.
-
-
 Overfull \hbox (1.37598pt too wide) in paragraph at lines 75--79
 \OT1/cmr/m/n/10 The au-thor as-sumes you know what a func-tion is; how-ever, the term \OT1/cmr/m/it/10 parametrized
  []
@@ -460,13 +439,8 @@ Overfull \hbox (5.36174pt too wide) in paragraph at lines 75--79
 \OT1/cmr/m/n/10 is one that ap-pears of-ten in deep learn-ing lit-er-a-ture and should be well-understood
  []
 
-
-Overfull \hbox (39.41805pt too wide) in paragraph at lines 75--79
-\OT1/cmr/m/n/10 by the stu-dent. Con-sider a generic quadratic func-tion [[]]
- []
-
 [2] [3]
-<figures//mlp_larger_font_croppped.jpg, id=28, 621.07031pt x 271.0125pt>
+<figures//mlp_larger_font_croppped.jpg, id=27, 621.07031pt x 271.0125pt>
 File: figures//mlp_larger_font_croppped.jpg Graphic file (type jpg)
 <use figures//mlp_larger_font_croppped.jpg>
 Package pdftex.def Info: figures//mlp_larger_font_croppped.jpg  used on input line 208.
@@ -477,65 +451,6 @@ Overfull \hbox (27.64505pt too wide) in paragraph at lines 208--209
  []
 
 [4 <c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/figures//mlp_larger_font_croppped.jpg>]
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex:248: Missing $ inserted.
-<inserted text> 
-                $
-l.248 
-      
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex:248: Display math should end with $$.
-<to be read again> 
-                   \par 
-l.248 
-      
-The `$' that I just saw supposedly matches a previous `$$'.
-So I shall assume that you typed `$$' both times.
-
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex:249: LaTeX Error: Bad math environment delimiter.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.249 \end{equation}
-                    
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex:249: You can't use `\eqno' in vertical mode.
-\endmathdisplay@a ...\df@tag \@empty \else \veqno 
-                                                  \alt@tag \df@tag \fi \ifx ...
-l.249 \end{equation}
-                    
-Sorry, but I'm not programmed to handle this case;
-I'll just pretend that you didn't ask for it.
-If you're in the wrong mode, you might be able to
-return to the right one by typing `I}' or `I$' or `I\par'.
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex:249: Missing $ inserted.
-<inserted text> 
-                $
-l.249 \end{equation}
-                    
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex:249: Display math should end with $$.
-<to be read again> 
-                   \endgroup 
-l.249 \end{equation}
-                    
-The `$' that I just saw supposedly matches a previous `$$'.
-So I shall assume that you typed `$$' both times.
-
-
 Overfull \hbox (55.857pt too wide) detected at line 259
 [][]
  []
@@ -546,35 +461,28 @@ Overfull \hbox (64.7213pt too wide) detected at line 287
  []
 
 [5]
-
-LaTeX Warning: Empty bibliography on input line 295.
+Overfull \hbox (7.79056pt too wide) in paragraph at lines 296--296
+[]\OT1/cmr/m/n/10 nmasanta (https://math.stackexchange.com/users/623924/nmasanta). \OT1/cmr/m/it/10 What
+ []
 
 [6] (c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.aux)
-
-LaTeX Warning: There were undefined references.
-
-
-Package biblatex Warning: Please (re)run Biber on the file:
-(biblatex)                explanation
-(biblatex)                and rerun LaTeX afterwards.
-
 Package logreq Info: Writing requests to 'explanation.run.xml'.
 \openout1 = `explanation.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 10144 strings out of 479304
- 186308 string characters out of 5871219
- 897475 words of memory out of 5000000
- 27251 multiletter control sequences out of 15000+600000
- 409836 words of font info for 49 fonts, out of 8000000 for 9000
+ 10182 strings out of 479304
+ 187547 string characters out of 5871219
+ 897899 words of memory out of 5000000
+ 27286 multiletter control sequences out of 15000+600000
+ 409997 words of font info for 50 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 81i,15n,88p,812b,1136s stack positions out of 5000i,500n,10000p,200000b,80000s
-{c:/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}<c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb>
-Output written on c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf (6 pages, 291303 bytes).
+ 81i,15n,88p,812b,1250s stack positions out of 5000i,500n,10000p,200000b,80000s
+{c:/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}<c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb>
+Output written on c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf (6 pages, 301450 bytes).
 PDF statistics:
- 93 PDF objects out of 1000 (max. 8388607)
- 66 compressed objects within 1 object stream
+ 97 PDF objects out of 1000 (max. 8388607)
+ 69 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 
