@@ -1,13 +1,13 @@
 # Fdb version 3
-["biber explanation"] 1641051859 "explanation.bcf" "explanation.bbl" "explanation" 1641051870
-  "explanation.bcf" 1641051870 106298 dd92ab7bae11643b9a6510528b4980b4 "pdflatex"
+["biber explanation"] 1641228306 "explanation.bcf" "explanation.bbl" "explanation" 1641228731
+  "explanation.bcf" 1641228731 106351 3be0c0ea8d55311af99eab7960d31d2f "pdflatex"
   "sources.bib" 1640897199 1504 83e67e2dfd849229ed0e7b3093f01510 ""
   (generated)
   "explanation.blg"
   "explanation.bbl"
-["pdflatex"] 1641051869 "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex" "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf" "explanation" 1641051870
-  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.aux" 1641051870 3074 e360748243bdd390e376685873e59e3b ""
-  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex" 1641051858 14738 cff613a5a13871a2b303e679206015fa ""
+["pdflatex"] 1641228730 "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex" "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf" "explanation" 1641228731
+  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.aux" 1641228731 2772 040bbada877ba6512eb4a8e78659709c ""
+  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.tex" 1641228728 14546 976beaff8438f725234a81b3a0b73816 ""
   "c:/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1612118520 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "c:/texlive/2020/texmf-dist/fonts/map/fontname/texfonts.map" 1612119555 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "c:/texlive/2020/texmf-dist/fonts/tfm/jknappen/ec/tcrm0600.tfm" 1612119090 1536 12e8c510d3e158fdd0e9a42e75118bd9 ""
@@ -38,7 +38,6 @@
   "c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1612117679 35752 024fb6c41858982481f6968b5fc26508 ""
   "c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1612117679 32722 d7379af29a190c3f453aba36302ff5a9 ""
   "c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb" 1612117679 32362 bc3f3eec7ab7d65fe700963d4017d32c ""
-  "c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb" 1612117679 31809 8670ca339bf94e56da1fc21c80635e2a ""
   "c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb" 1612117679 32762 7fee39e011c23b3589931effd97b9702 ""
   "c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb" 1612117679 32726 39f0f9e62e84beb801509898a605dbd5 ""
   "c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1612117679 32569 5e5ddc8df908dea60932f3c484a54c0d ""
@@ -95,16 +94,16 @@
   "c:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1612132193 5202855 2b8f7cc849fa973779ae636750430cd5 ""
   "c:/texlive/2020/texmf-var/web2c/pdftex/pdflatex.fmt" 1612132368 2568052 e3d9e945e8214d2a81f98ce14198eea0 ""
   "c:/texlive/2020/texmf.cnf" 1612132160 713 e69b156964470283e0530f5060668171 ""
-  "explanation.aux" 1641051870 3074 e360748243bdd390e376685873e59e3b "pdflatex"
-  "explanation.bbl" 1641051865 7758 e0c4389892fb9b444f5d93b522b428f3 "biber explanation"
-  "explanation.run.xml" 1641051870 2351 2b86cff8c33f1511deb5b2ef6cad7a32 "pdflatex"
-  "explanation.tex" 1641051858 14738 cff613a5a13871a2b303e679206015fa ""
+  "explanation.aux" 1641228731 2772 040bbada877ba6512eb4a8e78659709c "pdflatex"
+  "explanation.bbl" 1641228309 7758 e0c4389892fb9b444f5d93b522b428f3 "biber explanation"
+  "explanation.run.xml" 1641228731 2351 2b86cff8c33f1511deb5b2ef6cad7a32 "pdflatex"
+  "explanation.tex" 1641228728 14546 976beaff8438f725234a81b3a0b73816 ""
   "figures//mlp_larger_font_croppped.jpg" 1640972443 73404 92cf46399867c7c208a7a6904ab5887b ""
   (generated)
+  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf"
+  "explanation.run.xml"
+  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.log"
+  "explanation.bcf"
+  "explanation.log"
   "explanation.pdf"
   "explanation.aux"
-  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf"
-  "explanation.log"
-  "explanation.run.xml"
-  "explanation.bcf"
-  "c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.log"

@@ -242,56 +242,45 @@ operations, returns a scalar and \textit{not} a vector.
 
 The activation vector $a^{L}$ for the last layer $L$ is the prediction
 that the MLP makes. Again, the MLP can be written as a function $h$ of an
-input vector $x$ with parameters $W$ and $b$.
+input vector $x$ with parameters $W$ and $b$. Moreover, the cost function
+C can be written as a function of the parameters $W$ and $b$. This
+is important for the following section on the backpropagation algorithm
 
-\begin{equation}
-	\phi
-\end{equation}
+\subsection{Backpropagation}
 
-\begin{equation}
-	\begin{aligned}
-		NeuralNet_{\theta}(X) & =
-		\sigma(ReLU(XW^{[1]}
-		+ {b}^{[1]})W^{[2]} + {b}^{[2]})                                                                  \\
-		                      & = \sigma(g(ReLU(w(X))))                                                   \\
-		A^{L}                 & = NeuralNet_{\theta}(X) & \text{Activation matrix $A$ for last layer $L$}
-	\end{aligned}
-\end{equation}
+The key to learning for the MLP, and for artificial neural networks in general,
+is updating the weights $W^{l}$ and biases $b^{l}$ for each layer $l$. Since
+$W$ and $b$ are tensors, the gradient of w.r.t each tensor parameter of the
+cost function C is used to learning parameters via the equations below.
 
-where $\sigma$, $ReLU$, $g$, and $w$ are defined as follows:
-
-\begin{equation}
-	\begin{aligned}
-		\sigma(t)           & = \frac{1}{1 + e^{-t}}                                                         \\
-		ReLU(t)             & = max(0, t)                                                                    \\
-		g_{\theta^{[2]}}(A) & = AW^{[2]} + {b}^{[2]}                                                         \\
-		w_{\theta^{[1]}}(A) & = AW^{[1]} + {b}^{[1]}                                                         \\
-		u_{\theta^{[l]}}(A) & = AW^{[l]} + b^{[l]}   & \text{General form of $g$ and $w$ for $l^{th}$ layer}
-	\end{aligned}
-\end{equation}
-
-\subsection{Neural Network Prediction (Forward Pass)}
-% Forward Pass
 \begin{align}
-	\hat{y} & \gets NeuralNet_\theta(X)
+	W & = W - \eta \nabla_{W}\text{C} \\
+	b & = b - \eta \nabla_{b}\text{C}
 \end{align}
 
-% Loss function
-\subsection{Mean Squared Error Loss Function}
-\begin{equation}
-	\begin{aligned}
-		\mathcal{L}_\theta(X) & =
-		\frac{1}{N} \sum_{i=1}^{N}{ (\hat{y}^{(i)} - y^{(i)} )^{2}}                                                                                                            \\
-		                      & = \frac{1}{N} \sum_{i=1}^{N}{(a^{(i)} + y^{(i)})^{2}} & \text{$a^{(i)}$ is the activation vector of the last layer $L$ for the $i^{th}$ input}
-	\end{aligned}
-\end{equation}
+However, the proceeding equations that are critical for gradient descent
+are claimed without proof (see \cite{Nielsen2015} for proofs). Note, that while
+the previous equations are the "pretty" form of gradient descent, for the
+accompanying implementation, one does not compute the gradient directly.
 
-\subsection{Gradient Update}
-% Weight updates
 \begin{align}
-	\theta_i & \gets \theta_i - \eta (\nabla_\theta \mathcal{L}_{\theta}(\hat{y}, y))
+	\delta^{L}                                    & = \nabla_{a} \circ \frac{\partial \phi}{\partial z}(z^{L})                      \\
+	\delta^{l}                                    & = ((w^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l}) \\
+	\frac{\partial \text{C}}{\partial b_j^{l}}    & = \delta_j^{l}                                                                  \\
+	\frac{\partial \text{C}}{\partial W_{jk}^{l}} & = a_{k}^{l-1}\delta_{j}^{l}
 \end{align}
 
+The practical implementation of the four equations will be explained shortly
+after showing the \textit{gradient descent} equations below.
+
+\begin{align}
+	W^{l} & = W^{l} - \frac{\eta}{N} \sum_{x}{\delta^{x, l}(a^{x, l-1})^\top} \\
+	b^{l} & = b^{l} - \frac{\eta}{N} \sum_{x}{\delta^{x, l}}
+\end{align}
+
+
+
+\pagebreak
 \printbibliography
 
 \end{document}
