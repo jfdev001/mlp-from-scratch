@@ -26,6 +26,15 @@
 
 \usepackage{amsmath}
 
+% https://tex.stackexchange.com/questions/286094/insert-code-keywords-inline
+\usepackage{xcolor}
+% \usepackage{listings}
+% \lstset{language=Python, keywordstyle=\bfseries \color{blue}}
+\usepackage{xparse}
+\NewDocumentCommand{\codeword}{v}{%
+\texttt{\textcolor{blue}{#1}}%
+}
+
 % Titular information
 % https://en.wikibooks.org/wiki/LaTeX/Title_Creation
 \title{
@@ -221,7 +230,7 @@ has only a single neuron while the hidden layer has three neurons.
 % \end{align}
 
 % Neural Network Definition
-\subsection{The Forward Pass and Loss Function}
+\subsection{The Forward Pass and Cost Function}
 \quad The MLP is a function approximator and the MLP learns the parameters of
 this function. Since the learning is just the determination of the values of the
 parameters of the MLP, then there must be some other function that determines
@@ -229,7 +238,8 @@ how well the parameters of the MLP approximate the desired function. This other
 function is called or cost or loss function is denoted C, though sometimes
 it will be denoted $\mathcal{L}$. For regression problems, the most common
 cost function is the mean squared error. The cost function, unlike previous
-operations, returns a scalar and \textit{not} a vector.
+operations, returns a scalar and \textit{not} a vector. However, the cost for
+a single sample $\text{C}_x$ returns a vector.
 
 \begin{equation}
 	\begin{aligned}
@@ -264,7 +274,7 @@ the previous equations are the "pretty" form of gradient descent, for the
 accompanying implementation, one does not compute the gradient directly.
 
 \begin{align}
-	\delta^{L}                                    & = \nabla_{a} \circ \frac{\partial \phi}{\partial z}(z^{L})                      \\
+	\delta^{L}                                    & = \nabla_{a} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})             \\
 	\delta^{l}                                    & = ((w^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l}) \\
 	\frac{\partial \text{C}}{\partial b_j^{l}}    & = \delta_j^{l}                                                                  \\
 	\frac{\partial \text{C}}{\partial W_{jk}^{l}} & = a_{k}^{l-1}\delta_{j}^{l}
@@ -278,7 +288,37 @@ after showing the \textit{gradient descent} equations below.
 	b^{l} & = b^{l} - \frac{\eta}{N} \sum_{x}{\delta^{x, l}}
 \end{align}
 
+\section{Implementation}
+Here the author defines, somewhat out of order, the Python \codeword{class}es
+that will encapsulate the attributes (data members) and methods associated
+with the MLP. Since this approach is object oriented, it was helpful to
+define first the subunits of the MLP: operations (such as activation functions)
+and layers.
 
+The \textbf{forward pass} requires defining a \codeword{class} that
+encapsulates the fully/densely connected layer of the MLP. The author defines this as
+\codeword{DenseLayer} with attributes for the input dimensions $n_x$,
+the weight matrix $W \in \mathcal{R}^{n_x \times n_h}$, and the bias
+$b \in \mathcal{R}^{n_h}$. The \codeword{DenseLayer} is correspondingly passed
+arguments for $n_x$, $n_h$, and an optional Python \codeword{Callable}
+that will be used as the activation function $\phi$ for a given layer.
+The methods for the \codeword{DenseLayer} use Glorot Uniform initialization \cite{Glorot2010}
+for the weight matrix and a forward pass is also defined as
+
+\begin{equation}
+	ForwardPassResult = \phi(Wx + b)
+\end{equation}
+where $x$ is an argument to the \codeword{__call__} method of the
+\codeword{DenseLayer}.
+
+The \textbf{activation functions and cost functions} are children of the Python
+abstract base class the author defines as \codeword{Operation}. The
+\codeword{Operation} has no arguments and initializes no attributes, but
+does have a \codeword{__call__} method, \codeword{derivative} method. All
+children of the \codeword{Operation} must implement these methods. However, if
+the child is a \textit{cost function}, then this child class must also
+implement a \codeword{gradient} method ($\nabla_{a}\text{C}$)
+as is required by Equation 10.
 
 \pagebreak
 \printbibliography

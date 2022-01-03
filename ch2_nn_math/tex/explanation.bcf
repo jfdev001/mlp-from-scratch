@@ -2351,6 +2351,7 @@
     <bcf:citekey order="5">Chollet2021</bcf:citekey>
     <bcf:citekey order="6">MathSEVarsParamsArgs2015</bcf:citekey>
     <bcf:citekey order="7">Nielsen2015</bcf:citekey>
+    <bcf:citekey order="8">Glorot2010</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">

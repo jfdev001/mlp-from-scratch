@@ -195,6 +195,61 @@
       \verb https://math.stackexchange.com/q/3562026
       \endverb
     \endentry
+    \entry{Glorot2010}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{hash=0b3943c3bfdbb5867b3760f7c7d488c2}{%
+           family={Glorot},
+           familyi={G\bibinitperiod},
+           given={Xavier},
+           giveni={X\bibinitperiod}}}%
+        {{hash=40a8e4774982146adc2688546f54efb2}{%
+           family={Bengio},
+           familyi={B\bibinitperiod},
+           given={Yoshua},
+           giveni={Y\bibinitperiod}}}%
+      }
+      \name{editor}{2}{}{%
+        {{hash=a71fae003da84f44e31d26e868859945}{%
+           family={Teh},
+           familyi={T\bibinitperiod},
+           given={Yee\bibnamedelima Whye},
+           giveni={Y\bibinitperiod\bibinitdelim W\bibinitperiod}}}%
+        {{hash=4f07cb446ab04d4d77854b6722712e32}{%
+           family={Titterington},
+           familyi={T\bibinitperiod},
+           given={Mike},
+           giveni={M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {PMLR}%
+      }
+      \strng{namehash}{02af15243279c938a0a5ca766835bcd4}
+      \strng{fullhash}{02af15243279c938a0a5ca766835bcd4}
+      \strng{bibnamehash}{02af15243279c938a0a5ca766835bcd4}
+      \strng{authorbibnamehash}{02af15243279c938a0a5ca766835bcd4}
+      \strng{authornamehash}{02af15243279c938a0a5ca766835bcd4}
+      \strng{authorfullhash}{02af15243279c938a0a5ca766835bcd4}
+      \strng{editorbibnamehash}{ea4550790536e3c5e0b1f0cd5656198b}
+      \strng{editornamehash}{ea4550790536e3c5e0b1f0cd5656198b}
+      \strng{editorfullhash}{ea4550790536e3c5e0b1f0cd5656198b}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Proceedings of the Thirteenth International Conference on Artificial Intelligence and Statistics}
+      \field{month}{12}
+      \field{title}{Understanding the Difficulty of Training Deep Feedforward Neural Networks}
+      \field{volume}{9}
+      \field{year}{2010}
+      \field{pages}{249\bibrangedash 256}
+      \range{pages}{8}
+      \verb{urlraw}
+      \verb https://proceedings.mlr.press/v9/glorot10a.html
+      \endverb
+      \verb{url}
+      \verb https://proceedings.mlr.press/v9/glorot10a.html
+      \endverb
+    \endentry
   \enddatalist
 \endrefsection
 \endinput
