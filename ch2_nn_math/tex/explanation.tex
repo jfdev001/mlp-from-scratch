@@ -42,8 +42,8 @@
 	Mathematical Concepts and a Python3 Implementation}
 \date{2022 \\ January}
 \author{Jared Frazier\thanks{Department of Computer Science (2021-2022), 
-Middle Tennessee State University} \thanks{Not endorsed by or affiliated with any of the 
-authors or entities associated with references}}
+Middle Tennessee State University.} \thanks{Not endorsed by or affiliated with any of the 
+authors or entities associated with references.}}
 \begin{document}
 \maketitle
 
@@ -53,10 +53,10 @@ constructs/concepts behind feedforward neural networks, specifically the multila
 This includes the layers that compose such networks, the cost (aka loss, error, or objective) function
 and activation functions, the forward pass through the network,
 the computation of gradients via backpropagation (a concept that is often "handwaved" to the extreme
-or explained in so much detail as to be utterly confusing--at least in the author's experience),
+or explained in so much detail as to be utterly confusing--at least my experience),
 and the update of model parameters via mini-batch stochastic gradient descent.
 If the ideas such as \textit{layer} and \textit{backpropagation} are entirely unfamiliar
-to you, then the author encourages you to visit 3Blue1Brown's Deep Learning YouTube Series \cite{3Blue1BrownWhatIsANN2017}
+to you, then I encourage you to visit 3Blue1Brown's Deep Learning YouTube Series \cite{3Blue1BrownWhatIsANN2017}
 and peruse the first few chapters of texts such as \textit{Deep Learning} (free, online) \cite{Goodfellow2016},
 \textit{Neural Networks and Deep Learning} (free, online) \cite{Nielsen2015},
 \textit{Hands-on Machine Learning with Scikit-Learn, TensorFlow and Keras 2ed} (buy) \cite{Geron2020},
@@ -121,11 +121,11 @@ the backpropagation algorithm illustrated later.
 The input $x$ is not a single value as is conceived in the elementary
 formulations described above. Rather, the input $x$ is a list of
 values referred to as a \textit{column vector}. Each element of the vector
-is the value a particular feature, or independent variable, could take on.
+is a value that a particular feature, or independent variable, could take on.
 The shape of the vector $x$ is important to understand since the functions and operations
 performed by the neural network (dot product, Hadamard product, addition, etc.)
 restrict their vector/matrix operands to particular shapes. When using the term
-\textit{vector}, the author is always referring to a \textit{column vector}
+\textit{vector}, I am always referring to a \textit{column vector}
 unless otherwise specified. Also, note that $x \in \mathcal{R}^{n_x}$ indicates
 that $x$ is a vector with $n_x$ elements and the $j^{th}$ is a real number.
 For example, the below vector $x$ is shown and a common vector operation
@@ -156,8 +156,8 @@ known as transposition (converts a \textit{column vector} to a
 Many programming languages assign the first element of a vector the index
 0; this notation is shown above in addition to the more standard
 mathematical notation where the first element begins with the index 1.
-For the remainder of this document, the author will use the index 0 assumption
-since the author's implementation of the the neural network will use the Python
+For the remainder of this document, I will use the index 0 assumption
+since my implementation of the neural network uses the Python
 programming language. If you wish to implement the same algorithms in a language
 such as R or Wolfram Mathematica, be wary of this index discrepancy.
 Consequently, with index beginning at 0, the last index of a vector with
@@ -183,7 +183,7 @@ shown below.
 \end{align}
 
 \section{The Multilayer Perceptron}
-\quad Here the author defines the operations that occur for a multilayer perceptron (MLP).
+\quad Here I define the operations that occur for a multilayer perceptron (MLP).
 Note that the MLP can sometimes refer to any class of feedforward
 neural network, that is a network that applies affine transformations and
 activation functions to input from a previous layer in the network.
@@ -191,10 +191,11 @@ activation functions to input from a previous layer in the network.
 \subsection{The Dense/Fully Connected Layer}
 The affine transformation, which is the most fundamental transformation
 of the densely/fully connected layers that exist in the MLP, yields
-a weighted input element $z_j^{l} = W_{jk}^{l} a_{k}^{l-1} + b_{j}^{l}$. Here,
-the activation $a_k^{l-1}$ denotes the activation of the $k^{th}$ neuron of the
+a weighted input vector $z^{l}$ with elements
+$z_j^{l} = W_{jk}^{l} a_{k}^{l-1} + b_{j}^{l}$ for a layer $l$ and neuron $j$.
+Here, the activation $a_k^{l-1}$ denotes the activation of the $k^{th}$ neuron of the
 previous layer $(l-1)$. Importantly, the input layer has no activation function $\phi$
-associated with it, so the activation vector $a^{0}$ equal the input vector $x$.
+associated with it, so the activation vector $a^{0}$ equals the input vector $x$.
 Moreover, the inner dimensions of the matrix product
 $Wx$ match, that is the subscripts $k$ are "adjacent" to one another. While you may
 observe that the activation vector $a \in \mathcal{R}^{n_a}$ is clearly not a matrix,
@@ -205,9 +206,7 @@ the purposes of performing fast matrix-matrix calculations.
 Until now the discussion of the MLP has been entirely in abstract mathematical
 notation, so now a visual of a single layer (meaning single hidden layer)
 MLP is shown. The activation function $\phi$ is vectorized, meaning it
-applies to each element of a vector, matrix, or rank-n tensor. The weighted input
-vector $z^{l} = \set{ z_{j}^{l} }_{j=0}^{n_{h} - 1}$, meaning there is an element
-of the weighted input vector for the $j^{th}$ neuron in a layer. The number of
+applies to each element of a vector, matrix, or rank-n tensor. The number of
 neurons in a hidden layer (or output layer for that matter) $n_h$ does not have
 to be constant, and this is shown in the figure below where the output layer
 has only a single neuron while the hidden layer has three neurons.
@@ -235,40 +234,92 @@ has only a single neuron while the hidden layer has three neurons.
 this function. Since the learning is just the determination of the values of the
 parameters of the MLP, then there must be some other function that determines
 how well the parameters of the MLP approximate the desired function. This other
-function is called or cost or loss function is denoted C, though sometimes
+function is called the cost or loss function and is denoted C, though sometimes
 it will be denoted $\mathcal{L}$. For regression problems, the most common
 cost function is the mean squared error. The cost function, unlike previous
 operations, returns a scalar and \textit{not} a vector. However, the cost for
-a single sample $\text{C}_x$ returns a vector.
+a single sample $C_x$ is a vector. The scalar value can be used to estimate
+performance during training; however, for my implementation, the cost vector
+$C_x$ is used for learning MLP parameters.
 
 \begin{equation}
 	\begin{aligned}
-		\text{C} & = \frac{1}{N} \sum_{x} {\text{C}_x}            \\
+		\text{C} & = \frac{1}{N} \sum_{x} {C_x}                   \\
 		         & = \frac{1}{N} \sum_{x} {(\hat{y} - y)^{2} }    \\
 		         & = \frac{1}{N} \sum_{x} {(h_{W,b}(x) - y)^{2} } \\
 		         & = \frac{1}{N} \sum_{x} {(a^{L} - y)^{2} }
 	\end{aligned}
 \end{equation}
 
-The activation vector $a^{L}$ for the last layer $L$ is the prediction
-that the MLP makes. Again, the MLP can be written as a function $h$ of an
-input vector $x$ with parameters $W$ and $b$. Moreover, the cost function
-C can be written as a function of the parameters $W$ and $b$. This
-is important for the following section on the backpropagation algorithm
+The cost function for a single sample $C_x$ is a multivariable function
+and it can also be written as a function of its parameters $\theta$ like
+$C_x(\theta)$ where $\forall$ layers $l,\ \theta = \set{W^{l}, b^{l}}$. $C_x$ can
+also be written to emphasize a certain parameter such as the weight $C(W)$. More importantly,
+the derivative of the cost function with respect to each activation $j$ of
+the last layer (i.e., output layer) $L$ is defined as
+$\frac{\partial C_x}{\partial a_j^{L}}$ and this is
+relevant to the backpropagation algorithm illustrated shortly.
+
+Put simply, The activation vector $a^{L}$ for the last layer $L$ is the prediction
+that the MLP makes. The activation $a^{L}$ naturally has some number of elements
+determined by the number of units $n_h$ in the layer, and to index the $j^{th}$
+activation of the activation vector one would write $a_j^{l}$. The activation for
+the $j^{th}$ neuron is used to compute errors that are relevant for the
+backpropagation algorithm since how well $a^{L}$ "lines up" with the known
+result $y$ is determined by the choice parameters $W$ and $b$ for all layers $l$.
 
 \subsection{Backpropagation}
 
 The key to learning for the MLP, and for artificial neural networks in general,
-is updating the weights $W^{l}$ and biases $b^{l}$ for each layer $l$. Since
-$W$ and $b$ are tensors, the gradient of w.r.t each tensor parameter of the
-cost function C is used to learning parameters via the equations below.
+is updating the weights $W^{l}$ and biases $b^{l}$ for each layer $l$ such
+that the network performs better with respect to the loss function.\footnote{
+Machine learning APIs like TensorFlow tend to formulate cost functions
+such that they can be \textit{minimized} (e.g.,
+$minimize(NegativeLogLikelihood) \equiv maximize(LogLikelihood)$)}.
+Since $W$ and $b$ are tensors, the gradients\footnote{Remember this is denoted
+	using the gradient $\nabla$ or $\vec{\nabla}$ operator.}
+of these parameters ($W$, $b$) with respect to each variable (e.g.,
+$\frac{\partial C_x}{\partial W_{jk}^{l}}$ or
+$\frac{\partial C_x}{\partial b_{j}^{l}}$) in the parameter matrix or vector.
+
+At this point you might ask yourself again what the difference between
+variables and parameters is. In pure mathematics classes, you are often asked
+to minimize a function with respect to some variable(s), and rarely (at least in
+my experience) with respect to a parameter. Why minimize the cost
+function with respect to the parameters? The statement "minimize with respect
+to a parameter" seemed to contradict the very definition of a parameter:
+"argument that are... not explicitly varied in situations of interest are termed
+\textit{parameters}" \cite{WolframMathWorldParameterDefinition}. The simplest
+answer I can surmise is that the parameters are constant for a single iteration
+of a machine learning experiment, and then updated such that the model performs
+better on future experiments. An experiment here encompasses the fitting of a
+model for a number of iterations equal to
+$NumEpochs \times frac{TrainingDataSize}{BatchSize}$. A "batch" for learning
+is just a random subset of size $m$ of the training data and thus, one iteration of the
+machine learning experiment is performing the forward pass, computing the gradients
+for the weight matrices and biases of each layer, and then updating those
+parameters. Parameters are intrinsic to the model, that mathematical object
+that maps input to some desired output, while variables are simply inputs
+to the model.
+
+Knowing that the parameters need to be updated, most often the below equations
+will be written and the gradient computation process might be abstracted from
+the reader. The equations make quite a lot of sense if you think about exactly
+what they are saying. The first of the three equations says "update the
+weight matrix for a given layer by subtracting from the current weight matrix
+computing the cost function with respect to that same weight matrix." By definition,
+the gradient "points" in the direction of local maxima [\textbf{CITATION}], so
+negative gradient points in the direction of local minima. The "step size" of
+such an update is proportional to the leraning rate $\eta$, which is a
+hyperparameter (a parameter explicitly set by a user) of the model.
 
 \begin{align}
-	W & = W - \eta \nabla_{W}\text{C} \\
-	b & = b - \eta \nabla_{b}\text{C}
+	W^{l}      & = W^{l} - \eta \nabla_{W^{l}}C \\
+	b^{l}      & = b^{l} - \eta \nabla_{b^{l}}C \\
+	\theta^{l} & = \eta \nabla_{\theta^{l}}C
 \end{align}
 
-However, the proceeding equations that are critical for gradient descent
+However, the following equations that are critical for gradient descent
 are claimed without proof (see \cite{Nielsen2015} for proofs). Note, that while
 the previous equations are the "pretty" form of gradient descent, for the
 accompanying implementation, one does not compute the gradient directly.
@@ -284,12 +335,16 @@ The practical implementation of the four equations will be explained shortly
 after showing the \textit{gradient descent} equations below.
 
 \begin{align}
-	W^{l} & = W^{l} - \frac{\eta}{N} \sum_{x}{\delta^{x, l}(a^{x, l-1})^\top} \\
-	b^{l} & = b^{l} - \frac{\eta}{N} \sum_{x}{\delta^{x, l}}
+	W^{l} & = W^{l} - \frac{\eta}{m} \sum_{x}{\delta^{x, l}(a^{x, l-1})^\top} \\
+	b^{l} & = b^{l} - \frac{\eta}{m} \sum_{x}{\delta^{x, l}}
 \end{align}
 
+The learning rate $\eta$ is typically $\eta = \set{1^{i}}_{i=-2}^{-4}$, and $m$
+for mini-batch stochastic gradient descent is typically
+$m = \set{2^{i}}_{i=1}^{10}$.
+
 \section{Implementation}
-Here the author defines, somewhat out of order, the Python \codeword{class}es
+Here I define, somewhat out of order, the Python \codeword{class}es
 that will encapsulate the attributes (data members) and methods associated
 with the MLP. Since this approach is object oriented, it was helpful to
 define first the subunits of the MLP: operations (such as activation functions)
@@ -312,13 +367,12 @@ where $x$ is an argument to the \codeword{__call__} method of the
 \codeword{DenseLayer}.
 
 The \textbf{activation functions and cost functions} are children of the Python
-abstract base class the author defines as \codeword{Operation}. The
+abstract base class I define as \codeword{Operation}. The
 \codeword{Operation} has no arguments and initializes no attributes, but
 does have a \codeword{__call__} method, \codeword{derivative} method. All
 children of the \codeword{Operation} must implement these methods. However, if
 the child is a \textit{cost function}, then this child class must also
-implement a \codeword{gradient} method ($\nabla_{a}\text{C}$)
-as is required by Equation 10.
+implement a \codeword{gradient} method ($\nabla_{a}\text{C}$).
 
 \pagebreak
 \printbibliography

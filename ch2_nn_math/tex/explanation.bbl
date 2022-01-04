@@ -195,6 +195,35 @@
       \verb https://math.stackexchange.com/q/3562026
       \endverb
     \endentry
+    \entry{WolframMathWorldParameterDefinition}{online}{}
+      \name{author}{1}{}{%
+        {{hash=17eacc833e74f76c6cac4522224a09e3}{%
+           family={Weisstein},
+           familyi={W\bibinitperiod},
+           given={Eric},
+           giveni={E\bibinitperiod}}}%
+      }
+      \list{organization}{1}{%
+        {MathWorld--A Wofram Web Resource}%
+      }
+      \strng{namehash}{17eacc833e74f76c6cac4522224a09e3}
+      \strng{fullhash}{17eacc833e74f76c6cac4522224a09e3}
+      \strng{bibnamehash}{17eacc833e74f76c6cac4522224a09e3}
+      \strng{authorbibnamehash}{17eacc833e74f76c6cac4522224a09e3}
+      \strng{authornamehash}{17eacc833e74f76c6cac4522224a09e3}
+      \strng{authorfullhash}{17eacc833e74f76c6cac4522224a09e3}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Parameter}
+      \verb{urlraw}
+      \verb https://mathworld.wolfram.com/Parameter.html
+      \endverb
+      \verb{url}
+      \verb https://mathworld.wolfram.com/Parameter.html
+      \endverb
+    \endentry
     \entry{Glorot2010}{inproceedings}{}
       \name{author}{2}{}{%
         {{hash=0b3943c3bfdbb5867b3760f7c7d488c2}{%
@@ -232,8 +261,8 @@
       \strng{editorbibnamehash}{ea4550790536e3c5e0b1f0cd5656198b}
       \strng{editornamehash}{ea4550790536e3c5e0b1f0cd5656198b}
       \strng{editorfullhash}{ea4550790536e3c5e0b1f0cd5656198b}
-      \field{sortinit}{8}
-      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Proceedings of the Thirteenth International Conference on Artificial Intelligence and Statistics}
