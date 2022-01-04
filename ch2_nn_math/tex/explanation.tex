@@ -359,8 +359,8 @@ The size of the "step" in the direction of the local minima
 is proportional to the learning rate $\eta$,
 which is a hyperparameter (a parameter explicitly set by a user) of the model.
 Therefore, the semantic explanation of the equations is essentially to change the
-weights and biases of the model by a small amount until convergence (ideally on a global
-minimum in the N-dimensional cost function space) is reached. In this way, a model
+weights and biases of the model by a small amount until convergence\footnote{Ideally
+	on a global minimum in the N-dimensional cost function space.} is reached. In this way, a model
 will have parameters that can be used to \textit{infer} predictions based on
 unseen data. Consequently, when a model is making predictions without
 updating the parameters, it is called \textit{machine learning inference} or
@@ -402,26 +402,57 @@ $m = \set{2^{i}}_{i=1}^{10}$.
 \section{Implementation}
 
 \quad Here I define, somewhat out of order, the Python classes
-that will encapsulate the attributes (data members) and methods associated
+that will encapsulate the attributes (data members) and methods (functions) associated
 with the MLP. Since this approach is object oriented, it was helpful to
 define first the subunits of the MLP: operations (i.e., activation functions and
-cost functions) as well as layers.
+cost functions) and layers.
 
 The \textbf{forward pass} requires defining a \codeword{class} that
 encapsulates the fully/densely connected layer of the MLP. I define this as
 \codeword{DenseLayer} with attributes for the input dimensions $n_x$,
 the weight matrix $W \in \mathcal{R}^{n_x \times n_h}$, and the bias
 $b \in \mathcal{R}^{n_h}$. The \codeword{DenseLayer} is correspondingly passed
-arguments for $n_x$, $n_h$, and an optional Python \codeword{Callable}
-that will be used as the activation function $\phi$ for a given layer.
-The methods for the \codeword{DenseLayer} use Glorot Uniform initialization \cite{Glorot2010}
-for the weight matrix and a forward pass is also defined as
+arguments for $n_x$, $n_h$, and an \codeword{Optional[Callable]}
+that will be used as the vectorized activation function $\phi(\cdot)$ for a given layer.
+The \codeword{__init__} method saves the \codeword{Optional[Callable]} and passes
+the $n_x$ and $n_h$ arguments to initialize the weight matrix and bias vector.
+The \codeword{glorot_uniform} method initializes the values of the weight matrix
+using Glorot Uniform initialization \cite{Glorot2010}. The bias vector is
+initialized with zeros. The activations and weighted inputs of the \codeword{DenseLayer}
+are computed with the \codeword{__call__} method defined as
 
+\begin{align}
+	WeightedInputZ & = Wx + b               \\
+	ActivationA    & = \phi(WeightedInputZ)
+\end{align}
+where $x$ is an argument to the \codeword{__call__} method and
+$W$, $b$, and $\phi$ are attributes of the \codeword{DenseLayer}.
+Note that $x$ can be $x \in \mathcal{R}^{n_x}$, which
+is equivalent to $X \in \mathcal{R}^{n_x \times 1}$, or it can be
+$X \in \mathcal{R}^{n_x \times m}$ where $m$ is the number of training examples.
+
+Consider the shape of the $WeightedInputZ$: if $W \in \mathcal{R}^{n_h \times n_x}$,
+then
+
+% Determining shape of weighted matrix
 \begin{equation}
-	ForwardPassResult = \phi(Wx + b)
+	Z_{n_h \times m} =
+	W_{n_h \times \begingroup\color{red}n_x\endgroup} X_{\begingroup\color{red}n_x\endgroup \times m} + b_{n_h}
 \end{equation}
-where $x$ is an argument to the \codeword{__call__} method of the
-\codeword{DenseLayer}.
+For this weighted input matrix $Z_{n_h \times m}$, you may observe a problem with how
+it is computed:
+a \textit{matrix} is \textit{added} to a \textit{vector}. This is an operation that is undefined.
+The matrix-vector addition occurs because $W_{n_h \times n_x}X_{n_x \times m}$
+results in a matrix $C_{n_h \times n_x}$ and the vector $b_{n_h}$ is then added
+to $C_{n_h \times n_x}$ such that
+$W_{n_h \times n_x}X_{n_x \times m} + b_{n_h} = C_{n_h \times n_x} + b_{n_h}$.
+While this operation is undefined, numerical libraries treat this as a legitimate
+operation by \textit{broadcasting} the vector $b_{n_h}$ to $B_{n_h \times m}$ \cite{Goodfellow2016,NumPyBroadcasting2021}.
+One can imagine that the column vector $b_{n_h}$ is copied and
+then stacked horizontally until there are $m$ copies of the column vector in
+what is now a $n_x \times m$ matrix $B$ .
+
+
 
 The \textbf{activation functions and cost functions} are children of the Python
 abstract base class I define as \codeword{Operation}. The

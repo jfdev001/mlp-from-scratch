@@ -2357,6 +2357,8 @@
     <bcf:citekey order="11">MathLibreGradient2021</bcf:citekey>
     <bcf:citekey order="12">Nielsen2015</bcf:citekey>
     <bcf:citekey order="13">Glorot2010</bcf:citekey>
+    <bcf:citekey order="14">Goodfellow2016</bcf:citekey>
+    <bcf:citekey order="14">NumPyBroadcasting2021</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">
