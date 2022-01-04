@@ -410,7 +410,7 @@ cost functions) and layers.
 The \textbf{forward pass} requires defining a \codeword{class} that
 encapsulates the fully/densely connected layer of the MLP. I define this as
 \codeword{DenseLayer} with attributes for the input dimensions $n_x$,
-the weight matrix $W \in \mathcal{R}^{n_x \times n_h}$, and the bias
+the weight matrix $W \in \mathcal{R}^{n_h \times n_x}$, and the bias
 $b \in \mathcal{R}^{n_h}$. The \codeword{DenseLayer} is correspondingly passed
 arguments for $n_x$, $n_h$, and an \codeword{Optional[Callable]}
 that will be used as the vectorized activation function $\phi(\cdot)$ for a given layer.
@@ -422,23 +422,24 @@ initialized with zeros. The activations and weighted inputs of the \codeword{Den
 are computed with the \codeword{__call__} method defined as
 
 \begin{align}
-	WeightedInputZ & = Wx + b               \\
+	WeightedInputZ & = Wx^{\top} + b        \\
 	ActivationA    & = \phi(WeightedInputZ)
 \end{align}
 where $x$ is an argument to the \codeword{__call__} method and
 $W$, $b$, and $\phi$ are attributes of the \codeword{DenseLayer}.
 Note that $x$ can be $x \in \mathcal{R}^{n_x}$, which
-is equivalent to $X \in \mathcal{R}^{n_x \times 1}$, or it can be
-$X \in \mathcal{R}^{n_x \times m}$ where $m$ is the number of training examples.
-
-Consider the shape of the $WeightedInputZ$: if $W \in \mathcal{R}^{n_h \times n_x}$,
-then
+is equivalent to $X \in \mathcal{R}^{1 \times n_x}$ for the purposes of matrix
+multiplication. However, the training dataset $\mathcal{D}$ is commonly
+$\mathcal{D} \in \mathcal{R}^{N \times n_x}$ where $N$ is the total number of
+training examples. Therefore, a subset $m$ of $N$ means that
+$X \in \mathcal{R}^{m \times n_x}$. Consider now the shapes of the affine transformation
+and the subsequent activation:
 
 % Determining shape of weighted matrix
-\begin{equation}
+\begin{align}
 	Z_{n_h \times m} =
-	W_{n_h \times \begingroup\color{red}n_x\endgroup} X_{\begingroup\color{red}n_x\endgroup \times m} + b_{n_h}
-\end{equation}
+	W_{n_h \times \begingroup\color{red}n_x\endgroup} (X_{m \times \begingroup\color{red}n_x\endgroup})^{\top} + b_{n_h}
+\end{align}
 For this weighted input matrix $Z_{n_h \times m}$, you may observe a problem with how
 it is computed:
 a \textit{matrix} is \textit{added} to a \textit{vector}. This is an operation that is undefined.
