@@ -195,6 +195,37 @@
       \verb https://math.stackexchange.com/q/3562026
       \endverb
     \endentry
+    \entry{Kingma2014}{misc}{}
+      \name{author}{2}{}{%
+        {{hash=b6fbd171848aad4edf3925543f1f1522}{%
+           family={Kingma},
+           familyi={K\bibinitperiod},
+           given={Diederik\bibnamedelima P},
+           giveni={D\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
+        {{hash=53d2880ad8047b61cdae2c6b2803e763}{%
+           family={Welling},
+           familyi={W\bibinitperiod},
+           given={Max},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{aabdd5db7a1ed298b1dfb6824d032c66}
+      \strng{fullhash}{aabdd5db7a1ed298b1dfb6824d032c66}
+      \strng{bibnamehash}{aabdd5db7a1ed298b1dfb6824d032c66}
+      \strng{authorbibnamehash}{aabdd5db7a1ed298b1dfb6824d032c66}
+      \strng{authornamehash}{aabdd5db7a1ed298b1dfb6824d032c66}
+      \strng{authorfullhash}{aabdd5db7a1ed298b1dfb6824d032c66}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{stat.ML}
+      \field{eprinttype}{arXiv}
+      \field{title}{Auto-Encoding Variational Bayes}
+      \field{year}{2014}
+      \verb{eprint}
+      \verb 1312.6114
+      \endverb
+    \endentry
     \entry{WolframMathWorldParameterDefinition}{online}{}
       \name{author}{1}{}{%
         {{hash=17eacc833e74f76c6cac4522224a09e3}{%
@@ -212,8 +243,8 @@
       \strng{authorbibnamehash}{17eacc833e74f76c6cac4522224a09e3}
       \strng{authornamehash}{17eacc833e74f76c6cac4522224a09e3}
       \strng{authorfullhash}{17eacc833e74f76c6cac4522224a09e3}
-      \field{sortinit}{7}
-      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Parameter}
@@ -222,6 +253,22 @@
       \endverb
       \verb{url}
       \verb https://mathworld.wolfram.com/Parameter.html
+      \endverb
+    \endentry
+    \entry{MathLibreGradient2021}{misc}{}
+      \list{publisher}{1}{%
+        {Lake Tahoe Community College}%
+      }
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labeltitlesource}{title}
+      \field{title}{The Gradient}
+      \field{year}{2021}
+      \verb{urlraw}
+      \verb https://math.libretexts.org/Bookshelves/Calculus/Supplemental_Modules_(Calculus)/Vector_Calculus/1%3A_Vector_Basics/2%3A_The_Gradient
+      \endverb
+      \verb{url}
+      \verb https://math.libretexts.org/Bookshelves/Calculus/Supplemental_Modules_(Calculus)/Vector_Calculus/1%3A_Vector_Basics/2%3A_The_Gradient
       \endverb
     \endentry
     \entry{Glorot2010}{inproceedings}{}
@@ -261,8 +308,8 @@
       \strng{editorbibnamehash}{ea4550790536e3c5e0b1f0cd5656198b}
       \strng{editornamehash}{ea4550790536e3c5e0b1f0cd5656198b}
       \strng{editorfullhash}{ea4550790536e3c5e0b1f0cd5656198b}
-      \field{sortinit}{9}
-      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Proceedings of the Thirteenth International Conference on Artificial Intelligence and Statistics}

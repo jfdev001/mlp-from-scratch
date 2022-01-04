@@ -13,9 +13,13 @@
 \graphicspath{{figures/}}
 
 % https://tex.stackexchange.com/questions/2651/should-i-use-center-or-centering-for-figures-and-tables
+% Centering figures
 \makeatletter
 \g@addto@macro\@floatboxreset\centering
 \makeatother
+
+% Subsections
+\usepackage{titlesec}
 
 % https://tex.stackexchange.com/questions/268766/curly-braces-in-math-mode
 \usepackage{mathtools}
@@ -41,11 +45,13 @@
 	An Undergraduate's Explanation of the Multilayer Perceptron: 
 	Mathematical Concepts and a Python3 Implementation}
 \date{2022 \\ January}
-\author{Jared Frazier\thanks{Department of Computer Science (2021-2022), 
+\author{Jared Frazier\thanks{Department of Computer Science (2021-2022),
+Middle Tennessee State University.} \thanks{Department of Chemistry (2018-2021),
 Middle Tennessee State University.} \thanks{Not endorsed by or affiliated with any of the 
-authors or entities associated with references.}}
+authors or entities listed in the References section.}}
 \begin{document}
 \maketitle
+\titlepage
 
 \section{Preamble}
 \quad The purpose of the present document is to explain and implement the major mathematical
@@ -62,9 +68,17 @@ and peruse the first few chapters of texts such as \textit{Deep Learning} (free,
 \textit{Hands-on Machine Learning with Scikit-Learn, TensorFlow and Keras 2ed} (buy) \cite{Geron2020},
 and/or \textit{Deep Learning with Python 2ed} (buy) \cite{Chollet2021}. The present document
 is not intended to be a comprehensive overview of neural networks nor an extremely
-in-depth mathematical treatise but rather a document that highlights certain concepts that the
-author found confusing or ambiguous when he was learning about neural networks
-(particularly regarding the backpropagation algorithm).
+in-depth mathematical treatise but rather a document that highlights certain concepts that
+I found confusing or ambiguous when I was first learning about neural networks,
+particularly regarding the backpropagation algorithm.
+
+Having taken my institution's CSCI 4350 (Intro to AI) and CSCI 4850 (Neural Nets)
+courses in addition to conducting independent research using
+variational autoencoders, recurrent neural nets, convolutional neural nets, and
+self-attention, I am ashamed to say my fundamental understanding of neural nets
+was far weaker than it should have been. While I am not a master of pedagogy,
+I hope this document will serve as a reminder of fundamental concepts for my
+future self and for others.
 
 \section{Introduction}
 
@@ -76,12 +90,11 @@ layers (e.g., dense/fully connected layers) together. A neural network has $L$ t
 layers and the current layer $l$ receives the output from the previous layer $(l-1)$.
 Note that $n_x$ is the number of features (or independent variables) in the input
 and $n_h$ is the number of hidden units in the current layer. The following subsections will
-breifly elucidate the claims in of the first setnence of this section and the
-corresponding notation.
+briefly elucidate both the claims and notation of the first sentence of this section.
 
 \subsection{Parametrized Functions}
 
-The author assumes you know what a function is; however, the term \textit{parametrized}
+\quad I assume you know what a function is; however, the term \textit{parametrized}
 is one that appears often in deep learning literature and should be well-understood by the student.
 Consider a generic quadratic function \cite{MathSEVarsParamsArgs2015} as
 % Quadratic function
@@ -97,28 +110,34 @@ is some other value $y$ if $y = f(x)$. This explanation of a function
 should not be anything new; however, the \textit{parameters} are quantities
 of particular interest for neural networks since the parameters are the quantities
 that are \textit{learned} by the neural network over time. What it means to learn
-parameters will be explaned later.
+parameters will be explained later.
 
 A neural network can be denoted as a function $h$ with parameters $W$
 and $b$ of a variable $x$. This statement can be compactly written as
-$h_{W, b}(x)$. The subscript with $W$ and $b$
-means that the weights $W$ and biases $b$ are parameters of the neural network $h$.
+$h_{W, b}(x)$ as in \cite{Geron2020} or $h(x; W, b)$ as in \cite{Goodfellow2016}.
+Incidentally, I encourage you to know both notation, but the former appears to be more common
+in general in addition to being quite common for specialized
+probabilistic models such as the variational autoencoder \cite{Kingma2014}.
+The subscript with $W$ and $b$ means that the weights $W$ and biases $b$ are
+\textit{parameters } of the neural network $h$.
 The claim that a neural network is a chain of functions is useful later during
-the updating of the parameters of the network. But to briefly illustrate the idea
-of chaining functions, the generic quadratic function in Equation 1 is decomposed
-into units called \textit{atomic functions}.
+the updating of the parameters of the network. To briefly illustrate the idea
+of chaining functions, the generic quadratic function, which can be defined
+as a composite function $f$, can be decomposed into simpler functions shown
+below.
+
 \begin{align}
 	g_{a}(x)     & = ax^{2}                  \\
 	u_{b}(x)     & = bx                      \\
 	f_{a,b,c}(x) & = g_{a}(x) + u_{b}(x) + c
 \end{align}
-Decomposing functions into their constituent atomic functions is useful
-for applying rules of calculus--the basis of parameter learning via
+Recognizing the decomposition of composite functions into their constituent
+functions is useful for applying rules of calculus--the basis of parameter learning via
 the backpropagation algorithm illustrated later.
 
 \subsection{Operand Types}
 
-The input $x$ is not a single value as is conceived in the elementary
+\quad The input $x$ is not a single value as is conceived in the elementary
 formulations described above. Rather, the input $x$ is a list of
 values referred to as a \textit{column vector}. Each element of the vector
 is a value that a particular feature, or independent variable, could take on.
@@ -127,7 +146,7 @@ performed by the neural network (dot product, Hadamard product, addition, etc.)
 restrict their vector/matrix operands to particular shapes. When using the term
 \textit{vector}, I am always referring to a \textit{column vector}
 unless otherwise specified. Also, note that $x \in \mathcal{R}^{n_x}$ indicates
-that $x$ is a vector with $n_x$ elements and the $j^{th}$ is a real number.
+that $x$ is a vector with $n_x$ elements and the $j^{th}$ element is a real number.
 For example, the below vector $x$ is shown and a common vector operation
 known as transposition (converts a \textit{column vector} to a
 \textit{row vector} and is denoted with a superscript of $\top$) is also shown.
@@ -153,26 +172,25 @@ known as transposition (converts a \textit{column vector} to a
 	\end{bmatrix}^\top
 \end{align}
 
-Many programming languages assign the first element of a vector the index
+Many programming languages access the first element of a vector using the index
 0; this notation is shown above in addition to the more standard
 mathematical notation where the first element begins with the index 1.
 For the remainder of this document, I will use the index 0 assumption
 since my implementation of the neural network uses the Python
 programming language. If you wish to implement the same algorithms in a language
 such as R or Wolfram Mathematica, be wary of this index discrepancy.
-Consequently, with index beginning at 0, the last index of a vector with
+Consequently, with the index beginning at 0, the last index of a vector with
 $n_x$ elements will be $(n_x - 1)$... and woe is the programmer who commits an
 off-by-one error.
 
-Lastly, a matrix $W$ represents the weight of edges between the $k^{th}$
-input neuron of $n_x$ total input neurons (i.e., neurons in the previous layer)
-and the $j^{th}$ hidden neuron of $n_h^{l}$ total hidden neurons.
+A matrix $W$ represents the weight of edges between the $k^{th}$
+input neuron of $n_x^{l-1}$ total input neurons (i.e., neurons in the previous layer $(l-1)$)
+and the $j^{th}$ hidden neuron of $n_h^{l}$ total hidden neurons in the current layer $l$.
 A weight matrix looks similar to the vector, except rather than having a single
 column, a matrix has a rows and columns--looking like a table. Vectors can
-be referred to as rank-1 tensors, matrices as rank-2 tensors, so and so forth
+be referred to as rank-1 tensors, matrices as rank-2 tensors, so-on and so-forth
 for multiple index "lists" in higher dimensions. A sample weight matrix
-$W \in \mathcal{R}^{n_h \times n_x}$ is
-shown below.
+$W \in \mathcal{R}^{n_h \times n_x}$ is shown below.
 
 \begin{align}
 	\begin{bmatrix}
@@ -182,13 +200,22 @@ shown below.
 	\end{bmatrix}
 \end{align}
 
+When implementing machine learning algorithms, pay close attention to the
+input and output shapes described in a dataset, journal article, tutorial, or
+the source code of others. If you do not pay careful attention to these shapes,
+your implementation may not run or, worse, it \textit{will} run but it will not execute
+the operations you intended\footnote{This is especially true for the
+	matrix multiplication operation and the Hadamard (element-wise) product.}.
+
 \section{The Multilayer Perceptron}
+
 \quad Here I define the operations that occur for a multilayer perceptron (MLP).
 Note that the MLP can sometimes refer to any class of feedforward
 neural network, that is a network that applies affine transformations and
 activation functions to input from a previous layer in the network.
 
 \subsection{The Dense/Fully Connected Layer}
+
 The affine transformation, which is the most fundamental transformation
 of the densely/fully connected layers that exist in the MLP, yields
 a weighted input vector $z^{l}$ with elements
@@ -206,7 +233,9 @@ the purposes of performing fast matrix-matrix calculations.
 Until now the discussion of the MLP has been entirely in abstract mathematical
 notation, so now a visual of a single layer (meaning single hidden layer)
 MLP is shown. The activation function $\phi$ is vectorized, meaning it
-applies to each element of a vector, matrix, or rank-n tensor. The number of
+applies to each element of a vector, matrix, or rank-n tensor. Vectorized
+activation functions are often denoted $\phi(\cdot)$ or $\sigma(\cdot)$, though I do not like
+the latter notation as $\sigma$ typically references the sigmoid function. The number of
 neurons in a hidden layer (or output layer for that matter) $n_h$ does not have
 to be constant, and this is shown in the figure below where the output layer
 has only a single neuron while the hidden layer has three neurons.
@@ -228,19 +257,19 @@ has only a single neuron while the hidden layer has three neurons.
 % 	\end{neuralnetwork}
 % \end{align}
 
-% Neural Network Definition
 \subsection{The Forward Pass and Cost Function}
+
 \quad The MLP is a function approximator and the MLP learns the parameters of
 this function. Since the learning is just the determination of the values of the
 parameters of the MLP, then there must be some other function that determines
 how well the parameters of the MLP approximate the desired function. This other
 function is called the cost or loss function and is denoted C, though sometimes
-it will be denoted $\mathcal{L}$. For regression problems, the most common
+it is denoted $\mathcal{L}$ or $J$. For regression problems, the most common
 cost function is the mean squared error. The cost function, unlike previous
 operations, returns a scalar and \textit{not} a vector. However, the cost for
 a single sample $C_x$ is a vector. The scalar value can be used to estimate
 performance during training; however, for my implementation, the cost vector
-$C_x$ is used for learning MLP parameters.
+function $C_x$ is used for learning MLP parameters.
 
 \begin{equation}
 	\begin{aligned}
@@ -253,82 +282,109 @@ $C_x$ is used for learning MLP parameters.
 
 The cost function for a single sample $C_x$ is a multivariable function
 and it can also be written as a function of its parameters $\theta$ like
-$C_x(\theta)$ where $\forall$ layers $l,\ \theta = \set{W^{l}, b^{l}}$. $C_x$ can
-also be written to emphasize a certain parameter such as the weight $C(W)$. More importantly,
-the derivative of the cost function with respect to each activation $j$ of
-the last layer (i.e., output layer) $L$ is defined as
-$\frac{\partial C_x}{\partial a_j^{L}}$ and this is
+$C_x(\theta)$ where $\forall$ layers $l,\ \theta = \set{W^{l}, b^{l}}$. Additionally,
+$C_x$ can be written to emphasize a certain parameter such as the weight $C_x(W)$.
+More importantly, the derivative of the cost function $C_x$ with respect the activation
+$a_j^{L}$ for the $j^{th}$ neuron of the last layer (i.e., output layer) $L$ is defined as
+$\frac{\partial C_x}{\partial a_j^{L}}$. These partial derivatives are
 relevant to the backpropagation algorithm illustrated shortly.
 
-Put simply, The activation vector $a^{L}$ for the last layer $L$ is the prediction
-that the MLP makes. The activation $a^{L}$ naturally has some number of elements
-determined by the number of units $n_h$ in the layer, and to index the $j^{th}$
-activation of the activation vector one would write $a_j^{l}$. The activation for
+Before moving on to backpropagation, I briefly explain the meaning of the activations
+of the last layer. Put simply, The activation vector $a^{L}$ for the last layer $L$ is the prediction
+that the MLP makes. The activation vector $a^{L}$ has a number of elements
+determined by the number of units $n_h^{L}$ in the last layer, and to index the $j^{th}$
+activation of the activation vector one would write $a_j^{L}$. The activation for
 the $j^{th}$ neuron is used to compute errors that are relevant for the
 backpropagation algorithm since how well $a^{L}$ "lines up" with the known
-result $y$ is determined by the choice parameters $W$ and $b$ for all layers $l$.
+result $y$ is determined by the choice of parameters $W$ and $b$ for all layers $l$.
+Here I loosely use the phrase "lines up" because $a^{L} = \hat{y}$ and for supervised
+learning problems, it is desirable for $\hat{y}$ to be very "close" to $y$. Of
+course, the metric for such "closeness" is the cost function!
 
 \subsection{Backpropagation}
 
-The key to learning for the MLP, and for artificial neural networks in general,
+\quad The key to learning for the MLP, and for artificial neural networks in general,
 is updating the weights $W^{l}$ and biases $b^{l}$ for each layer $l$ such
-that the network performs better with respect to the loss function.\footnote{
+that the network performs better with respect to the loss function\footnote{
 Machine learning APIs like TensorFlow tend to formulate cost functions
 such that they can be \textit{minimized} (e.g.,
 $minimize(NegativeLogLikelihood) \equiv maximize(LogLikelihood)$)}.
-Since $W$ and $b$ are tensors, the gradients\footnote{Remember this is denoted
-	using the gradient $\nabla$ or $\vec{\nabla}$ operator.}
-of these parameters ($W$, $b$) with respect to each variable (e.g.,
-$\frac{\partial C_x}{\partial W_{jk}^{l}}$ or
-$\frac{\partial C_x}{\partial b_{j}^{l}}$) in the parameter matrix or vector.
+Since $W$ and $b$ are tensors, the gradients\footnote{Denoted
+	using the gradients $\nabla$ or sometimes the $\vec{\nabla}$ operator.}
+of the cost function with respect to these parameters ($\frac{\partial C_x}{\partial W_{jk}^{l}}$
+and $\frac{\partial C_x}{\partial b_{j}^{l}}$)) are computed to determine how
+the elements of the parameter tensors should be modified to produce better predictions.
 
-At this point you might ask yourself again what the difference between
+\subsubsection{Parameters Revisited}
+
+\quad At this point you might ask yourself again what the difference between
 variables and parameters is. In pure mathematics classes, you are often asked
 to minimize a function with respect to some variable(s), and rarely (at least in
 my experience) with respect to a parameter. Why minimize the cost
 function with respect to the parameters? The statement "minimize with respect
-to a parameter" seemed to contradict the very definition of a parameter:
-"argument that are... not explicitly varied in situations of interest are termed
-\textit{parameters}" \cite{WolframMathWorldParameterDefinition}. The simplest
-answer I can surmise is that the parameters are constant for a single iteration
+to a parameter" seems to contradict the very definition of a parameter:
+"arguments that are... not explicitly varied in situations of interest are termed
+\textit{parameters}" \cite{WolframMathWorldParameterDefinition}. The simplest intuition
+behind the minimization of parameters instead of variables
+is that the parameters are constant for a single iteration
 of a machine learning experiment, and then updated such that the model performs
-better on future experiments. An experiment here encompasses the fitting of a
+better on future experiments. Conversely, variables (e.g., the input $x$) are
+independent of the model. An experiment encompasses the \textit{fitting} of a
 model for a number of iterations equal to
-$NumEpochs \times frac{TrainingDataSize}{BatchSize}$. A "batch" for learning
-is just a random subset of size $m$ of the training data and thus, one iteration of the
-machine learning experiment is performing the forward pass, computing the gradients
-for the weight matrices and biases of each layer, and then updating those
-parameters. Parameters are intrinsic to the model, that mathematical object
-that maps input to some desired output, while variables are simply inputs
-to the model.
+$NumEpochs \times \frac{TrainingDataSize}{BatchSize}$. A \textit{batch} for learning
+is just a random subset of size $m$ of the training data. Thus, one iteration of the
+machine learning experiment is performing the forward pass (i.e., making a prediction
+$a^{i, L} = y^{i}$ for each training example $x^{i}$ in the batch),
+computing the gradients for the weight matrices and biases of each layer based on the
+model error, and then updating those parameters.
 
-Knowing that the parameters need to be updated, most often the below equations
-will be written and the gradient computation process might be abstracted from
-the reader. The equations make quite a lot of sense if you think about exactly
-what they are saying. The first of the three equations says "update the
-weight matrix for a given layer by subtracting from the current weight matrix
-computing the cost function with respect to that same weight matrix." By definition,
-the gradient "points" in the direction of local maxima [\textbf{CITATION}], so
-negative gradient points in the direction of local minima. The "step size" of
-such an update is proportional to the leraning rate $\eta$, which is a
-hyperparameter (a parameter explicitly set by a user) of the model.
+\subsubsection{Typical Mathematical Notation for Gradient Descent}
+
+\quad Knowing that the parameters need to be updated, most often the below equations
+will be written and the gradient computation process will be abstracted from
+the reader.
 
 \begin{align}
-	W^{l}      & = W^{l} - \eta \nabla_{W^{l}}C \\
-	b^{l}      & = b^{l} - \eta \nabla_{b^{l}}C \\
-	\theta^{l} & = \eta \nabla_{\theta^{l}}C
+	W^{l}      & = W^{l} - \eta \nabla_{W^{l}}C           \\
+	b^{l}      & = b^{l} - \eta \nabla_{b^{l}}C           \\
+	\theta^{l} & = \theta^{l} - \eta \nabla_{\theta^{l}}C
 \end{align}
+The equations make quite a lot of sense if you think about exactly
+what they are saying. The first of the three equations says "update the
+weight matrix for a given layer by subtracting from the current weight matrix
+the gradient of the cost function with respect to that same weight matrix." By definition,
+the gradient points in the direction of local maxima, and the
+negative gradient points in the direction of local minima \cite{MathLibreGradient2021}.
+The size of the "step" in the direction of the local minima
+is proportional to the learning rate $\eta$,
+which is a hyperparameter (a parameter explicitly set by a user) of the model.
+Therefore, the semantic explanation of the equations is essentially to change the
+weights and biases of the model by a small amount until convergence (ideally on a global
+minimum in the N-dimensional cost function space) is reached. In this way, a model
+will have parameters that can be used to \textit{infer} predictions based on
+unseen data. Consequently, when a model is making predictions without
+updating the parameters, it is called \textit{machine learning inference} or
+some variation on the word \textit{inference}.
 
-However, the following equations that are critical for gradient descent
-are claimed without proof (see \cite{Nielsen2015} for proofs). Note, that while
+\subsubsection{The Four Fundamental Equations of Backpropagation}
+
+\quad While the previous equations are nice for rapidly intuiting the meaning of
+gradient descent, they provide no insight into the computation of \textit{gradients}
+that are obviously needed for \textit{gradient} descent.
+
+The fundamental equations of backpropagation, which are critical for \textit{gradient}
+descent, are claimed without proof (see \cite{Nielsen2015} for proofs). While
 the previous equations are the "pretty" form of gradient descent, for the
-accompanying implementation, one does not compute the gradient directly.
+accompanying implementation, one does not compute the gradient directly (i.e.,
+$\nabla_{W}C$ or $\nabla_{b}C$). Rather,
+the components of the gradient are computed using the last two equations listed
+below.
 
 \begin{align}
 	\delta^{L}                                    & = \nabla_{a} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})             \\
-	\delta^{l}                                    & = ((w^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l}) \\
+	\delta^{l}                                    & = ((W^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l}) \\
 	\frac{\partial \text{C}}{\partial b_j^{l}}    & = \delta_j^{l}                                                                  \\
-	\frac{\partial \text{C}}{\partial W_{jk}^{l}} & = a_{k}^{l-1}\delta_{j}^{l}
+	\frac{\partial \text{C}}{\partial W_{jk}^{l}} & = \delta_{j}^{l} (a_{k}^{l-1})^{\top}
 \end{align}
 
 The practical implementation of the four equations will be explained shortly
@@ -344,14 +400,15 @@ for mini-batch stochastic gradient descent is typically
 $m = \set{2^{i}}_{i=1}^{10}$.
 
 \section{Implementation}
-Here I define, somewhat out of order, the Python \codeword{class}es
+
+\quad Here I define, somewhat out of order, the Python classes
 that will encapsulate the attributes (data members) and methods associated
 with the MLP. Since this approach is object oriented, it was helpful to
-define first the subunits of the MLP: operations (such as activation functions)
-and layers.
+define first the subunits of the MLP: operations (i.e., activation functions and
+cost functions) as well as layers.
 
 The \textbf{forward pass} requires defining a \codeword{class} that
-encapsulates the fully/densely connected layer of the MLP. The author defines this as
+encapsulates the fully/densely connected layer of the MLP. I define this as
 \codeword{DenseLayer} with attributes for the input dimensions $n_x$,
 the weight matrix $W \in \mathcal{R}^{n_x \times n_h}$, and the bias
 $b \in \mathcal{R}^{n_h}$. The \codeword{DenseLayer} is correspondingly passed
