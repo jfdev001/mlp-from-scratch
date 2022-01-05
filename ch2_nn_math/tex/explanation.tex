@@ -432,8 +432,9 @@ is equivalent to $X \in \mathcal{R}^{1 \times n_x}$ for the purposes of matrix
 multiplication. However, the training dataset $\mathcal{D}$ is commonly
 $\mathcal{D} \in \mathcal{R}^{N \times n_x}$ where $N$ is the total number of
 training examples. Therefore, a subset $m$ of $N$ means that
-$X \in \mathcal{R}^{m \times n_x}$. Consider now the shapes of the affine transformation
-and the subsequent activation:
+$X \in \mathcal{R}^{m \times n_x}$.
+
+Consider now the shapes of the affine transformation and the subsequent activation:
 
 % Determining shape of weighted matrix
 \begin{align}
@@ -442,18 +443,21 @@ and the subsequent activation:
 \end{align}
 For this weighted input matrix $Z_{n_h \times m}$, you may observe a problem with how
 it is computed:
-a \textit{matrix} is \textit{added} to a \textit{vector}. This is an operation that is undefined.
-The matrix-vector addition occurs because $W_{n_h \times n_x}X_{n_x \times m}$
-results in a matrix $C_{n_h \times n_x}$ and the vector $b_{n_h}$ is then added
+a \textit{vector} is \textit{added} to a \textit{matrix}. This is an operation that is undefined.
+The matrix-vector addition occurs because $W_{n_h \times n_x}(X_{m \times n_x})^\top$
+returns a matrix $C_{n_h \times n_x}$ and the vector $b_{n_h}$ is then added
 to $C_{n_h \times n_x}$ such that
-$W_{n_h \times n_x}X_{n_x \times m} + b_{n_h} = C_{n_h \times n_x} + b_{n_h}$.
+$W_{n_h \times n_x}(X_{m \times n_x})^\top + b_{n_h} = C_{n_h \times n_x} + b_{n_h}$.
 While this operation is undefined, numerical libraries treat this as a legitimate
 operation by \textit{broadcasting} the vector $b_{n_h}$ to $B_{n_h \times m}$ \cite{Goodfellow2016,NumPyBroadcasting2021}.
 One can imagine that the column vector $b_{n_h}$ is copied and
-then stacked horizontally until there are $m$ copies of the column vector in
-what is now a $n_x \times m$ matrix $B$ .
+into adjacent columns until there are $m$ copies of the column vector in
+what is now a $n_x \times m$ matrix $B$.
 
-
+The activation matrix (i.e., activation vector for each training example) $A$
+will also be $A \in \mathcal{R}^{n_h \times m}$. Since the activations are
+passed onto the next layer as the new input $X$ to the \codeword{__call__} method,
+one must reshape the matrix to be the expected input.
 
 The \textbf{activation functions and cost functions} are children of the Python
 abstract base class I define as \codeword{Operation}. The
