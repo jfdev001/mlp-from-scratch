@@ -30,6 +30,10 @@
 
 \usepackage{amsmath}
 
+% Use with dfrac
+% https://tex.stackexchange.com/questions/33502/vertical-spacing-between-fractions-in-matrix-environment
+\renewcommand{\arraystretch}{2.5}
+
 % https://tex.stackexchange.com/questions/286094/insert-code-keywords-inline
 \usepackage{xcolor}
 % \usepackage{listings}
@@ -386,6 +390,97 @@ below.
 	\frac{\partial \text{C}}{\partial b_j^{l}}    & = \delta_j^{l}                                                                  \\
 	\frac{\partial \text{C}}{\partial W_{jk}^{l}} & = \delta_{j}^{l} (a_{k}^{l-1})^{\top}
 \end{align}
+
+The error vector $\delta^{L}$ for the last layer $L$ uses the gradient operator
+$\nabla_a$ with respect to each activation $a_{j}$ for the $j^{th}$ neuron
+of the layer $L$. The gradient
+for a function of two variables can be succinctly exemplified with the following
+equations:
+
+\begin{align}
+	f(x, y)        & = x^{2} y                                                                      \\
+	\nabla f(x, y) & = \langle \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \rangle \\
+	\nabla f(x, y) & = \langle 2xy, x^{2} \rangle
+\end{align}
+That is, the gradient is the vector where each element is the first-order
+partial derivative with respect to each variable in the function.
+
+Now, $\nabla_a C$ specifies $a$ because $C$ can be written as
+a function of many parameters and variables. For example, with a single layer neural network,
+that is a network with two weight matrices $W^{0}$ and $W^{1}$, two bias vectors
+$b^{0}$ and $b^{1}$ can be written as $C(W^{0}, W^{1}, b^{0}, b^{1}, a^{0}, a^{1})$.
+Consider the activation vector for a layer $l$ over $j$ neurons as
+$a = \set{a_{j}^{l}}_{j=0}^{(n_{h} - 1)}$. This is written as
+
+\begin{align}
+	a & = \begin{bmatrix}
+		a_{0}  \\
+		a_{1}  \\
+		a_{2}  \\
+		\vdots \\
+		a_{(n_h) - 1}
+	\end{bmatrix}
+\end{align}
+
+So if you reduce the problem to the element-by-element case, i.e.
+
+\begin{align}
+	\delta^{L}     & = \nabla_{a} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})                            \\
+	\delta_{j}^{L} & = \frac{\partial C}{\partial a_{j}^{L}} \frac{\partial \phi}{\partial z}(z_{j}^{L})            \\
+	\delta_{j}^{L} & = \frac{\partial C}{\partial a_{j}^{L}}(a_{j}^{L}) \frac{\partial \phi}{\partial z}(z_{j}^{L})
+\end{align}
+it becomes clear that you must compute $\frac{\partial C}{\partial a_{j}^{L}}$.
+
+Assuming $C$ is for a single training vector $x$, then
+
+\begin{align}
+	C                                     & = \frac{1}{m} \sum_{j=0}^{m} { (a_{j}^{L} - y_j)^{2} } \\
+	\frac{\partial C}{\partial a_{j}^{L}} & = 2(a_{j}^{L} - y_j)
+\end{align}
+and the partial derivative returns a scalar, but no summation is taken since
+a summation over a vector would return a scalar, and the desired result of the gradient
+is a vector.
+
+The gradient must therefore be taken with respect to a certain parameter, otherwise
+known as the Jacobian matrix, the partial derivative with respect
+to each variable of a vector valued function, would result. To visualize what the gradient
+vector with respect to the activation only looks like, consider the below vector.
+
+\begin{align}
+	\nabla_{a^{L}} C & =
+	\begin{bmatrix}
+		\dfrac{\partial C}{\partial a_{0}^{L}} \\
+		\dfrac{\partial C}{\partial a_{1}^{L}} \\
+		\dfrac{\partial C}{\partial a_{2}^{L}} \\
+		\vdots                                 \\
+		\dfrac{\partial C}{\partial a_{(n_{h} - 1)}^{L}}
+	\end{bmatrix}
+\end{align}
+The above vector is in stark contrast to $\nabla_{\theta^{L}} C$, where
+$\theta^{L}$ are the relevant parameters and variables for the layer layer $L$.
+Such a matrix would be as follows:
+
+\begin{align}
+	\nabla_{\theta^{L}} C & =
+	\begin{bmatrix}
+		\dfrac{\partial C}{\partial a_{0}^{L}}           & \dfrac{\partial C}{\partial W_{00}^{L}}           & \dfrac{\partial C}{\partial W_{01}^{L}}         & \dfrac{\partial C}{\partial W_{0(n_{x}-1)}^{L}}         & \dfrac{\partial C}{\partial b_{0}^{L}}         \\
+		\dfrac{\partial C}{\partial a_{1}^{L}}           & \dfrac{\partial C}{\partial W_{10}^{L}}           & \dfrac{\partial C}{\partial W_{11}^{L}}         & \cdots                                                  & \dfrac{\partial C}{\partial b_{1}^{L}}         \\
+		\dfrac{\partial C}{\partial a_{2}^{L}}           & \dfrac{\partial C}{\partial W_{20}^{L}}           & \dfrac{\partial C}{\partial W_{21}^{L}}         & \cdots                                                  & \dfrac{\partial C}{\partial b_{2}^{L}}         \\
+		\vdots                                           & \vdots                                            & \dfrac{\partial C}{\partial W_{00}^{L}}         & \vdots                                                  & \vdots                                         \\
+		\dfrac{\partial C}{\partial a_{(n_{h} - 1)}^{L}} & \dfrac{\partial C}{\partial W_{(n_{h} - 1)0}^{L}} & \dfrac{\partial C}{\partial W_{(n_{h}-1)1}^{L}} & \dfrac{\partial C}{\partial W_{(n_{h}-1)(n_{x}-1)}^{L}} & \dfrac{\partial C}{\partial b_{(n_{h})-1}^{L}}
+	\end{bmatrix}
+\end{align}
+
+You might ask yourself, "how do I actually get
+$\frac{\partial C}{\partial a_{j}^{L}}$." Initially, I assumed the answer would
+be something quite confusing, but when computing such a derivative, you need
+only consider what a function is. If you think of the $\frac{\partial C}{\partial a_{j}^{L}}$
+as just another function, which it is in fact, then of what variables is it a function?
+It is simple: $a_{j}^{L}$ and $y_j$! We \textit{know} the values of these variables
+since we know the $a_{j}^{L}$ is just the output of a single neuron in a layer
+of neurons. Moreover, $y_j$ is not something we have to compute, but rather it
+is a known element of a vector of targets $y$, or desired outcomes, on which the error of the network
+is based.
 
 The practical implementation of the four equations will be explained shortly
 after showing the \textit{gradient descent} equations below.
