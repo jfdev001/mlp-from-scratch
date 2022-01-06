@@ -57,13 +57,17 @@ authors or entities listed in the References section.}}
 \maketitle
 \titlepage
 
+% https://www.overleaf.com/learn/latex/Table_of_contents
+\tableofcontents
+\pagebreak
+
 \section{Preamble}
 \quad The purpose of the present document is to explain and implement the major mathematical
 constructs/concepts behind feedforward neural networks, specifically the multilayer perceptron.
 This includes the layers that compose such networks, the cost (aka loss, error, or objective) function
 and activation functions, the forward pass through the network,
 the computation of gradients via backpropagation (a concept that is often "handwaved" to the extreme
-or explained in so much detail as to be utterly confusing--at least my experience),
+or explained in so much detail as to be utterly confusing--at least in my experience),
 and the update of model parameters via mini-batch stochastic gradient descent.
 If the ideas such as \textit{layer} and \textit{backpropagation} are entirely unfamiliar
 to you, then I encourage you to visit 3Blue1Brown's Deep Learning YouTube Series \cite{3Blue1BrownWhatIsANN2017}
@@ -152,8 +156,8 @@ restrict their vector/matrix operands to particular shapes. When using the term
 unless otherwise specified. Also, note that $x \in \mathcal{R}^{n_x}$ indicates
 that $x$ is a vector with $n_x$ elements and the $j^{th}$ element is a real number.
 For example, the below vector $x$ is shown and a common vector operation
-known as transposition (converts a \textit{column vector} to a
-\textit{row vector} and is denoted with a superscript of $\top$) is also shown.
+known as the transpose (converts a \textit{column vector} to a
+\textit{row vector} and is denoted with a superscript $\top$) is also shown.
 \begin{align}
 	x & = \begin{bmatrix}
 		x_{1}  \\
@@ -197,7 +201,7 @@ for multiple index "lists" in higher dimensions. A sample weight matrix
 $W \in \mathcal{R}^{n_h \times n_x}$ is shown below.
 
 \begin{align}
-	\begin{bmatrix}
+	W & = \begin{bmatrix}
 		W_{00}         & W_{01}         & W_{02}         & \cdots & W_{0(n_{x}-1)}         \\
 		\vdots         & \vdots         & \vdots         & \vdots & \vdots                 \\
 		W_{(n_{h}-1)0} & W_{(n_{h}-1)1} & W_{(n_{h}-1)2} & \cdots & W_{(n_{h}-1)(n_{x}-1)}
@@ -213,14 +217,14 @@ the operations you intended\footnote{This is especially true for the
 
 \section{The Multilayer Perceptron}
 
-\quad Here I define the operations that occur for a multilayer perceptron (MLP).
+\quad Here I define the operations that occur for the multilayer perceptron (MLP).
 Note that the MLP can sometimes refer to any class of feedforward
 neural network, that is a network that applies affine transformations and
 activation functions to input from a previous layer in the network.
 
 \subsection{The Dense/Fully Connected Layer}
 
-The affine transformation, which is the most fundamental transformation
+\quad The affine transformation, which is the most fundamental transformation
 of the densely/fully connected layers that exist in the MLP, yields
 a weighted input vector $z^{l}$ with elements
 $z_j^{l} = W_{jk}^{l} a_{k}^{l-1} + b_{j}^{l}$ for a layer $l$ and neuron $j$.
@@ -241,12 +245,18 @@ applies to each element of a vector, matrix, or rank-n tensor. Vectorized
 activation functions are often denoted $\phi(\cdot)$ or $\sigma(\cdot)$, though I do not like
 the latter notation as $\sigma$ typically references the sigmoid function. The number of
 neurons in a hidden layer (or output layer for that matter) $n_h$ does not have
-to be constant, and this is shown in the figure below where the output layer
+to be constant, and this is shown in the Figure 1 below where the output layer
 has only a single neuron while the hidden layer has three neurons.
 
 % Multilayer perceptron figure
 \begin{figure}[h]
 	\includegraphics[scale=0.60]{mlp_larger_font_croppped.jpg}
+	\caption{The multilayer perceptron with bias vectors $b$ in layers
+		$[l]$ and activations $a$ for the $j^{th}$ neuron in a layer. The weights
+		$W$ of the last layer are shown as edges connecting neurons in the hidden
+		layer to the output layer. The operations are defined to the right
+		of the figure along with a set of
+		common vectorized activation functions $\phi(\cdot)$.}
 \end{figure}
 
 % Multilayer percetpron with useneuralnetwork pkg
@@ -267,21 +277,29 @@ has only a single neuron while the hidden layer has three neurons.
 this function. Since the learning is just the determination of the values of the
 parameters of the MLP, then there must be some other function that determines
 how well the parameters of the MLP approximate the desired function. This other
-function is called the cost or loss function and is denoted C, though sometimes
-it is denoted $\mathcal{L}$ or $J$. For regression problems, the most common
+function is called the cost or loss function and is denoted $C$, though sometimes
+it is denoted $\mathcal{L}$ or $J$\footnote{Despite these functions sharing the same notation as
+	a matrix $W$, the result of the function is not a tensor but is rather a scalar.}.
+For regression problems, the most common
 cost function is the mean squared error. The cost function, unlike previous
-operations, returns a scalar and \textit{not} a vector. However, the cost for
-a single sample $C_x$ is a vector. The scalar value can be used to estimate
-performance during training; however, for my implementation, the cost vector
-function $C_x$ is used for learning MLP parameters.
+operations, returns a scalar and \textit{not} a vector. The scalar value can be used to estimate
+performance during training; however, when implementing backpropagation, you will
+be more interested in the derivative of the cost with respect to certain variables
+and using gradient vectors (discussed later) rather than the scalar cost.
 
 \begin{equation}
 	\begin{aligned}
-		\text{C} & = \frac{1}{N} \sum_{x} {C_x}                   \\
-		         & = \frac{1}{N} \sum_{x} {(\hat{y} - y)^{2} }    \\
-		         & = \frac{1}{N} \sum_{x} {(h_{W,b}(x) - y)^{2} } \\
-		         & = \frac{1}{N} \sum_{x} {(a^{L} - y)^{2} }
+		C & = \frac{1}{N} \sum_{x} {C_x}                       \\
+		  & = \frac{1}{N} \sum_{x} {||(\hat{y} - y)||^{2} }    \\
+		  & = \frac{1}{N} \sum_{x} {||(h_{W,b}(x) - y)||^{2} } \\
+		  & = \frac{1}{N} \sum_{x} {||(a^{L} - y)||^{2} }
 	\end{aligned}
+\end{equation}
+
+where $x$ and $y$ are in $\mathcal{R}^{n_x}$ and
+
+\begin{equation}
+	||x - y||^{n} = \sum_{i=0}^{n_{x}-1} { (x_{i} - y_{i})^{2} }
 \end{equation}
 
 The cost function for a single sample $C_x$ is a multivariable function
@@ -297,7 +315,7 @@ Before moving on to backpropagation, I briefly explain the meaning of the activa
 of the last layer. Put simply, The activation vector $a^{L}$ for the last layer $L$ is the prediction
 that the MLP makes. The activation vector $a^{L}$ has a number of elements
 determined by the number of units $n_h^{L}$ in the last layer, and to index the $j^{th}$
-activation of the activation vector one would write $a_j^{L}$. The activation for
+activation (a scalar) of the activation vector one would write $a_j^{L}$. The activation for
 the $j^{th}$ neuron is used to compute errors that are relevant for the
 backpropagation algorithm since how well $a^{L}$ "lines up" with the known
 result $y$ is determined by the choice of parameters $W$ and $b$ for all layers $l$.
@@ -316,7 +334,7 @@ $minimize(NegativeLogLikelihood) \equiv maximize(LogLikelihood)$)}.
 Since $W$ and $b$ are tensors, the gradients\footnote{Denoted
 	using the gradients $\nabla$ or sometimes the $\vec{\nabla}$ operator.}
 of the cost function with respect to these parameters ($\frac{\partial C_x}{\partial W_{jk}^{l}}$
-and $\frac{\partial C_x}{\partial b_{j}^{l}}$)) are computed to determine how
+and $\frac{\partial C_x}{\partial b_{j}^{l}}$) are computed to determine how
 the elements of the parameter tensors should be modified to produce better predictions.
 
 \subsubsection{Parameters Revisited}
@@ -363,7 +381,8 @@ The size of the "step" in the direction of the local minima
 is proportional to the learning rate $\eta$,
 which is a hyperparameter (a parameter explicitly set by a user) of the model.
 Therefore, the semantic explanation of the equations is essentially to change the
-weights and biases of the model by a small amount until convergence\footnote{Ideally
+weights and biases (sometimes combined and denoted as a single parameter tensor $\theta$)
+of the model by a small amount until convergence\footnote{Ideally
 	on a global minimum in the N-dimensional cost function space.} is reached. In this way, a model
 will have parameters that can be used to \textit{infer} predictions based on
 unseen data. Consequently, when a model is making predictions without
@@ -379,23 +398,21 @@ that are obviously needed for \textit{gradient} descent.
 The fundamental equations of backpropagation, which are critical for \textit{gradient}
 descent, are claimed without proof (see \cite{Nielsen2015} for proofs). While
 the previous equations are the "pretty" form of gradient descent, for the
-accompanying implementation, one does not compute the gradient directly (i.e.,
-$\nabla_{W}C$ or $\nabla_{b}C$). Rather,
-the components of the gradient are computed using the last two equations listed
-below.
+accompanying implementation, one does not compute the gradient vectors of these parameters
+directly, rather the components of these gradient vectors $\nabla_{W}C$ or $\nabla_{b}C$
+are computed using other outputs of the network such as $a^{l}$ and $z^{l}$.
 
 \begin{align}
-	\delta^{L}                                    & = \nabla_{a} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})             \\
-	\delta^{l}                                    & = ((W^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l}) \\
-	\frac{\partial \text{C}}{\partial b_j^{l}}    & = \delta_j^{l}                                                                  \\
-	\frac{\partial \text{C}}{\partial W_{jk}^{l}} & = \delta_{j}^{l} (a_{k}^{l-1})^{\top}
+	\delta^{L}                               & = \nabla_{a^{L}} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})         \\
+	\delta^{l}                               & = ((W^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l}) \\
+	\frac{\partial C_x}{\partial b_j^{l}}    & = \delta_j^{l}                                                                  \\
+	\frac{\partial C_x}{\partial W_{jk}^{l}} & = \delta_{j}^{l} (a_{k}^{l-1})^{\top}
 \end{align}
 
 The error vector $\delta^{L}$ for the last layer $L$ uses the gradient operator
-$\nabla_a$ with respect to each activation $a_{j}$ for the $j^{th}$ neuron
-of the layer $L$. The gradient
-for a function of two variables can be succinctly exemplified with the following
-equations:
+$\nabla_{a^{L}}$ with respect to each activation $a_{j}^{L}$ for the $j^{th}$ neuron.
+The gradient for a function of two variables can be succinctly exemplified with
+the following equations:
 
 \begin{align}
 	f(x, y)        & = x^{2} y                                                                      \\
@@ -405,37 +422,45 @@ equations:
 That is, the gradient is the vector where each element is the first-order
 partial derivative with respect to each variable in the function.
 
-Now, $\nabla_a C$ specifies $a$ because $C$ can be written as
-a function of many parameters and variables. For example, with a single layer neural network,
-that is a network with two weight matrices $W^{0}$ and $W^{1}$, two bias vectors
-$b^{0}$ and $b^{1}$ can be written as $C(W^{0}, W^{1}, b^{0}, b^{1}, a^{0}, a^{1})$.
-Consider the activation vector for a layer $l$ over $j$ neurons as
-$a = \set{a_{j}^{l}}_{j=0}^{(n_{h} - 1)}$. This is written as
+Now, $\nabla_{a^{L}} C$ specifies $a^{L}$ because $C$ can be written as
+a function of many parameters and variables. A single layer neural network,
+that is a network with two weight matrices $W^{0}$ and $W^{1}$; two bias vectors
+$b^{0}$ and $b^{1}$; and three activations $a^{0}$, $a^{1}$, and $a^{2}$
+can be written as $C(W^{0}, W^{1}, b^{0}, b^{1}, a^{0}, a^{1}, a^{2})$. You might
+note that the number of activation vectors $a$ exceeds the number of weight matrices
+and bias vectors. Recall that the input layer of the MLP has no preceding
+weight matrix, and a linear activation $\phi(x) = x$ is applied to the input vector,
+thus resulting in activations $a^{0} = x$. Refer to Figure 1 to observe the lack
+of a weight matrix before the input layer.
+
+Consider the activation vector iteslf for a layer $l$ over $j$ neurons as
+${a = \set{a_{j}^{l}}_{j=0}^{n_{h} - 1}}$. This is written as
 
 \begin{align}
-	a & = \begin{bmatrix}
-		a_{0}  \\
-		a_{1}  \\
-		a_{2}  \\
-		\vdots \\
-		a_{(n_h) - 1}
+	a^{l} & = \begin{bmatrix}
+		a_{0}^{l} \\
+		a_{1}^{l} \\
+		a_{2}^{l} \\
+		\vdots    \\
+		a_{(n_h - 1)}^{l}
 	\end{bmatrix}
 \end{align}
 
-So if you reduce the problem to the element-by-element case, i.e.
+If you reduce the problem to the element-by-element case rather than the vector case,
+it becomes clear that you must compute $\frac{\partial C}{\partial a_{j}^{L}}$.
 
 \begin{align}
 	\delta^{L}     & = \nabla_{a} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})                            \\
 	\delta_{j}^{L} & = \frac{\partial C}{\partial a_{j}^{L}} \frac{\partial \phi}{\partial z}(z_{j}^{L})            \\
 	\delta_{j}^{L} & = \frac{\partial C}{\partial a_{j}^{L}}(a_{j}^{L}) \frac{\partial \phi}{\partial z}(z_{j}^{L})
 \end{align}
-it becomes clear that you must compute $\frac{\partial C}{\partial a_{j}^{L}}$.
 
-Assuming $C$ is for a single training vector $x$, then
+Assuming $C$ is the cost for a single training vector $x$, then
 
 \begin{align}
-	C                                     & = \frac{1}{m} \sum_{j=0}^{m} { (a_{j}^{L} - y_j)^{2} } \\
-	\frac{\partial C}{\partial a_{j}^{L}} & = 2(a_{j}^{L} - y_j)
+	C                                       & = \frac{1}{m} \sum_{j=0}^{m} { (a_{j}^{L} - y_j)^{2} } \\
+	\frac{\partial C}{\partial a_{j}^{L}}   & = 2(a_{j}^{L} - y_j)                                   \\
+	\frac{\partial C_x}{\partial a_{j}^{L}} & = 2(a_{j}^{L} - y_j)
 \end{align}
 and the partial derivative returns a scalar, but no summation is taken since
 a summation over a vector would return a scalar, and the desired result of the gradient

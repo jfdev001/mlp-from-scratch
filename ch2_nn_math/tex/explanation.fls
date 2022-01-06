@@ -444,8 +444,13 @@ OUTPUT c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/expla
 INPUT c:/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map
 INPUT c:/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
 INPUT c:/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
-INPUT c:/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
+INPUT c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.toc
+INPUT c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.toc
+INPUT c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.toc
+INPUT c:/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
 INPUT c:/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
+OUTPUT c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.toc
+INPUT c:/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
 INPUT c:/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
 INPUT c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/figures//mlp_larger_font_croppped.jpg
 INPUT c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/figures//mlp_larger_font_croppped.jpg
@@ -453,7 +458,6 @@ INPUT c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/figure
 INPUT c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/figures//mlp_larger_font_croppped.jpg
 INPUT c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/figures//mlp_larger_font_croppped.jpg
 INPUT c:/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmti8.tfm
-INPUT c:/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
 INPUT c:/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm
 INPUT c:/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmcsc10.tfm
 INPUT c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.aux
