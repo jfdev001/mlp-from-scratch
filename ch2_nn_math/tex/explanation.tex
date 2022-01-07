@@ -43,6 +43,11 @@
 \texttt{\textcolor{blue}{#1}}%
 }
 
+% % Color a variable
+% \NewDocumentCommand{\colorvar}{}{
+% 	\begin
+% }
+
 % Titular information
 % https://en.wikibooks.org/wiki/LaTeX/Title_Creation
 \title{
@@ -233,7 +238,7 @@ previous layer $(l-1)$. Importantly, the input layer has no activation function 
 associated with it, so the activation vector $a^{0}$ equals the input vector $x$.
 Moreover, the inner dimensions of the matrix product
 $Wx$ match, that is the subscripts $k$ are "adjacent" to one another. While you may
-observe that the activation vector $a \in \mathcal{R}^{n_a}$ is clearly not a matrix,
+observe that the activation vector $a^{l} \in \mathcal{R}^{n_a}$ is clearly not a matrix,
 numerical libraries will often treat a vector $v \in \mathcal{R}^{n_v}$ as equivalent
 to a matrix with a single column (i.e., $V \in \mathcal{R}^{n_v \times 1}$) for
 the purposes of performing fast matrix-matrix calculations.
@@ -308,8 +313,9 @@ $C_x(\theta)$ where $\forall$ layers $l,\ \theta = \set{W^{l}, b^{l}}$. Addition
 $C_x$ can be written to emphasize a certain parameter such as the weight $C_x(W)$.
 More importantly, the derivative of the cost function $C_x$ with respect the activation
 $a_j^{L}$ for the $j^{th}$ neuron of the last layer (i.e., output layer) $L$ is defined as
-$\frac{\partial C_x}{\partial a_j^{L}}$. These partial derivatives are
-relevant to the backpropagation algorithm illustrated shortly.
+$\frac{\partial C_x}{\partial a_j^{L}}$. To avoid long superscripts, assume
+that the the last layer $L$ actually indexes the location $(L-1)$.
+These partial derivatives are relevant to the backpropagation algorithm illustrated shortly.
 
 Before moving on to backpropagation, I briefly explain the meaning of the activations
 of the last layer. Put simply, The activation vector $a^{L}$ for the last layer $L$ is the prediction
@@ -421,7 +427,8 @@ You can see that the gradient is the vector where each element is the first-orde
 partial derivative with respect to each variable in the function $f$.
 
 Now, consider the error vector $\delta^{L}$ for the last layer $L$ and note the gradient operator
-$\nabla_{a^{L}}$ with respect to each activation $a_{j}^{L}$ for the $j^{th}$ neuron.
+$\nabla_{a^{L}}$ is with respect to the activation vector $a^{L}$ whose elements
+can be defined as $a^{L} = \set{a_j^{L}}_{j=0}^{n_h - 1}$.
 Thus, the error vector for the last layer is shown below for clarity. Assume that the cost
 function $C$ is for a single example $x$ and $\delta^{L} \in \mathcal{R}^{n_y}$
 where $n_y$ is the number of targets (or output classes).
@@ -444,22 +451,46 @@ where $n_y$ is the number of targets (or output classes).
 		\dfrac{\partial C}{\partial a_{(n_{y} - 1)}^{L}}(a_{(n_{y} - 1)}^{L}) \dfrac{\partial \phi}{\partial z}(z_{0}^{L})
 	\end{bmatrix}
 \end{align}
+
 Showing the elements of the error vector $\delta^{L}$ above demonstrates what must be computed:
 ${\frac{\partial C}{\partial a_{j}^{L}}\ \text{and}\ \frac{\partial \phi}{\partial z}}$.
 The derivative of the activation function $\frac{\partial \phi}{\partial z}$ is
 very easy to compute since activation functions with well-known derivatives are
 typically selected. For example, if the activation function is the sigmoid function,
-then derivative is easy to compute and shown below.
+then derivative is known and shown below.
 
 \begin{align}
 	\phi(z)                             & = \frac{1}{1 + e^{-z}}      \\
 	\frac{\partial \phi}{\partial z}(z) & = \sigma(z) (1 - \sigma(z))
 \end{align}
 
+The derivative of the cost function with respect to activations of different
+neurons is also easily computed. For the mean squared error function,
+you would derive the function with respect to only a single activation. That is,
+you are finding the rate of change of the cost function for an infinitesimally
+small change in the activation.
+This means that the summation and number of samples to divide by would be one.
+This is important because the summation and division operation are removed
+from the equation.
 
+\begin{align}
+	C                                     & = \frac{1}{m} \sum_{j=0}^{m} { (a_{j}^{L} - y_j)^{2} } \\
+	\frac{\partial C}{\partial a_{j}^{L}} & = 2(a_{j}^{L} - y_j)
+\end{align}
 
-Now, $\nabla_{a^{L}} C$ specifies $a^{L}$ because $C$ can be written as
-a function of many parameters and variables. A single layer neural network,
+You might ask yourself, "how do I actually get
+$\frac{\partial C}{\partial a_{j}^{L}}$." Initially, I assumed the answer would
+be something quite confusing, but when computing such a derivative, you need
+only consider what a function is. If you think of $\frac{\partial C}{\partial a_{j}^{L}}$
+as just another function, which it is, then of what variables is it a function?
+It is simple: $a_{j}^{L}$ and $y_j$! We \textit{know} the values of these variables
+since we know $a_{j}^{L}$ is just the output of a single neuron in a layer
+of neurons. Moreover, $y_j$ is not something we have to compute, but rather it
+is a known element of a vector of targets $y$, or desired outcomes.
+
+Now, why does $\nabla_{a^{L}} C$ specify $a^{L}$? It is because $C$ can be written as
+a function of many parameters and variables, and you only care about certain variables
+when performing backpropagation. A single layer neural network,
 that is a network with two weight matrices $W^{0}$ and $W^{1}$; two bias vectors
 $b^{0}$ and $b^{1}$; and three activations $a^{0}$, $a^{1}$, and $a^{2}$
 can be written as $C(W^{0}, W^{1}, b^{0}, b^{1}, a^{0}, a^{1}, a^{2})$. You might
@@ -467,43 +498,10 @@ note that the number of activation vectors $a$ exceeds the number of weight matr
 and bias vectors. Recall that the input layer of the MLP has no preceding
 weight matrix, and a linear activation $\phi(x) = x$ is applied to the input vector,
 thus resulting in activations $a^{0} = x$. Refer to Figure 1 to observe the lack
-of a weight matrix before the input layer.
-
-Consider the activation vector iteslf for a layer $l$ over $j$ neurons as
-${a = \set{a_{j}^{l}}_{j=0}^{n_{h} - 1}}$.
-
-\begin{align}
-	a^{l} & = \begin{bmatrix}
-		a_{0}^{l} \\
-		a_{1}^{l} \\
-		a_{2}^{l} \\
-		\vdots    \\
-		a_{(n_h - 1)}^{l}
-	\end{bmatrix}
-\end{align}
-
-
-\begin{align}
-	\delta^{L}     & = \nabla_{a} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})                            \\
-	\delta_{j}^{L} & = \frac{\partial C}{\partial a_{j}^{L}} \frac{\partial \phi}{\partial z}(z_{j}^{L})            \\
-	\delta_{j}^{L} & = \frac{\partial C}{\partial a_{j}^{L}}(a_{j}^{L}) \frac{\partial \phi}{\partial z}(z_{j}^{L})
-\end{align}
-
-Assuming $C$ is the cost for a single training vector $x$, then
-
-\begin{align}
-	C                                       & = \frac{1}{m} \sum_{j=0}^{m} { (a_{j}^{L} - y_j)^{2} } \\
-	\frac{\partial C}{\partial a_{j}^{L}}   & = 2(a_{j}^{L} - y_j)                                   \\
-	\frac{\partial C_x}{\partial a_{j}^{L}} & = 2(a_{j}^{L} - y_j)
-\end{align}
-and the partial derivative returns a scalar, but no summation is taken since
-a summation over a vector would return a scalar, and the desired result of the gradient
-is a vector.
-
-The gradient must therefore be taken with respect to a certain parameter, otherwise
-known as the Jacobian matrix, the partial derivative with respect
-to each variable of a vector valued function, would result. To visualize what the gradient
-vector with respect to the activation only looks like, consider the below vector.
+of a weight matrix before the input layer. The gradient must be taken with respect to a
+certain parameter, otherwise the partial derivative with respect
+to each variable of a vector valued function would result. To visualize what the gradient
+only with respect to the activations of the last layer looks like, consider the below vector.
 
 \begin{align}
 	\nabla_{a^{L}} C & =
@@ -516,8 +514,8 @@ vector with respect to the activation only looks like, consider the below vector
 	\end{bmatrix}
 \end{align}
 The above vector is in stark contrast to $\nabla_{\theta^{L}} C$, where
-$\theta^{L}$ are the relevant parameters and variables for the layer layer $L$.
-Such a matrix would be as follows:
+$\theta^{L}$ are the relevant parameters and variables for the layer $L$.
+Such a matrix is called the Jacobian matrix and is shown below.
 
 \begin{align}
 	\nabla_{\theta^{L}} C & =
@@ -525,21 +523,22 @@ Such a matrix would be as follows:
 		\dfrac{\partial C}{\partial a_{0}^{L}}           & \dfrac{\partial C}{\partial W_{00}^{L}}           & \dfrac{\partial C}{\partial W_{01}^{L}}         & \dfrac{\partial C}{\partial W_{0(n_{x}-1)}^{L}}         & \dfrac{\partial C}{\partial b_{0}^{L}}         \\
 		\dfrac{\partial C}{\partial a_{1}^{L}}           & \dfrac{\partial C}{\partial W_{10}^{L}}           & \dfrac{\partial C}{\partial W_{11}^{L}}         & \cdots                                                  & \dfrac{\partial C}{\partial b_{1}^{L}}         \\
 		\dfrac{\partial C}{\partial a_{2}^{L}}           & \dfrac{\partial C}{\partial W_{20}^{L}}           & \dfrac{\partial C}{\partial W_{21}^{L}}         & \cdots                                                  & \dfrac{\partial C}{\partial b_{2}^{L}}         \\
-		\vdots                                           & \vdots                                            & \dfrac{\partial C}{\partial W_{00}^{L}}         & \vdots                                                  & \vdots                                         \\
+		\vdots                                           & \vdots                                            & \vdots                                          & \vdots                                                  & \vdots                                         \\
 		\dfrac{\partial C}{\partial a_{(n_{h} - 1)}^{L}} & \dfrac{\partial C}{\partial W_{(n_{h} - 1)0}^{L}} & \dfrac{\partial C}{\partial W_{(n_{h}-1)1}^{L}} & \dfrac{\partial C}{\partial W_{(n_{h}-1)(n_{x}-1)}^{L}} & \dfrac{\partial C}{\partial b_{(n_{h})-1}^{L}}
 	\end{bmatrix}
 \end{align}
 
-You might ask yourself, "how do I actually get
-$\frac{\partial C}{\partial a_{j}^{L}}$." Initially, I assumed the answer would
-be something quite confusing, but when computing such a derivative, you need
-only consider what a function is. If you think of the $\frac{\partial C}{\partial a_{j}^{L}}$
-as just another function, which it is in fact, then of what variables is it a function?
-It is simple: $a_{j}^{L}$ and $y_j$! We \textit{know} the values of these variables
-since we know the $a_{j}^{L}$ is just the output of a single neuron in a layer
-of neurons. Moreover, $y_j$ is not something we have to compute, but rather it
-is a known element of a vector of targets $y$, or desired outcomes, on which the error of the network
-is based.
+Now that you understand the computation of $\delta^{L}$, finding $\delta^{l}$
+is trivial since the errors in the current layer plus one propagate backward through
+the network (i.e., you will use $\delta^{L}$ in the comptuation of $\delta^{L-1}$).
+To validate the shapes of the operands relevant to the equation for $\delta^{l}$,
+refer to the below statements.
+
+\begin{align}
+	W^{l+1}                                 & \in \mathcal{R}^{n_h^{l+1} \times n_{h}^{l}} \\
+	\delta^{l+1}                            & \in \mathcal{R}^{n_h^{l+1}}                  \\
+	\frac{\partial \phi}{\partial z}(z^{l}) & \in \mathcal{R}^{n_{h}^{l}}
+\end{align}
 
 The practical implementation of the four equations will be explained shortly
 after showing the \textit{gradient descent} equations below.

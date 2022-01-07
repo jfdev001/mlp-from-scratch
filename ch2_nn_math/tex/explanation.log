@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  7 JAN 2022 01:25
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  7 JAN 2022 09:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -397,20 +397,20 @@ Package: xparse 2020-10-27 L3 Experimental document command parser
  (c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.aux)
 \openout1 = `explanation.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
 Package biblatex Info: Trying to load language 'english'...
 Package biblatex Info: ... file 'english.lbx' found.
  (c:/texlive/2020/texmf-dist/tex/latex/biblatex/lbx/english.lbx
@@ -432,8 +432,8 @@ Package: blx-case-expl3 2020/12/31 v3.16 expl3 case changing code for biblatex
 Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'explanation.bbl' found.
  (c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.bbl)
-Package biblatex Info: Reference section=0 on input line 56.
-Package biblatex Info: Reference segment=0 on input line 56.
+Package biblatex Info: Reference section=0 on input line 61.
+Package biblatex Info: Reference segment=0 on input line 61.
  (c:/texlive/2020/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count396
@@ -462,38 +462,33 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 <figures//mlp_larger_font_croppped.jpg, id=34, 621.07031pt x 271.0125pt>
 File: figures//mlp_larger_font_croppped.jpg Graphic file (type jpg)
 <use figures//mlp_larger_font_croppped.jpg>
-Package pdftex.def Info: figures//mlp_larger_font_croppped.jpg  used on input line 253.
+Package pdftex.def Info: figures//mlp_larger_font_croppped.jpg  used on input line 258.
 (pdftex.def)             Requested size: 372.64505pt x 162.60875pt.
 
-Overfull \hbox (27.64505pt too wide) in paragraph at lines 253--259
+Overfull \hbox (27.64505pt too wide) in paragraph at lines 258--264
  [][] 
  []
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[5] [6 <c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/figures//mlp_larger_font_croppped.jpg>] [7] [8] [9]
-Overfull \hbox (9.75175pt too wide) in paragraph at lines 472--474
-[]\OT1/cmr/m/n/10 Consider the ac-ti-va-tion vec-tor iteslf for a layer $\OML/cmm/m/it/10 l$ \OT1/cmr/m/n/10 over $\OML/cmm/m/it/10 j$ \OT1/cmr/m/n/10 neu-rons as $[]$. 
- []
-
-[10] [11]
-Overfull \hbox (12.72481pt too wide) in paragraph at lines 564--577
+[5] [6 <c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/figures//mlp_larger_font_croppped.jpg>] [7] [8] [9] [10] [11]
+Overfull \hbox (12.72481pt too wide) in paragraph at lines 563--576
 []\OT1/cmr/m/n/10 The \OT1/cmr/bx/n/10 for-ward pass \OT1/cmr/m/n/10 re-quires defin-ing a []\OT1/cmtt/m/n/10 class[] \OT1/cmr/m/n/10 that en-cap-su-lates the fully/densely
  []
 
 [12] [13]
-Overfull \hbox (2.6634pt too wide) in paragraph at lines 626--626
+Overfull \hbox (2.6634pt too wide) in paragraph at lines 625--625
 \OT1/cmr/m/n/10 Press, 2015. \OT1/cmr/m/sc/10 url\OT1/cmr/m/n/10 : $\OT1/cmtt/m/n/10 http : / / neuralnetworksanddeeplearning . com / index .
  []
 
 
-Overfull \hbox (12.79057pt too wide) in paragraph at lines 626--626
+Overfull \hbox (12.79057pt too wide) in paragraph at lines 625--625
 []\OT1/cmr/m/n/10 nmasanta (https://math.stackexchange.com/users/623924/nmasanta). \OT1/cmr/m/it/10 What
  []
 
 
-Overfull \hbox (0.55829pt too wide) in paragraph at lines 626--626
+Overfull \hbox (0.55829pt too wide) in paragraph at lines 625--625
 []\OT1/cmr/m/it/10 The Gra-di-ent\OT1/cmr/m/n/10 . 2021. \OT1/cmr/m/sc/10 url\OT1/cmr/m/n/10 : $\OT1/cmtt/m/n/10 https : / / math . libretexts . org / Bookshelves /
  []
 
@@ -510,11 +505,11 @@ Here is how much of TeX's memory you used:
  410657 words of font info for 52 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  81i,17n,88p,812b,1257s stack positions out of 5000i,500n,10000p,200000b,80000s
-{c:/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}<c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb>
-Output written on c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf (15 pages, 384345 bytes).
+{c:/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}<c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb>
+Output written on c:/Dev/python/ml/deep_learning_with_python_fchollet/ch2_nn_math/tex/explanation.pdf (15 pages, 391591 bytes).
 PDF statistics:
- 144 PDF objects out of 1000 (max. 8388607)
- 102 compressed objects within 2 object streams
+ 148 PDF objects out of 1000 (max. 8388607)
+ 105 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 
