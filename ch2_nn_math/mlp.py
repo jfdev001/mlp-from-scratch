@@ -233,16 +233,21 @@ class MLP:
         for epoch in range(epochs):
             for batch_step, (x_batch, y_batch) in enumerate(batch_data):
 
-                # This is a single training step and could be renamed
-                # training iteration
+                # This is a single training step and could be 
+                # refactored as training iteration
 
+                # 
                 preds = self._forward_pass(x_batch)
 
+                # Loss metric, not used for grad descent
                 loss = self._compute_loss(y_true=y_batch, y_pred=preds)
 
+                # Compute gradients
                 weight_grads, bias_grads = self._backward_pass(
                     y_true=y_batch)
 
+                # Use gradient weights to descend cost function
+                # (i.e., apply grads)
                 self._gradient_descent(
                     weight_grads=weight_grads,
                     bias_grads=bias_grads)
@@ -255,7 +260,14 @@ class MLP:
         pass
 
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
-        """Perform forward pass through network."""
+        """Perform forward pass through network.
+        
+        Args:
+            inputs: Array of x data.
+        
+        Returns:
+            Predictions (aka activations) given inputs.
+        """
 
         # Dump cache
         self._clear_cache()
