@@ -82,15 +82,14 @@ class DenseLayer:
         #     x = np.expand_dims(x, axis=0)
 
         # Affine transformation
-        # W (hidden_units, input_dims) * (samples, input_dims).T + (hidden_units, )
-        # --> z (hidden_units, samples).T
-        weighted_input_z = np.dot(x, np.transpose(self.W)) + self.b
+        weighted_input_z = np.transpose(np.dot(self.W, np.transpose(x)) + self.b)
 
         # Activation function
         activation_a = np.apply_along_axis(
             self.activation_function, axis=-1, arr=weighted_input_z)
 
         # Result of layer computation
+        # a (samples, hidden units), (samples, hidden units)
         return activation_a, weighted_input_z
 
 
