@@ -403,24 +403,60 @@ directly, rather the components of these gradient vectors $\nabla_{W}C$ or $\nab
 are computed using other outputs of the network such as $a^{l}$ and $z^{l}$.
 
 \begin{align}
-	\delta^{L}                               & = \nabla_{a^{L}} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})         \\
-	\delta^{l}                               & = ((W^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l}) \\
-	\frac{\partial C_x}{\partial b_j^{l}}    & = \delta_j^{l}                                                                  \\
-	\frac{\partial C_x}{\partial W_{jk}^{l}} & = \delta_{j}^{l} (a_{k}^{l-1})^{\top}
+	\delta^{L}                             & = \nabla_{a^{L}} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})         \\
+	\delta^{l}                             & = ((W^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l}) \\
+	\frac{\partial C}{\partial b_j^{l}}    & = \delta_j^{l}                                                                  \\
+	\frac{\partial C}{\partial W_{jk}^{l}} & = \delta_{j}^{l} (a_{k}^{l-1})^{\top}
 \end{align}
 
-The error vector $\delta^{L}$ for the last layer $L$ uses the gradient operator
-$\nabla_{a^{L}}$ with respect to each activation $a_{j}^{L}$ for the $j^{th}$ neuron.
-The gradient for a function of two variables can be succinctly exemplified with
-the following equations:
+Before explaining the meaning of the above equations,
+consider first the gradient for a function $f$ of two variables $x$ and $y$:
 
 \begin{align}
 	f(x, y)        & = x^{2} y                                                                      \\
 	\nabla f(x, y) & = \langle \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \rangle \\
 	\nabla f(x, y) & = \langle 2xy, x^{2} \rangle
 \end{align}
-That is, the gradient is the vector where each element is the first-order
-partial derivative with respect to each variable in the function.
+You can see that the gradient is the vector where each element is the first-order
+partial derivative with respect to each variable in the function $f$.
+
+Now, consider the error vector $\delta^{L}$ for the last layer $L$ and note the gradient operator
+$\nabla_{a^{L}}$ with respect to each activation $a_{j}^{L}$ for the $j^{th}$ neuron.
+Thus, the error vector for the last layer is shown below for clarity. Assume that the cost
+function $C$ is for a single example $x$ and $\delta^{L} \in \mathcal{R}^{n_y}$
+where $n_y$ is the number of targets (or output classes).
+
+\begin{align}
+	\delta^{L} & =
+	\begin{bmatrix}
+		\delta_0^{L} \\
+		\delta_1^{L} \\
+		\delta_2^{L} \\
+		\vdots       \\
+		\delta_{(n_{y} - 1)}^{L}
+	\end{bmatrix}
+	=
+	\begin{bmatrix}
+		\dfrac{\partial C}{\partial a_{0}^{L}}(a_{0}^{L}) \dfrac{\partial \phi}{\partial z}(z_{0}^{L}) \\
+		\dfrac{\partial C}{\partial a_{1}^{L}}(a_{1}^{L}) \dfrac{\partial \phi}{\partial z}(z_{1}^{L}) \\
+		\dfrac{\partial C}{\partial a_{2}^{L}}(a_{2}^{L}) \dfrac{\partial \phi}{\partial z}(z_{1}^{L}) \\
+		\vdots                                                                                         \\
+		\dfrac{\partial C}{\partial a_{(n_{y} - 1)}^{L}}(a_{(n_{y} - 1)}^{L}) \dfrac{\partial \phi}{\partial z}(z_{0}^{L})
+	\end{bmatrix}
+\end{align}
+Showing the elements of the error vector $\delta^{L}$ above demonstrates what must be computed:
+${\frac{\partial C}{\partial a_{j}^{L}}\ \text{and}\ \frac{\partial \phi}{\partial z}}$.
+The derivative of the activation function $\frac{\partial \phi}{\partial z}$ is
+very easy to compute since activation functions with well-known derivatives are
+typically selected. For example, if the activation function is the sigmoid function,
+then derivative is easy to compute and shown below.
+
+\begin{align}
+	\phi(z)                             & = \frac{1}{1 + e^{-z}}      \\
+	\frac{\partial \phi}{\partial z}(z) & = \sigma(z) (1 - \sigma(z))
+\end{align}
+
+
 
 Now, $\nabla_{a^{L}} C$ specifies $a^{L}$ because $C$ can be written as
 a function of many parameters and variables. A single layer neural network,
@@ -434,7 +470,7 @@ thus resulting in activations $a^{0} = x$. Refer to Figure 1 to observe the lack
 of a weight matrix before the input layer.
 
 Consider the activation vector iteslf for a layer $l$ over $j$ neurons as
-${a = \set{a_{j}^{l}}_{j=0}^{n_{h} - 1}}$. This is written as
+${a = \set{a_{j}^{l}}_{j=0}^{n_{h} - 1}}$.
 
 \begin{align}
 	a^{l} & = \begin{bmatrix}
@@ -446,8 +482,6 @@ ${a = \set{a_{j}^{l}}_{j=0}^{n_{h} - 1}}$. This is written as
 	\end{bmatrix}
 \end{align}
 
-If you reduce the problem to the element-by-element case rather than the vector case,
-it becomes clear that you must compute $\frac{\partial C}{\partial a_{j}^{L}}$.
 
 \begin{align}
 	\delta^{L}     & = \nabla_{a} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})                            \\
