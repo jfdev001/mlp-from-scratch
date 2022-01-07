@@ -18,6 +18,7 @@ Derivative of Activation Fxns: https://www.analyticsvidhya.com/blog/2021/04/acti
 """
 
 from __future__ import annotations
+from collections import defaultdict
 from typing import Callable, Optional
 
 import numpy as np
@@ -181,6 +182,11 @@ class MLP:
         self.activations_cache = []
         self.weighted_inputs_cache = []
 
+        # Dictionary {'train_loss': [], 'val_loss': []}
+        # where there is a single value per epoch
+        self.history = defaultdict(list)
+
+
     @property
     def cache(self,) -> tuple[list[np.ndarray], list[np.ndarray]]:
         """Returns activation and weighted inputs caches."""
@@ -227,6 +233,9 @@ class MLP:
         for epoch in range(epochs):
             for batch_step, (x_batch, y_batch) in enumerate(batch_data):
 
+                # This is a single training step and could be renamed
+                # training iteration
+
                 preds = self._forward_pass(x_batch)
 
                 loss = self._compute_loss(y_true=y_batch, y_pred=preds)
@@ -237,6 +246,13 @@ class MLP:
                 self._gradient_descent(
                     weight_grads=weight_grads,
                     bias_grads=bias_grads)
+
+            # Update performance over epoch
+            pass
+
+        # Validation loop where predictions and losses only are calculated
+        # no gradient descent
+        pass
 
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network."""
@@ -311,10 +327,11 @@ class MLP:
         delta_L_samples = []
         dCost_dW_L_samples = []
 
+        # Refactor this using np.apply_along_axis([], axis=0)
         for sample in range(self.batch_size):
 
             # Compute errors for bias and then weight matrices
-            delta_L_sample = self._compute_output_layer_error(
+            delta_L_sample = self._compute_delta_last_lyr(
                 output_activations=activations[-1][sample],
                 y_true=y_true[sample],
                 wted_input_of_final_lyr=weighted_inputs[-1][sample])
@@ -353,7 +370,7 @@ class MLP:
                 a_lyr_minus_one = activations[lyr-1][sample]
 
                 # Compute errors
-                delta_lyr_sample = self._compute_hidden_layer_error(
+                delta_lyr_sample = self._compute_delta_hidden_lyr(
                     wt_matrix_of_lyr_plus_one=w_of_lyr_plus_one,
                     delta_of_lyr_plus_one=delta_of_lyr_plus_one,
                     wted_input_of_cur_lyr=z_lyr,
@@ -413,7 +430,7 @@ class MLP:
         self.activations_cache = []
         self.weighted_inputs_cache = []
 
-    def _compute_output_layer_error(
+    def _compute_delta_last_lyr(
             self,
             output_activations: np.ndarray,
             y_true: np.ndarray,
@@ -439,7 +456,7 @@ class MLP:
 
         return delta_lyr
 
-    def _compute_hidden_layer_error(
+    def _compute_delta_hidden_lyr(
             self,
             wt_matrix_of_lyr_plus_one: np.ndarray,
             delta_of_lyr_plus_one: np.ndarray,
