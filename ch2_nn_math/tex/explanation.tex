@@ -25,10 +25,25 @@
 \usepackage{mathtools}
 \DeclarePairedDelimiter\set\{\}
 
+% Make links to pages in table of contents
+% https://tex.stackexchange.com/questions/73862/how-can-i-make-a-clickable-table-of-contents
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
 % https://github.com/battlesnake/neural
 % \usepackage{neuralnetwork}
 
+% Mathematical stuff
 \usepackage{amsmath}
+
+% https://tex.stackexchange.com/questions/38769/mathbbz-yields-undefined-control-sequence-error
+\usepackage{amsfonts}
 
 % Use with dfrac
 % https://tex.stackexchange.com/questions/33502/vertical-spacing-between-fractions-in-matrix-environment
@@ -43,10 +58,10 @@
 \texttt{\textcolor{blue}{#1}}%
 }
 
-% % Color a variable
-% \NewDocumentCommand{\colorvar}{}{
-% 	\begin
-% }
+% Color a variable
+\newcommand{\colorvar}[2]{
+	\begingroup\color{#1}{#2}\endgroup
+}
 
 % Titular information
 % https://en.wikibooks.org/wiki/LaTeX/Title_Creation
@@ -96,8 +111,8 @@ future self and for others.
 \section{Introduction}
 
 \quad The neural network (function approximator) is just a chain of geometric transformations (functions)
-each parametrized by a weight matrix $W \in \mathcal{R}^{n_h \times n_x}$ and
-a bias vector $b \in \mathcal{R}^{n_h}$ on the input vector $x \in \mathcal{R}^{n_x}$.
+each parametrized by a weight matrix $W \in \mathbb{R}^{n_h \times n_x}$ and
+a bias vector $b \in \mathbb{R}^{n_h}$ on the input vector $x \in \mathbb{R}^{n_x}$.
 The geometric transformations of the neural network are encapsulated by connecting
 layers (e.g., dense/fully connected layers) together. A neural network has $L$ total
 layers and the current layer $l$ receives the output from the previous layer $(l-1)$.
@@ -158,7 +173,7 @@ The shape of the vector $x$ is important to understand since the functions and o
 performed by the neural network (dot product, Hadamard product, addition, etc.)
 restrict their vector/matrix operands to particular shapes. When using the term
 \textit{vector}, I am always referring to a \textit{column vector}
-unless otherwise specified. Also, note that $x \in \mathcal{R}^{n_x}$ indicates
+unless otherwise specified. Also, note that $x \in \mathbb{R}^{n_x}$ indicates
 that $x$ is a vector with $n_x$ elements and the $j^{th}$ element is a real number.
 For example, the below vector $x$ is shown and a common vector operation
 known as the transpose (converts a \textit{column vector} to a
@@ -203,7 +218,7 @@ A weight matrix looks similar to the vector, except rather than having a single
 column, a matrix has a rows and columns--looking like a table. Vectors can
 be referred to as rank-1 tensors, matrices as rank-2 tensors, so-on and so-forth
 for multiple index "lists" in higher dimensions. A sample weight matrix
-$W \in \mathcal{R}^{n_h \times n_x}$ is shown below.
+$W \in \mathbb{R}^{n_h \times n_x}$ is shown below.
 
 \begin{align}
 	W & = \begin{bmatrix}
@@ -238,9 +253,9 @@ previous layer $(l-1)$. Importantly, the input layer has no activation function 
 associated with it, so the activation vector $a^{0}$ equals the input vector $x$.
 Moreover, the inner dimensions of the matrix product
 $Wx$ match, that is the subscripts $k$ are "adjacent" to one another. While you may
-observe that the activation vector $a^{l} \in \mathcal{R}^{n_a}$ is clearly not a matrix,
-numerical libraries will often treat a vector $v \in \mathcal{R}^{n_v}$ as equivalent
-to a matrix with a single column (i.e., $V \in \mathcal{R}^{n_v \times 1}$) for
+observe that the activation vector $a^{l} \in \mathbb{R}^{n_a}$ is clearly not a matrix,
+numerical libraries will often treat a vector $v \in \mathbb{R}^{n_v}$ as equivalent
+to a matrix with a single column (i.e., $V \in \mathbb{R}^{n_v \times 1}$) for
 the purposes of performing fast matrix-matrix calculations.
 
 Until now the discussion of the MLP has been entirely in abstract mathematical
@@ -301,7 +316,7 @@ and using gradient vectors (discussed later) rather than the scalar cost.
 	\end{aligned}
 \end{equation}
 
-where $x$ and $y$ are in $\mathcal{R}^{n_x}$ and
+where $x$ and $y$ are in $\mathbb{R}^{n_x}$ and
 
 \begin{equation}
 	||x - y||^{n} = \sum_{i=0}^{n_{x}-1} { (x_{i} - y_{i})^{2} }
@@ -430,7 +445,7 @@ Now, consider the error vector $\delta^{L}$ for the last layer $L$ and note the 
 $\nabla_{a^{L}}$ is with respect to the activation vector $a^{L}$ whose elements
 can be defined as $a^{L} = \set{a_j^{L}}_{j=0}^{n_h - 1}$.
 Thus, the error vector for the last layer is shown below for clarity. Assume that the cost
-function $C$ is for a single example $x$ and $\delta^{L} \in \mathcal{R}^{n_y}$
+function $C$ is for a single example $x$ and $\delta^{L} \in \mathbb{R}^{n_y}$
 where $n_y$ is the number of targets (or output classes).
 
 \begin{align}
@@ -457,7 +472,7 @@ ${\frac{\partial C}{\partial a_{j}^{L}}\ \text{and}\ \frac{\partial \phi}{\parti
 The derivative of the activation function $\frac{\partial \phi}{\partial z}$ is
 very easy to compute since activation functions with well-known derivatives are
 typically selected. For example, if the activation function is the sigmoid function,
-then derivative is known and shown below.
+then the derivative is known and shown below.
 
 \begin{align}
 	\phi(z)                             & = \frac{1}{1 + e^{-z}}      \\
@@ -465,16 +480,15 @@ then derivative is known and shown below.
 \end{align}
 
 The derivative of the cost function with respect to activations of different
-neurons is also easily computed. For the mean squared error function,
-you would derive the function with respect to only a single activation. That is,
+neurons ${\frac{\partial C}{\partial a_{j}^{L}}}$ is also easily computed.
+For the mean squared error function, you would derive the function with respect
+to only a single activation. That is,
 you are finding the rate of change of the cost function for an infinitesimally
-small change in the activation.
-This means that the summation and number of samples to divide by would be one.
-This is important because the summation and division operation are removed
-from the equation.
+small change in the $j^{th}$ activation of a layer.
 
 \begin{align}
-	C                                     & = \frac{1}{m} \sum_{j=0}^{m} { (a_{j}^{L} - y_j)^{2} } \\
+	C                                     & = \frac{1}{n_h} \sum_{j=0}^{(n_h - 1)} { (a_{j}^{L} - y_j)^{2} }                \\
+	\frac{\partial C}{\partial a^{L}}     & = \frac{1}{n_h} \sum_{j=0}^{(n_h - 1)} { \frac{\partial C}{\partial a_{j}^{L}}} \\
 	\frac{\partial C}{\partial a_{j}^{L}} & = 2(a_{j}^{L} - y_j)
 \end{align}
 
@@ -530,18 +544,20 @@ Such a matrix is called the Jacobian matrix and is shown below.
 
 Now that you understand the computation of $\delta^{L}$, finding $\delta^{l}$
 is trivial since the errors in the current layer plus one propagate backward through
-the network (i.e., you will use $\delta^{L}$ in the comptuation of $\delta^{L-1}$).
+the network (i.e., you will use $\delta^{L}$ in the computation of $\delta^{L-1}$).
 To validate the shapes of the operands relevant to the equation for $\delta^{l}$,
 refer to the below statements.
 
 \begin{align}
-	W^{l+1}                                 & \in \mathcal{R}^{n_h^{l+1} \times n_{h}^{l}} \\
-	\delta^{l+1}                            & \in \mathcal{R}^{n_h^{l+1}}                  \\
-	\frac{\partial \phi}{\partial z}(z^{l}) & \in \mathcal{R}^{n_{h}^{l}}
+	W^{l+1}                                 & \in \mathbb{R}^{\colorvar{red}{n_h^{l+1}} \times \colorvar{blue}{n_{h}^{l}}} \\
+	\delta^{l+1}                            & \in \mathbb{R}^{\colorvar{red}{n_h^{l+1}}}                                   \\
+	\frac{\partial \phi}{\partial z}(z^{l}) & \in \mathbb{R}^{\colorvar{blue}{n_{h}^{l}}}
 \end{align}
 
-The practical implementation of the four equations will be explained shortly
-after showing the \textit{gradient descent} equations below.
+With these comments about backpropagation,
+the practical implementation of the four equations for can be discussed.
+Since the above equations focus on the computation of gradients,
+they must be used in the \textit{gradient descent} equations below.
 
 \begin{align}
 	W^{l} & = W^{l} - \frac{\eta}{m} \sum_{x}{\delta^{x, l}(a^{x, l-1})^\top} \\
@@ -554,17 +570,29 @@ $m = \set{2^{i}}_{i=1}^{10}$.
 
 \section{Implementation}
 
-\quad Here I define, somewhat out of order, the Python classes
-that will encapsulate the attributes (data members) and methods (functions) associated
+\quad Here I define the Python classes
+that encapsulate the attributes (data members) and methods (functions) associated
 with the MLP. Since this approach is object oriented, it was helpful to
 define first the subunits of the MLP: operations (i.e., activation functions and
 cost functions) and layers.
 
-The \textbf{forward pass} requires defining a \codeword{class} that
+\subsection{Operation}
+
+\quad The activation functions and cost functions are children of the Python
+abstract base class I define as \codeword{Operation}. The
+\codeword{Operation} has no arguments and initializes no attributes, but
+does have a \codeword{__call__} method and \codeword{derivative} method. All
+children of the \codeword{Operation} must implement these methods; however, if
+the child is a \textit{cost function}, then this child class must also
+implement a \codeword{gradient} method ($\nabla_{a^{l}}\text{C}$). The
+
+\subsection{DenseLayer}
+
+\quad The forward pass requires defining a class that
 encapsulates the fully/densely connected layer of the MLP. I define this as
 \codeword{DenseLayer} with attributes for the input dimensions $n_x$,
-the weight matrix $W \in \mathcal{R}^{n_h \times n_x}$, and the bias
-$b \in \mathcal{R}^{n_h}$. The \codeword{DenseLayer} is correspondingly passed
+the weight matrix $W \in \mathbb{R}^{n_h \times n_x}$, and the bias
+${b \in \mathbb{R}^{n_h}}$. The \codeword{DenseLayer} is correspondingly passed
 arguments for $n_x$, $n_h$, and an \codeword{Optional[Callable]}
 that will be used as the vectorized activation function $\phi(\cdot)$ for a given layer.
 The \codeword{__init__} method saves the \codeword{Optional[Callable]} and passes
@@ -580,12 +608,12 @@ are computed with the \codeword{__call__} method defined as
 \end{align}
 where $x$ is an argument to the \codeword{__call__} method and
 $W$, $b$, and $\phi$ are attributes of the \codeword{DenseLayer}.
-Note that $x$ can be $x \in \mathcal{R}^{n_x}$, which
-is equivalent to $X \in \mathcal{R}^{1 \times n_x}$ for the purposes of matrix
+Note that $x$ can be $x \in \mathbb{R}^{n_x}$, which
+is equivalent to $X \in \mathbb{R}^{1 \times n_x}$ for the purposes of matrix
 multiplication. However, the training dataset $\mathcal{D}$ is commonly
-$\mathcal{D} \in \mathcal{R}^{N \times n_x}$ where $N$ is the total number of
+$\mathcal{D} \in \mathbb{R}^{N \times n_x}$ where $N$ is the total number of
 training examples. Therefore, a subset $m$ of $N$ means that
-$X \in \mathcal{R}^{m \times n_x}$.
+$X \in \mathbb{R}^{m \times n_x}$.
 
 Consider now the shapes of the affine transformation and the subsequent activation:
 
@@ -608,17 +636,13 @@ into adjacent columns until there are $m$ copies of the column vector in
 what is now a $n_x \times m$ matrix $B$.
 
 The activation matrix (i.e., activation vector for each training example) $A$
-will also be $A \in \mathcal{R}^{n_h \times m}$. Since the activations are
+will also be $A \in \mathbb{R}^{n_h \times m}$. Since the activations are
 passed onto the next layer as the new input $X$ to the \codeword{__call__} method,
 one must reshape the matrix to be the expected input.
 
-The \textbf{activation functions and cost functions} are children of the Python
-abstract base class I define as \codeword{Operation}. The
-\codeword{Operation} has no arguments and initializes no attributes, but
-does have a \codeword{__call__} method, \codeword{derivative} method. All
-children of the \codeword{Operation} must implement these methods. However, if
-the child is a \textit{cost function}, then this child class must also
-implement a \codeword{gradient} method ($\nabla_{a}\text{C}$).
+\subsection{MLP}
+
+test
 
 \pagebreak
 \printbibliography

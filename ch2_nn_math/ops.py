@@ -121,12 +121,16 @@ class MeanSquaredError(Operation):
             self,
             inputs: tuple[np.ndarray, np.ndarray]) -> np.float64:
 
-        targets, predictions = inputs
-        return 2 * np.mean(predictions - targets)
+        raise NotImplementedError('Not needed for cost function.')
 
     def gradient(
             self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
-        """Computes the gradient vector with respect to activations (preds).
+        """Computes the gradient with respect to activation (preds).
+
+        This is a vectorized function and is called on each element of 
+        an activation vector in order to compute the partial derivative
+        of the cost with respect to the j^{th} activation for the 
+        l^{th} layer.
 
         Args:
             inputs: Targets, predictions vectors.

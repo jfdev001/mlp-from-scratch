@@ -1,15 +1,15 @@
 [0] Config.pm:311> INFO - This is Biber 2.16
 [0] Config.pm:314> INFO - Logfile is 'explanation.blg'
-[128] biber-MSWIN32:340> INFO - === 
-[181] Biber.pm:415> INFO - Reading 'explanation.bcf'
-[319] Biber.pm:952> INFO - Found 11 citekeys in bib section 0
-[336] Biber.pm:4340> INFO - Processing section 0
-[351] Biber.pm:4531> INFO - Looking for bibtex format file 'sources.bib' for section 0
-[426] bibtex.pm:1689> INFO - LaTeX decoding ...
-[446] bibtex.pm:1494> INFO - Found BibTeX data source 'sources.bib'
-[549] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[550] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[550] Biber.pm:4168> INFO - Sorting list 'none/global//global/global' of type 'entry' with template 'none' and locale 'en-US'
-[550] Biber.pm:4174> INFO - No sort tailoring available for locale 'en-US'
-[565] bbl.pm:654> INFO - Writing 'explanation.bbl' with encoding 'UTF-8'
-[578] bbl.pm:757> INFO - Output to explanation.bbl
+[117] biber-MSWIN32:340> INFO - === 
+[158] Biber.pm:415> INFO - Reading 'explanation.bcf'
+[279] Biber.pm:952> INFO - Found 11 citekeys in bib section 0
+[295] Biber.pm:4340> INFO - Processing section 0
+[309] Biber.pm:4531> INFO - Looking for bibtex format file 'sources.bib' for section 0
+[364] bibtex.pm:1689> INFO - LaTeX decoding ...
+[387] bibtex.pm:1494> INFO - Found BibTeX data source 'sources.bib'
+[485] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[486] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[486] Biber.pm:4168> INFO - Sorting list 'none/global//global/global' of type 'entry' with template 'none' and locale 'en-US'
+[486] Biber.pm:4174> INFO - No sort tailoring available for locale 'en-US'
+[500] bbl.pm:654> INFO - Writing 'explanation.bbl' with encoding 'UTF-8'
+[511] bbl.pm:757> INFO - Output to explanation.bbl
