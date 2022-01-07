@@ -648,7 +648,19 @@ expected input for the next layer.
 
 \subsection{MLP}
 
-test
+The \codeword{MLP} encapsulates the \codeword{DenseLayer} objects and
+implements a number of methods to approximate the function for a system.
+
+The \codeword{__init__} method takes as arguments the dimension of the input
+$n_x$, the number of units $n_h$ per hidden layer, the number of targets or
+classes $n_y$, the learning rate $\eta$, the total number of hidden layers $l_h$,
+the cost function $C$ as a string, activation function $\phi$ for hidden layers as a string,
+the activation function for the target layer $\varphi$ as a string. This method
+also creates three \codeword{list} objects of particular important:
+\codeword{sequential}, \codeword{activations_cache}, and
+\codeword{weighted_inputs_cache}. These \codeword{list} objects are used to
+track the layers of the model, the activation vectors $a$ for a forward pass,
+and the weighted input vectors $z$ for a forward pass.
 
 \pagebreak
 \printbibliography
