@@ -256,7 +256,13 @@ class MLP:
 
         # Training loop
         for epoch in range(epochs):
+            losses = []
+
+            # Once iterated won't iterate again....
             for batch_step, (x_batch, y_batch) in enumerate(batch_data):
+
+                print('batch shapes')
+                print(x_batch.shape, y_batch.shape)
 
                 # This is a single training step and could be 
                 # refactored as training iteration
@@ -270,6 +276,7 @@ class MLP:
 
                 # Loss metric, not used for grad descent
                 loss = self._compute_loss(y_true=y_batch, y_pred=preds)
+                losses.append(loss)
 
                 # # Compute gradients
                 # weight_grads, bias_grads = self._backward_pass(
@@ -282,7 +289,11 @@ class MLP:
                 #     bias_grads=bias_grads)
 
             # Update performance over epoch
-            pass
+            print('batch losses:', losses)
+            mean_of_batch_losses = np.mean(losses)
+            self.history['train_loss'].append(mean_of_batch_losses)
+            print(f'Epoch {epoch+1}/{epochs} -- Loss: {mean_of_batch_losses}')
+
 
         # Validation loop where predictions and losses only are calculated
         # no gradient descent
