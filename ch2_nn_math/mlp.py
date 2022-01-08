@@ -33,7 +33,8 @@ class DenseLayer:
             self,
             input_dims: int,
             num_units: int,
-            activation_function: Optional[Callable] = Linear):
+            activation_function: Optional[Callable] = Linear,
+            debug: Optional[bool] = False):
         """Define state for neural network layer.
 
         Args:
@@ -44,6 +45,8 @@ class DenseLayer:
 
         # Save function arg
         self.activation_function = activation_function
+
+        self.debug = debug
 
         # Initialize weight matrix
         self.W = self.glorot_uniform(
@@ -78,16 +81,31 @@ class DenseLayer:
             Activation vector and weighted inputs vector.
         """
 
-        # # Transpose to row vector for single sample
-        # if len(x.shape) == 1:
-        #     x = np.expand_dims(x, axis=0)
+        # Make row vector for single sample
+        x = np.atleast_2d(x)
+
+        # shapes
+        if self.debug:
+            print('__call__ inputs')
+            print('x:', x.shape, '@ W^{T}:', self.W.shape[::-1], '+ b', self.b.shape)
+            breakpoint()
 
         # Affine transformation
-        weighted_input_z = np.transpose(np.dot(self.W, np.transpose(x)) + self.b)
+        # z_{m x n_h}
+        weighted_input_z = np.dot(x, np.transpose(self.W)) + self.b
 
         # Activation function
+        # a_{m x n_h}
         activation_a = np.apply_along_axis(
             self.activation_function, axis=-1, arr=weighted_input_z)
+
+        # Shapes
+        if self.debug:
+            print('__call__ transformations')
+            print('z:', weighted_input_z.shape)
+            print('a:', activation_a.shape)
+            breakpoint()
+
 
         # Result of layer computation
         # a (samples, hidden units), (samples, hidden units)
@@ -106,7 +124,8 @@ class MLP:
             l_layers: int = 1,
             loss_function: str = 'mse',
             hidden_activation: str = 'relu',
-            target_activation: Optional[str] = None,):
+            target_activation: Optional[str] = None,
+            debug: Optional[bool] = False):
         """Define state for Multilayer Perceptron.
 
         The parameters (params) of this hypothesis function are denoted
@@ -125,12 +144,14 @@ class MLP:
                 NOTE: Only supports 'relu'.
             target_activation: Activation function for target layers.
                 NOTE: Only support 'sigmoid' or None for now.
+            debug: Bool to debug or not... print shapes of inputs, etc.
         """
 
         # Save args
         self.learning_rate = learning_rate
         self.l_layers = l_layers
         self.batch_size = None
+        self.debug = debug
 
         # Set final layer activation function
         if target_activation is None:
@@ -158,19 +179,22 @@ class MLP:
         self.hidden = DenseLayer(
             input_dims=input_dims,
             num_units=hidden_units,
-            activation_function=self.hidden_activation)
+            activation_function=self.hidden_activation,
+            debug=debug)
 
         self.deep_hidden = [
             DenseLayer(
                 input_dims=hidden_units,
                 num_units=hidden_units,
-                activation_function=self.hidden_activation)
+                activation_function=self.hidden_activation,
+                debug=debug)
             for lyr in range(l_layers - 1)]
 
         self.output = DenseLayer(
             input_dims=hidden_units,
             num_units=targets,
-            activation_function=self.target_activation)
+            activation_function=self.target_activation,
+            debug=debug)
 
         # Sequential model with a None for placeholder for input layer
         self.sequential = [None, self.hidden, *self.deep_hidden, self.output]
@@ -237,21 +261,25 @@ class MLP:
                 # This is a single training step and could be 
                 # refactored as training iteration
 
-                # 
+                if self.debug:
+                    print('MLP.fit batch step')
+                    print(f'{batch_step+1}/{num_batches}')
+
+                # Predictions for sample 
                 preds = self._forward_pass(x_batch)
 
                 # Loss metric, not used for grad descent
                 loss = self._compute_loss(y_true=y_batch, y_pred=preds)
 
-                # Compute gradients
-                weight_grads, bias_grads = self._backward_pass(
-                    y_true=y_batch)
+                # # Compute gradients
+                # weight_grads, bias_grads = self._backward_pass(
+                #     y_true=y_batch)
 
-                # Use gradient weights to descend cost function
-                # (i.e., apply grads)
-                self._gradient_descent(
-                    weight_grads=weight_grads,
-                    bias_grads=bias_grads)
+                # # Use gradient weights to descend cost function
+                # # (i.e., apply grads)
+                # self._gradient_descent(
+                #     weight_grads=weight_grads,
+                #     bias_grads=bias_grads)
 
             # Update performance over epoch
             pass
@@ -283,6 +311,10 @@ class MLP:
             activations, weighted_inputs = self.sequential[lyr](activations)
             self._cache(activations=activations,
                         weighted_inputs=weighted_inputs)
+
+        if self.debug:
+            print('end _forward_pass')
+            breakpoint()
 
         # Result of forward pass
         return activations
@@ -336,11 +368,14 @@ class MLP:
         # Get cached activations and weighted inputs
         activations, weighted_inputs = self.cache
 
+        # Make ground truth a row vector if single sample
+        y_true = np.atleast_2d(y_true)
+
         # Lists to track L computations
         delta_L_samples = np.array([
             self._compute_delta_last_lyr(
                 output_activations=activations[-1][sample],
-                y_true=y_true[:, sample],
+                y_true=y_true[sample, :],
                 wted_input_of_final_lyr=weighted_inputs[-1][sample])
             for sample in range(self.batch_size)])
 

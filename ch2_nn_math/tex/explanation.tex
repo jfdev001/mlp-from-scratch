@@ -603,7 +603,7 @@ initialized with zeros. The activations and weighted inputs of the \codeword{Den
 are computed with the \codeword{__call__} method defined as
 
 \begin{align}
-	z & = Wx^{\top} + b \\
+	z & = XW^{\top} + b \\
 	a & = \phi(z)
 \end{align}
 where $x$ is an argument to the \codeword{__call__} method and
@@ -620,31 +620,17 @@ Consider now the shapes of the affine transformation and the subsequent activati
 % Determining shape of weighted matrix
 \begin{align}
 	Z_{m \times n_h} =
-	(W_{\colorvar{blue}{n_h} \times \colorvar{red}{n_x}} (X_{\colorvar{green}{m} \times \colorvar{red}{n_x}})^{\top} + b_{\colorvar{blue}{n_h}})^{\top}
+	X_{\colorvar{green}{m} \times \colorvar{red}{n_x}} (W_{\colorvar{blue}{n_h} \times \colorvar{red}{n_x}})^{\top} + b_{\colorvar{blue}{n_h}}
 \end{align}
-For this weighted input matrix $Z_{n_h \times m}$, you may observe a problem with how
+For this weighted input matrix $Z_{m \times n_h}$, you may observe a problem with how
 it is computed:
 a \textit{vector} is \textit{added} to a \textit{matrix}. This is an operation that is undefined.
-The matrix-vector addition occurs because $W_{n_h \times n_x}(X_{m \times n_x})^\top$
-returns a matrix $C_{n_h \times m}$ and the vector $b_{n_h}$ is then added
-to $C_{n_h \times m}$ such that
-$W_{n_h \times n_x}(X_{m \times n_x})^\top + b_{n_h} = C_{n_h \times m} + b_{n_h}$.
 While this operation is undefined, numerical libraries treat this as a legitimate
-operation by \textit{broadcasting} the vector $b_{n_h}$ to $B_{n_h \times m}$ \cite{Goodfellow2016,NumPyBroadcasting2021}.
-One can imagine that the column vector $b_{n_h}$ is copied
-into adjacent columns until there are $m$ copies of the column vector in
-what is now $n_h \times m$ matrix $B$.
+operation by \textit{broadcasting} the vector $b_{n_h}$ to $B_{m \times n_h}$ \cite{Goodfellow2016,NumPyBroadcasting2021}.
 
 The activation matrix $A$ contains the activation vector as a row
-for each training example and
-is expected to be $A \in \mathbb{R}^{m \times n_h}$. Since the activation matrix
-$A$ is
-passed onto the next layer as the new input $X$ to the \codeword{__call__} method,
-I make sure the matrix is the expected input shape $m \times n_x$. To do this,
-I transpose the weighted input matrix to
-${Z \in \mathbb{R}^{m \times n_h}}$ so that the activation matrix, which is just
-the result of element wise application of the activation function, matches the
-expected input for the next layer.
+for each training example and is expected to be $A \in \mathbb{R}^{m \times n_h}$
+since it will be passed onto to the next layer as input.
 
 \subsection{MLP}
 

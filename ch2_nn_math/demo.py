@@ -1,6 +1,7 @@
 """Script for demo-ing MLP."""
 
 import argparse
+from distutils.util import strtobool
 
 import numpy as np
 
@@ -13,6 +14,11 @@ def main():
     parser = cli(description='script for testing MLP from scratch.')
 
     args = parser.parse_args()
+
+    # Debug
+    if args.debug:
+        print('Begin debugging...')
+        breakpoint()
 
     # Set random seed
     np.random.seed(args.random_seed)
@@ -29,7 +35,8 @@ def main():
             hidden_units=args.num_hidden_units,
             targets=args.t_targets,
             learning_rate=args.learning_rate,
-            l_layers=args.num_layers,)
+            l_layers=args.num_layers,
+            debug=args.debug)
 
     elif args.task == 'random-classification':
         y = np.random.choice(a=args.c_categories, size=(
@@ -40,7 +47,8 @@ def main():
             hidden_units=args.num_hidden_units,
             targets=args.c_categories,
             learning_rate=args.learning_rate,
-            l_layers=args.num_layers,)
+            l_layers=args.num_layers,
+            debug=args.debug)
 
     elif args.task == 'boston-housing-regression':
         raise NotImplementedError
@@ -64,6 +72,13 @@ def cli(description: str):
             'random-regression',
             'random-classification'],
         help='specify supervised learning task.')
+
+    parser.add_argument(
+        '--debug',
+        choices=[True, False],
+        help='bool to debug',
+        type=lambda x: bool(strtobool(x)),
+        default=False)
 
     parser.add_argument(
         '--random-seed',
@@ -112,13 +127,13 @@ def cli(description: str):
 
     hparams.add_argument(
         '--num-hidden-units',
-        help='number of hidden units in hidden layers. (default: 32)',
+        help='number of hidden units in hidden layers. (default: 2)',
         type=int,
         default=2)
 
     hparams.add_argument(
         '--batch-size',
-        help='batch size for training. (default: 32)',
+        help='batch size for training. (default: 4)',
         type=int,
         default=4)
 
