@@ -221,10 +221,11 @@ class MLP:
 
         # Save the batch size for computations later
         self.batch_size = batch_size
+        num_batches = num_samples//batch_size
 
         # Get batch indices
         batch_indices = np.random.choice(
-            a=num_samples, size=(num_samples//batch_size, batch_size), replace=False)
+            a=num_samples, size=(num_batches, batch_size), replace=False)
 
         # Batch the data
         batch_data = zip(x[batch_indices], y[batch_indices])
@@ -336,24 +337,32 @@ class MLP:
         activations, weighted_inputs = self.cache
 
         # Lists to track L computations
-        delta_L_samples = []
-        dCost_dW_L_samples = []
-
-        # Refactor this using np.apply_along_axis([], axis=0)
-        for sample in range(self.batch_size):
-
-            # Compute errors for bias and then weight matrices
-            delta_L_sample = self._compute_delta_last_lyr(
+        delta_L_samples = np.array([
+            self._compute_delta_last_lyr(
                 output_activations=activations[-1][sample],
-                y_true=y_true[sample],
+                y_true=y_true[:, sample],
                 wted_input_of_final_lyr=weighted_inputs[-1][sample])
+            for sample in range(self.batch_size)])
 
-            dCost_dW_L_sample = self._compute_deriv_cost_wrt_wt(
-                activations_prev_lyr=activations[-2][sample],
-                delta_cur_lyr=delta_L_sample)
 
-            delta_L_samples.append(delta_L_sample)
-            dCost_dW_L_samples.append(dCost_dW_L_sample)
+        print(delta_L_samples.shape)
+        breakpoint()
+
+        # # Refactor this using np.apply_along_axis([], axis=0)
+        # for sample in range(self.batch_size):
+
+        #     # Compute errors for bias and then weight matrices
+        #     delta_L_sample = self._compute_delta_last_lyr(
+        #         output_activations=activations[-1][sample],
+        #         y_true=y_true[sample],
+        #         wted_input_of_final_lyr=weighted_inputs[-1][sample])
+
+        #     dCost_dW_L_sample = self._compute_deriv_cost_wrt_wt(
+        #         activations_prev_lyr=activations[-2][sample],
+        #         delta_cur_lyr=delta_L_sample)
+
+        #     delta_L_samples.append(delta_L_sample)
+        #     dCost_dW_L_samples.append(dCost_dW_L_sample)
 
         # Save deltas
         delta_lyrs = [None for i in range(self.num_layers)]

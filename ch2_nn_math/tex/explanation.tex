@@ -662,6 +662,27 @@ also creates three \codeword{list} objects of particular important:
 track the layers of the model, the activation vectors $a$ for a forward pass,
 and the weighted input vectors $z$ for a forward pass.
 
+The \codeword{fit} method takes inputs $X$, targets $y$, the batch size $m$,
+and the number of epochs to train the model. Batching of the data occurs first.
+This can be easily accomplished using \codeword{numpy.random.choice} with
+the range of indices to sample from being the total number of training examples,
+passing \codeword{replace=False}, and setting \codeword{size=(num_batches, batch_size)}.
+The number of batches is $floor(\frac{\text{training examples}}{\text{batch size}})$.
+
+The training loop is also quite simple: (1) make predictions, (2) compute the scalar
+loss\footnote{Only used to track model performance, not used to
+	update gradients.},
+(3) compute the gradients, and (4) update the weights and biases layer by layer.
+
+The \codeword{_forward_pass} first clears the cache of saved activations and
+weighted input vectors from the previous pass. Then each layer in the
+\codeword{sequential} list is to compute and the cache weighted inputs and
+activations for each layer. Finally, it returns the last activation vector
+representing the predictions the model made given the samples.
+
+The \codeword{_backward_pass} is the only pseudocode I will provide since
+it is really the only step that cannot figure
+
 \pagebreak
 \printbibliography
 
