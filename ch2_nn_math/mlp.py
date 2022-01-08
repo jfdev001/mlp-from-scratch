@@ -251,18 +251,16 @@ class MLP:
         batch_indices = np.random.choice(
             a=num_samples, size=(num_batches, batch_size), replace=False)
 
-        # Batch the data
-        batch_data = zip(x[batch_indices], y[batch_indices])
+        # Create batch data generator
+        # https://stackoverflow.com/questions/50465966/re-using-zip-iterator-in-python-3/50466346
+        batch_data = lambda: zip(x[batch_indices], y[batch_indices])
 
         # Training loop
         for epoch in range(epochs):
+            
+            # Track losses per epoch over batches
             losses = []
-
-            # Once iterated won't iterate again....
-            for batch_step, (x_batch, y_batch) in enumerate(batch_data):
-
-                print('batch shapes')
-                print(x_batch.shape, y_batch.shape)
+            for batch_step, (x_batch, y_batch) in enumerate(batch_data()):
 
                 # This is a single training step and could be 
                 # refactored as training iteration
@@ -289,7 +287,6 @@ class MLP:
                 #     bias_grads=bias_grads)
 
             # Update performance over epoch
-            print('batch losses:', losses)
             mean_of_batch_losses = np.mean(losses)
             self.history['train_loss'].append(mean_of_batch_losses)
             print(f'Epoch {epoch+1}/{epochs} -- Loss: {mean_of_batch_losses}')
