@@ -276,9 +276,9 @@ class MLP:
                 loss = self._compute_loss(y_true=y_batch, y_pred=preds)
                 losses.append(loss)
 
-                # # Compute gradients
-                # weight_grads, bias_grads = self._backward_pass(
-                #     y_true=y_batch)
+                # Compute gradients
+                weight_grads, bias_grads = self._backward_pass(
+                    y_true=y_batch)
 
                 # # Use gradient weights to descend cost function
                 # # (i.e., apply grads)
@@ -379,62 +379,60 @@ class MLP:
         # Make ground truth a row vector if single sample
         y_true = np.atleast_2d(y_true)
 
-        # Lists to track L computations
-        delta_L_samples = np.array([
+        # One delta_L vector with a number of columns
+        # equal to the number of targets for each row (training example)
+        # (batch_size, num_targets)
+        dCost_dBias_L_samples = np.array([
             self._compute_delta_last_lyr(
                 output_activations=activations[-1][sample],
                 y_true=y_true[sample, :],
                 wted_input_of_final_lyr=weighted_inputs[-1][sample])
             for sample in range(self.batch_size)])
 
+        # One weight cost matrix for each training example
+        # (batch_size, num_neurons_in_cur_lyr, num_neurons_in_pre_lyr)
+        dCost_dW_L_samples = np.array([
+            self._compute_deriv_cost_wrt_wt(
+                activations_prev_lyr=activations[-2][sample],
+                delta_cur_lyr=dCost_dBias_L_samples[sample])
+            for sample in range(self.batch_size)])
 
-        print(delta_L_samples.shape)
-        breakpoint()
+        # Save deltas, which are equivalent to partial derivatives
+        # with respect to biases for a layer...
+        # this will end up being a ragged rank-3 tensor
+        # (num_layers, batch_size, num_hidden_units_in_cur_lyr)
+        dCost_dBias_lyrs = [None for i in range(self.num_layers)]
+        dCost_dBias_lyrs[-1] = dCost_dBias_L_samples
 
-        # # Refactor this using np.apply_along_axis([], axis=0)
-        # for sample in range(self.batch_size):
-
-        #     # Compute errors for bias and then weight matrices
-        #     delta_L_sample = self._compute_delta_last_lyr(
-        #         output_activations=activations[-1][sample],
-        #         y_true=y_true[sample],
-        #         wted_input_of_final_lyr=weighted_inputs[-1][sample])
-
-        #     dCost_dW_L_sample = self._compute_deriv_cost_wrt_wt(
-        #         activations_prev_lyr=activations[-2][sample],
-        #         delta_cur_lyr=delta_L_sample)
-
-        #     delta_L_samples.append(delta_L_sample)
-        #     dCost_dW_L_samples.append(dCost_dW_L_sample)
-
-        # Save deltas
-        delta_lyrs = [None for i in range(self.num_layers)]
-        delta_lyrs[-1] = delta_L_samples
-
+        # Save the partial derivatives with respect to the weights,
+        # this will end up being a ragged rank-4 tensor
+        # (num_layers, batch_size, num_neurons_in_cur_lyr, num_neurons_in_pre_lyr)
         dCost_dW_lyrs = [None for i in range(self.num_layers)]
         dCost_dW_lyrs[-1] = dCost_dW_L_samples
 
         # Backpropagate error through layers...
         # Must use `self.num_layers-2` because `len(lst)-1` is index `L`
-        # and iteration begins at `L-2`
+        # and iteration begins at `L-2`... stop index is 0, which is the
+        # input layer None
         for lyr in range(self.num_layers-2, 0, -1):
 
             # Lists for tracking errors accumulated for each
             # training example
             dCost_dW_lyrs_samples = []
-            delta_lyrs_samples = []
+            dCost_dBias_lyrs_samples = []
 
             # Arguments that are independent of training samples
             hidden_activation = self.sequential[lyr].activation_function
             w_of_lyr_plus_one = self.sequential[lyr+1].W
+
             for sample in range(self.batch_size):
 
-                delta_of_lyr_plus_one = delta_lyrs[lyr+1][sample]
+                delta_of_lyr_plus_one = dCost_dBias_lyrs[lyr+1][sample]
                 z_lyr = weighted_inputs[lyr][sample]
                 a_lyr_minus_one = activations[lyr-1][sample]
 
                 # Compute errors
-                delta_lyr_sample = self._compute_delta_hidden_lyr(
+                dCost_dBias_lyr_sample = self._compute_delta_hidden_lyr(
                     wt_matrix_of_lyr_plus_one=w_of_lyr_plus_one,
                     delta_of_lyr_plus_one=delta_of_lyr_plus_one,
                     wted_input_of_cur_lyr=z_lyr,
@@ -442,18 +440,47 @@ class MLP:
 
                 dCost_dW_lyr_sample = self._compute_deriv_cost_wrt_wt(
                     activations_prev_lyr=a_lyr_minus_one,
-                    delta_cur_lyr=delta_lyr_sample)
+                    delta_cur_lyr=dCost_dBias_lyr_sample)
 
                 # Append to samples list
-                delta_lyrs_samples.append(delta_lyr_sample)
+                dCost_dBias_lyrs_samples.append(dCost_dBias_lyr_sample)
                 dCost_dW_lyrs_samples.append(dCost_dW_lyr_sample)
 
             # Update layer list
             dCost_dW_lyrs[lyr] = dCost_dW_lyrs_samples
-            delta_lyrs[lyr] = delta_lyrs_samples
+            dCost_dBias_lyrs[lyr] = dCost_dBias_lyrs_samples
 
-        # Return the error lists
-        return dCost_dW_lyrs, delta_lyrs
+        # Convert to ndarray
+        dCost_dW_lyrs, dCost_dBias_lyrs = np.array(dCost_dW_lyrs), np.array(dCost_dBias_lyrs)
+
+        if self.debug:
+            print('MLP._backward_pass')
+            print('Length of error tensors... \
+                one per layer where first element is None for placeholding input layer')
+            print(dCost_dW_lyrs.shape)
+            print(dCost_dBias_lyrs.shape)
+
+            print()
+            print('Shapes of dC arrays:')
+            print('Shapes of dC/dB arrays')
+            for dcdb in dCost_dBias_lyrs:
+                if dcdb is not None:
+                    print(np.array(dcdb).shape)
+                else:
+                    print('None')
+                print()
+
+            print('Shapes of dC/dW arrays')
+            for dcdw in dCost_dW_lyrs:
+                if dcdw is not None:
+                    print(np.array(dcdw).shape)
+                else:
+                    print('None')
+                print()
+
+            breakpoint()
+
+        return dCost_dW_lyrs, dCost_dBias_lyrs
 
     def _gradient_descent(
             self,
