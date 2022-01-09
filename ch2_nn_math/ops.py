@@ -94,7 +94,7 @@ class Sigmoid(Operation):
         return self(inputs=inputs) * (1 - self(inputs=inputs))
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
-        return 1 / (1 + np.exp(-inputs))
+        return 1 / (1 + np.exp(-1 * inputs))
 
 
 class Linear(Operation):
@@ -120,8 +120,7 @@ class MeanSquaredError(Operation):
     def derivative(
             self,
             inputs: tuple[np.ndarray, np.ndarray]) -> np.float64:
-
-        raise NotImplementedError('Not needed for cost function.')
+        return super().derivative(inputs)
 
     def gradient(
             self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
@@ -145,6 +144,14 @@ class MeanSquaredError(Operation):
     def __call__(
             self,
             inputs: tuple[np.ndarray, np.ndarray]) -> np.float64:
+        """Compute cost given inputs.
+        
+        Args:
+            inputs: Targets and predictions vectors.
+
+        Return:
+            Scalar cost.
+        """
 
         targets, predictions = inputs
         return np.mean(np.square(targets - predictions))
@@ -153,11 +160,42 @@ class MeanSquaredError(Operation):
 class BinaryCrossEntropy(Operation):
     """Binary cross entropy loss (cost) function."""
 
+    def __init__(self,):
+        """Initializes sigmoid function for binary cross entropy."""
+
+        self.sigmoid = Sigmoid()
+
     def derivative(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         return super().derivative(inputs)
 
-    def __call__(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
-        return super().__call__(inputs)
+    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+        """"""
+        pass
+
+    def __call__(self, 
+        inputs: tuple[np.ndarray, np.ndarray],
+        from_logits: bool = False) -> np.ndarray:
+        """Compute cost given inputs.
+        
+        Args:
+            inputs: Targets and predictions vectors. 
+                Assumes predictions are not from logits.
+            from_logits: True for logits, false for normalized log 
+                probabilities (i.e., used sigmoid activation function).
+                Assumes not from logits.
+
+        Return:
+            Scalar cost.
+        """
+        
+        targets, predictions = inputs
+
+        if from_logits:
+            predictions = self.sigmoid(predictions)
+
+        return -1 * np.mean(targets * np.log(predictions) + (1 - targets) * np.log(1 - predictions))
+
+    
 
 
 class CategoricalCrossEntropy(Operation):
