@@ -13,3 +13,9 @@
 \BOOKMARK [2][-]{subsection.4.1}{Operation}{section.4}% 13
 \BOOKMARK [2][-]{subsection.4.2}{DenseLayer}{section.4}% 14
 \BOOKMARK [2][-]{subsection.4.3}{MLP}{section.4}% 15
+\BOOKMARK [3][-]{subsubsection.4.3.1}{Backpropagation Pseudocode}{subsection.4.3}% 16
+\BOOKMARK [1][-]{section.5}{Testing}{}% 17
+\BOOKMARK [2][-]{subsection.5.1}{Regression Tasks}{section.5}% 18
+\BOOKMARK [2][-]{subsection.5.2}{Classification Tasks}{section.5}% 19
+\BOOKMARK [3][-]{subsubsection.5.2.1}{Binary}{subsection.5.2}% 20
+\BOOKMARK [3][-]{subsubsection.5.2.2}{Multi-Class}{subsection.5.2}% 21

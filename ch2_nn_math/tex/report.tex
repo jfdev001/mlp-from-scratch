@@ -649,6 +649,8 @@ activations $a^{l-1}$ as the input to the \codeword{__call__} method of each \co
 Finally, the \codeword{__call__} of the last \codeword{DenseLayer} returns the
 last activation vector $a^{L}$ representing the predictions the model made given the samples.
 
+\subsubsection{Backpropagation Pseudocode}
+
 The \codeword{_backward_pass} is the only pseudocode I will provide since
 it is really the only step that is confusing due to the use of local $list$
 objects and the creation of ragged tensors, which are just nested variable
@@ -743,6 +745,31 @@ refers to the number of neurons in the previous layer.
 
 	\end{algorithmic}
 \end{algorithm}
+
+\section{Testing}
+
+\subsection{Regression Tasks}
+
+\subsection{Classification Tasks}
+
+\subsubsection{Binary}
+
+A binary classification task takes some input $x$ and produces a prediction
+$\hat{y}$ that is the probability (or logit, aka unscaled log probability) that
+$x$ belongs to the class $y \in \set{0, 1}$.
+
+The cost function for a problem such as this over $m$ examples in a batch is
+shown below.
+
+% Binary cross entropy
+\begin{equation}
+	\begin{aligned}
+		C & = \frac{1}{m} \sum_{i = 0}^{m-1} {C_{i}}                                                       \\
+		C & = \frac{1}{m} \sum_{i = 0}^{m-1}{ y_{i} \ln{\hat{y}_{i}} + (1 - y_{i}) \ln{(1 - \hat{y}_{i})}}
+	\end{aligned}
+\end{equation}
+
+\subsubsection{Multi-Class}
 
 \pagebreak
 \printbibliography
