@@ -383,7 +383,7 @@ class MLP:
 
         # Make ground truth a row vector if single sample
         y_true = np.atleast_2d(y_true)
-
+        
         # One delta_L vector with a number of columns
         # equal to the number of targets for each row (training example)
         # (batch_size, num_targets)

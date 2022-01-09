@@ -1,33 +1,22 @@
-% Some notation taken from 
-% https://cs230.stanford.edu/files/Notation.pdf
-
-% On variables, parameters, and arguments
-% https://math.stackexchange.com/questions/2113138/what-is-the-difference-between-variable-argument-and-parameter
-
 \documentclass{article}
 \usepackage[sorting=none]{biblatex}
+\usepackage{graphicx} % Graphics: https://www.overleaf.com/learn/latex/Inserting_Images
+\usepackage{titlesec} % Subsections
+\usepackage{mathtools} % https://tex.stackexchange.com/questions/268766/curly-braces-in-math-mode
+\usepackage{hyperref} % https://tex.stackexchange.com/questions/73862/how-can-i-make-a-clickable-table-of-contents
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{xparse}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
 \addbibresource{sources.bib}
-
-%Graphics: https://www.overleaf.com/learn/latex/Inserting_Images
-\usepackage{graphicx}
 \graphicspath{{figures/}}
-
-% https://tex.stackexchange.com/questions/2651/should-i-use-center-or-centering-for-figures-and-tables
-% Centering figures
-\makeatletter
+\makeatletter % https://tex.stackexchange.com/questions/2651/should-i-use-center-or-centering-for-figures-and-tables
 \g@addto@macro\@floatboxreset\centering
 \makeatother
-
-% Subsections
-\usepackage{titlesec}
-
-% https://tex.stackexchange.com/questions/268766/curly-braces-in-math-mode
-\usepackage{mathtools}
 \DeclarePairedDelimiter\set\{\}
-
-% Make links to pages in table of contents
-% https://tex.stackexchange.com/questions/73862/how-can-i-make-a-clickable-table-of-contents
-\usepackage{hyperref}
 \hypersetup{
     colorlinks,
     citecolor=black,
@@ -36,24 +25,10 @@
     urlcolor=black
 }
 
-% https://github.com/battlesnake/neural
-% \usepackage{neuralnetwork}
-
-% Mathematical stuff
-\usepackage{amsmath}
-
-% https://tex.stackexchange.com/questions/38769/mathbbz-yields-undefined-control-sequence-error
-\usepackage{amsfonts}
-
 % Use with dfrac
 % https://tex.stackexchange.com/questions/33502/vertical-spacing-between-fractions-in-matrix-environment
 \renewcommand{\arraystretch}{2.5}
 
-% https://tex.stackexchange.com/questions/286094/insert-code-keywords-inline
-\usepackage{xcolor}
-% \usepackage{listings}
-% \lstset{language=Python, keywordstyle=\bfseries \color{blue}}
-\usepackage{xparse}
 \NewDocumentCommand{\codeword}{v}{%
 \texttt{\textcolor{blue}{#1}}%
 }
@@ -73,6 +48,8 @@
 Middle Tennessee State University.} \thanks{Department of Chemistry (2018-2021),
 Middle Tennessee State University.} \thanks{Not endorsed by or affiliated with any of the 
 authors or entities listed in the References section.}}
+
+% Document 
 \begin{document}
 \maketitle
 \titlepage
@@ -648,7 +625,8 @@ the cost function $C$ as a string, activation function $\phi$ for hidden layers 
 and the activation function for the target layer $\varphi$ as a string. This method
 also creates three \codeword{list} objects of particular important:
 \codeword{sequential}, \codeword{activations_cache}, and
-\codeword{weighted_inputs_cache}. These \codeword{list} objects are used to
+\codeword{weighted_inputs_cache} stored collectively as a \codeword{@property}
+called \codeword{cache}. These \codeword{list} objects are used to
 track the layers of the model, the activation vectors $a$ for a forward pass,
 and the weighted input vectors $z$ for a forward pass.
 
@@ -672,10 +650,99 @@ Finally, the \codeword{__call__} of the last \codeword{DenseLayer} returns the
 last activation vector $a^{L}$ representing the predictions the model made given the samples.
 
 The \codeword{_backward_pass} is the only pseudocode I will provide since
-it is really the only step that is somewhat muddled due to the use of local $list$
+it is really the only step that is confusing due to the use of local $list$
 objects and the creation of ragged tensors, which are just nested variable
 length lists. The ragged tensors are the natural result of different weight
-and bias tensor shapes of hidden layers and the output layer.
+and bias tensor shapes of hidden layers and the output layer. I also specify the
+shapes of the tensors in the pseudocode for clarity. A \textit{?} is used in
+describing the variable length dimension of a tensor. Also, $n_l$ is the number
+of layers in the network (including the input layer) while $n_x$ generically
+refers to the number of neurons in the previous layer.
+
+\begin{algorithm}
+	\caption{Computation of gradients for weight and bias parameters via backpropagation}
+	\begin{algorithmic}[1]  % Number every line
+
+		% Pre backprop checks
+		\State{$\text{\underline{Initialize tensors}}$}
+
+		% Get activations and weighted input tensors from cache
+		\State{$A, Z \gets \text{\begingroup\color{blue}\texttt{cache}\endgroup}$} \Comment{$A \in \mathbb{R}^{n_l \times m \times ?}; Z \in \mathbb{R}^{n_l \times m \times ?}$}
+
+		% Make sure y_true is (batch)
+		\State{$Y \gets \text{AssertAtLeast2D}(Y)$} \Comment{Make sure at least $Y \in \mathbb{R}^{1 \times n_y}$}
+
+		% Initial computations for backprop (i.e, last layer)
+		\State{}
+		\State{$\text{\underline{Compute errors for last layer}}$}
+
+		% Compute delta L  = dC_dBias_Ltensor for all training examples
+		\State{$A_{L,:,:} \gets A_{-1,:,:}$} \Comment{Get the last layer activation tensor}
+		\State{$Z_{L,:,:} \gets Z_{-1,:,:}$} \Comment{Get the last layer weighted input tensor}
+		\State{$\nabla_{b^{L}} C_{\text{samples}} \gets \set{}$} \Comment{Empty $\nabla_{b^{L}} C_{\text{samples}} \in \mathbb{R}^{m \times n_y}$}
+		\State{$\nabla_{b^{L}} C_{\text{samples}} \gets \text{GradBiases}(A_{L}, Z_{L}, Y)$} \Comment{Bprop eq. 1 $\forall b \in m$}
+
+		\State{}
+
+		\State{$A_{L-1, :, :} \gets A_{-2,:,:}$} \Comment{Get the second to last layer activation tensor.}
+		\State{$\nabla_{W^{L}} C_{\text{samples}} \gets \set{}$} \Comment{Empty $\nabla_{W^{L}} C_{\text{samples}} \in \mathbb{R}^{m \times n_y \times n_h}$}
+		\State{$\nabla_{W^{L}} C_{\text{samples}} \gets \text{GradWeights}(A_{L-1}, \nabla_{b^{L}} C_{\text{samples}})$} \Comment{Bprop eq. 4 $\forall b \in m$}
+
+		\State{}
+		% Main training loop for backpropagating errors through layers
+
+		% Initialize layers tensors
+		\State{$\text{\underline{Backpropagate errors}}$}
+		\State{$\nabla_{b} C_{\text{layers}} \gets \set{}$} \Comment{Empty $\nabla_{b} C_{\text{layers}} \in \mathbb{R}^{n_{l} \times m \times ?}$}
+		\State{$\nabla_{W} C_{\text{layers}} \gets \set{}$} \Comment{Empty $\nabla_{W} C_{\text{layers}} \in \mathbb{R}^{n_{l} \times m \times ? \times ?}$}
+
+		% Assign the computations for the last layer to the end of the layers tensors
+		\State{}
+		\State{$\nabla_{b} C_{\text{layers}}[-1,:,:] \gets \nabla_{b^{L}} C_{\text{samples}}$}
+		\State{$\nabla_{W} C_{\text{layers}}[-1,:,:,:] \gets \nabla_{W^{L}} C_{\text{samples}}$}
+
+		% For loop to compute samples tensors
+		\State{}
+
+		\For{$l=(L-1), ..., 0$} \Comment{For all remaining layers, backpropagate error.}
+		\State{$\nabla_{b^{l}} C_{\text{samples}} \gets \set{}$} \Comment{Empty $\nabla_{b^{l}} C_{\text{samples}} \in \mathbb{R}^{m \times n_h}$}
+		\State{$\nabla_{W^{l}} C_{\text{samples}} \gets \set{}$} \Comment{Empty $\nabla_{W^{L}} C_{\text{samples}} \in \mathbb{R}^{m \times n_h \times n_x}$}
+
+		% Weight matrix and activation
+		\State{}
+		\State{$W^{l+1} \gets \text{\begingroup\color{blue}\texttt{sequential[l+1].W}\endgroup}$}
+		\State{$\frac{\partial \phi^{l}}{\partial z} \gets \text{\begingroup\color{blue}\texttt{sequential[l].activation.derivative}\endgroup}$}
+
+		\State{}
+		\For{$b=0,...,m$}
+		\State{$\delta^{l+1} \gets \nabla_{b} C_{\text{layers}}[l+1,b,:]$}
+		\State{$z^{l} \gets Z[l, b, :]$}
+		\State{$a^{l-1} \gets A[l-1, b, :]$}
+
+		\State{}
+		\State{$\nabla_{b^{l}} C_{\text{sample}} \gets \text{GradHiddenBiases}(W^{l+1},\delta^{l+1},z^{l},\frac{\partial \phi^{l}}{\partial z})$}
+		\State{$\nabla_{W^{l}} C_{\text{sample}} \gets \text{GradWeights}(a^{l-1}, \nabla_{b^{l}} C_{\text{sample}})$}
+
+
+		% Append sample tensors to samples
+		\State{}
+		\State{$\nabla_{b^{l}} C_{\text{samples}} \text{.append} (\nabla_{b^{l}} C_{\text{sample}})$}
+		\State{$\nabla_{W^{l}} C_{\text{samples}} \text{.append} (\nabla_{W^{l}} C_{\text{sample}})$}
+		\EndFor
+
+		% Assign samples tensors to layers tensors
+		\State{}
+		\State{$\nabla_{b} C_{\text{layers}}[l, :, :] \gets \nabla_{b^{l}} C_{\text{samples}}$}
+		\State{$\nabla_{W} C_{\text{layers}}[l, :, :, :] \gets \nabla_{W^{l}} C_{\text{samples}}$}
+
+		\EndFor
+
+		% Return the gradient lists for parameters
+		\State{}
+		\State{\Return{$\nabla_{b} C_{\text{layers}}, \nabla_{W} C_{\text{layers}}$}}
+
+	\end{algorithmic}
+\end{algorithm}
 
 \pagebreak
 \printbibliography
