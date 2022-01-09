@@ -10,6 +10,8 @@
 \usepackage{xparse}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{afterpage}
+\usepackage{indentfirst} % https://tex.stackexchange.com/questions/39227/no-indent-in-the-first-paragraph-in-a-section/39228
 
 \addbibresource{sources.bib}
 \graphicspath{{figures/}}
@@ -59,7 +61,8 @@ authors or entities listed in the References section.}}
 \pagebreak
 
 \section{Preamble}
-\quad The purpose of the present document is to explain and implement the major mathematical
+
+The purpose of the present document is to explain and implement the major mathematical
 constructs/concepts behind feedforward neural networks, specifically the multilayer perceptron.
 This includes the layers that compose such networks, the cost (aka loss, error, or objective) function
 and activation functions, the forward pass through the network,
@@ -87,7 +90,7 @@ future self and for others.
 
 \section{Introduction}
 
-\quad The neural network (function approximator) is just a chain of geometric transformations (functions)
+The neural network (function approximator) is just a chain of geometric transformations (functions)
 each parametrized by a weight matrix $W \in \mathbb{R}^{n_h \times n_x}$ and
 a bias vector $b \in \mathbb{R}^{n_h}$ on the input vector $x \in \mathbb{R}^{n_x}$.
 The geometric transformations of the neural network are encapsulated by connecting
@@ -99,7 +102,7 @@ briefly elucidate both the claims and notation of the first sentence of this sec
 
 \subsection{Parametrized Functions}
 
-\quad I assume you know what a function is; however, the term \textit{parametrized}
+I assume you know what a function is; however, the term \textit{parametrized}
 is one that appears often in deep learning literature and should be well-understood by the student.
 Consider a generic quadratic function \cite{MathSEVarsParamsArgs2015} as
 % Quadratic function
@@ -142,7 +145,7 @@ the backpropagation algorithm illustrated later.
 
 \subsection{Operand Types}
 
-\quad The input $x$ is not a single value as is conceived in the elementary
+The input $x$ is not a single value as is conceived in the elementary
 formulations described above. Rather, the input $x$ is a list of
 values referred to as a \textit{column vector}. Each element of the vector
 is a value that a particular feature, or independent variable, could take on.
@@ -214,14 +217,14 @@ the operations you intended\footnote{This is especially true for the
 
 \section{The Multilayer Perceptron}
 
-\quad Here I define the operations that occur for the multilayer perceptron (MLP).
+Here I define the operations that occur for the multilayer perceptron (MLP).
 Note that the MLP can sometimes refer to any class of feedforward
 neural network, that is a network that applies affine transformations and
 activation functions to input from a previous layer in the network.
 
 \subsection{The Dense/Fully Connected Layer}
 
-\quad The affine transformation, which is the most fundamental transformation
+The affine transformation, which is the most fundamental transformation
 of the densely/fully connected layers that exist in the MLP, yields
 a weighted input vector $z^{l}$ with elements
 $z_j^{l} = W_{jk}^{l} a_{k}^{l-1} + b_{j}^{l}$ for a layer $l$ and neuron $j$.
@@ -270,7 +273,7 @@ has only a single neuron while the hidden layer has three neurons.
 
 \subsection{The Forward Pass and Cost Function}
 
-\quad The MLP is a function approximator and the MLP learns the parameters of
+The MLP is a function approximator and the MLP learns the parameters of
 this function. Since the learning is just the determination of the values of the
 parameters of the MLP, then there must be some other function that determines
 how well the parameters of the MLP approximate the desired function. This other
@@ -323,7 +326,7 @@ course, the metric for such "closeness" is the cost function!
 
 \subsection{Backpropagation}
 
-\quad The key to learning for the MLP, and for artificial neural networks in general,
+The key to learning for the MLP, and for artificial neural networks in general,
 is updating the weights $W^{l}$ and biases $b^{l}$ for each layer $l$ such
 that the network performs better with respect to the loss function\footnote{
 Machine learning APIs like TensorFlow tend to formulate cost functions
@@ -337,7 +340,7 @@ the elements of the parameter tensors should be modified to produce better predi
 
 \subsubsection{Parameters Revisited}
 
-\quad At this point you might ask yourself again what the difference between
+At this point you might ask yourself again what the difference between
 variables and parameters is. In pure mathematics classes, you are often asked
 to minimize a function with respect to some variable(s), and rarely (at least in
 my experience) with respect to a parameter. Why minimize the cost
@@ -360,7 +363,7 @@ model error, and then updating those parameters.
 
 \subsubsection{Typical Mathematical Notation for Gradient Descent}
 
-\quad Knowing that the parameters need to be updated, most often the below equations
+Knowing that the parameters need to be updated, most often the below equations
 will be written and the gradient computation process will be abstracted from
 the reader.
 
@@ -389,7 +392,7 @@ some variation on the word \textit{inference}.
 
 \subsubsection{The Four Fundamental Equations of Backpropagation}
 
-\quad While the previous equations are nice for rapidly intuiting the meaning of
+While the previous equations are nice for rapidly intuiting the meaning of
 gradient descent, they provide no insight into the computation of \textit{gradients}
 that are obviously needed for \textit{gradient} descent.
 
@@ -548,7 +551,7 @@ $m = \set{2^{i}}_{i=1}^{10}$.
 
 \section{Implementation}
 
-\quad Here I define the Python classes
+Here I define the Python classes
 that encapsulate the attributes (data members) and methods (functions) associated
 with the MLP. Since this approach is object oriented, it was helpful to
 define first the subunits of the MLP: operations (i.e., activation functions and
@@ -556,7 +559,7 @@ cost functions) and layers.
 
 \subsection{Operation}
 
-\quad The activation functions and cost functions are children of the Python
+The activation functions and cost functions are children of the Python
 abstract base class I define as \codeword{Operation}. The
 \codeword{Operation} has no arguments and initializes no attributes, but
 does have a \codeword{__call__} method and \codeword{derivative} method. All
@@ -566,7 +569,7 @@ implement a \codeword{gradient} method ($\nabla_{a^{l}}\text{C}$). The
 
 \subsection{DenseLayer}
 
-\quad The forward pass requires defining a class that
+The forward pass requires defining a class that
 encapsulates the fully/densely connected layer of the MLP. I define this as
 \codeword{DenseLayer} with attributes for the input dimensions $n_x$,
 the weight matrix $W \in \mathbb{R}^{n_h \times n_x}$, and the bias
@@ -652,7 +655,7 @@ last activation vector $a^{L}$ representing the predictions the model made given
 \subsubsection{Backpropagation Pseudocode}
 
 The \codeword{_backward_pass} is the only pseudocode I will provide since
-it is really the only step that is confusing due to the use of local $list$
+it is really the only step that is confusing due to the use of local \codeword{list}
 objects and the creation of ragged tensors, which are just nested variable
 length lists. The ragged tensors are the natural result of different weight
 and bias tensor shapes of hidden layers and the output layer. I also specify the
@@ -660,6 +663,8 @@ shapes of the tensors in the pseudocode for clarity. A \textit{?} is used in
 describing the variable length dimension of a tensor. Also, $n_l$ is the number
 of layers in the network (including the input layer) while $n_x$ generically
 refers to the number of neurons in the previous layer.
+
+\afterpage
 
 \begin{algorithm}
 	\caption{Computation of gradients for weight and bias parameters via backpropagation}
@@ -700,8 +705,8 @@ refers to the number of neurons in the previous layer.
 
 		% Assign the computations for the last layer to the end of the layers tensors
 		\State{}
-		\State{$\nabla_{b} C_{\text{layers}}[-1,:,:] \gets \nabla_{b^{L}} C_{\text{samples}}$}
-		\State{$\nabla_{W} C_{\text{layers}}[-1,:,:,:] \gets \nabla_{W^{L}} C_{\text{samples}}$}
+		\State{$\nabla_{b} C_{\text{layers}}[-1,:,:] \gets \nabla_{b^{L}} C_{\text{samples}}$} \Comment{Update the last element of the bias cost tensor}
+		\State{$\nabla_{W} C_{\text{layers}}[-1,:,:,:] \gets \nabla_{W^{L}} C_{\text{samples}}$} \Comment{Update the last element of the weight cost tensor}
 
 		% For loop to compute samples tensors
 		\State{}
@@ -713,7 +718,7 @@ refers to the number of neurons in the previous layer.
 		% Weight matrix and activation
 		\State{}
 		\State{$W^{l+1} \gets \text{\begingroup\color{blue}\texttt{sequential[l+1].W}\endgroup}$}
-		\State{$\frac{\partial \phi^{l}}{\partial z} \gets \text{\begingroup\color{blue}\texttt{sequential[l].activation.derivative}\endgroup}$}
+		\State{$\frac{\partial \phi^{l}}{\partial z}(\cdot) \gets \text{\begingroup\color{blue}\texttt{sequential[l].activation.derivative}\endgroup}$}
 
 		\State{}
 		\For{$b=0,...,m$}
@@ -722,7 +727,7 @@ refers to the number of neurons in the previous layer.
 		\State{$a^{l-1} \gets A[l-1, b, :]$}
 
 		\State{}
-		\State{$\nabla_{b^{l}} C_{\text{sample}} \gets \text{GradHiddenBiases}(W^{l+1},\delta^{l+1},z^{l},\frac{\partial \phi^{l}}{\partial z})$}
+		\State{$\nabla_{b^{l}} C_{\text{sample}} \gets \text{GradHiddenBiases}(W^{l+1},\delta^{l+1},z^{l},\frac{\partial \phi^{l}}{\partial z}(\cdot))$}
 		\State{$\nabla_{W^{l}} C_{\text{sample}} \gets \text{GradWeights}(a^{l-1}, \nabla_{b^{l}} C_{\text{sample}})$}
 
 
@@ -746,6 +751,8 @@ refers to the number of neurons in the previous layer.
 	\end{algorithmic}
 \end{algorithm}
 
+\clearpage
+
 \section{Testing}
 
 \subsection{Regression Tasks}
@@ -758,16 +765,42 @@ A binary classification task takes some input $x$ and produces a prediction
 $\hat{y}$ that is the probability (or logit, aka unscaled log probability) that
 $x$ belongs to the class $y \in \set{0, 1}$.
 
-The cost function for a problem such as this over $m$ examples in a batch is
-shown below.
+The binary cross entropy (BCE) cost function for a problem such as this over
+$m$ examples in a batch is shown below.
 
 % Binary cross entropy
 \begin{equation}
 	\begin{aligned}
 		C & = \frac{1}{m} \sum_{i = 0}^{m-1} {C_{i}}                                                       \\
-		C & = \frac{1}{m} \sum_{i = 0}^{m-1}{ y_{i} \ln{\hat{y}_{i}} + (1 - y_{i}) \ln{(1 - \hat{y}_{i})}}
+		  & = \frac{1}{m} \sum_{i = 0}^{m-1}{ y_{i} \ln{\hat{y}_{i}} + (1 - y_{i}) \ln{(1 - \hat{y}_{i})}}
 	\end{aligned}
 \end{equation}
+
+The partial derivative for a single sample $\frac{\partial C_i}{\partial a_{0}^{L}}$
+is needed, and no gradient is used
+since the gradient is, by definition, at least a rank-1 tensor. Why is no
+gradient computed? It is because there is only a single neuron in the output
+layer of a binary classification problem. Gradients were needed in previous
+problems to compute the initial errors of the parameters in the last layer.
+This is because the output layer of previous problems is a vector of $n_y$ neurons
+where $n_y \geq 1$ and therefore the gradient was
+${\nabla_{a^{L}} C = \langle \frac{\partial C}{\partial a_0^{L}}, \frac{\partial C}{\partial a_1^{L}}, \cdots, \frac{\partial C}{\partial a_{(n_{y} - 1)}^{L}} \rangle}$.
+The pseudocode still works for when $n_y = 1$; however, the algorithm must
+generalize to multiple dependent variables in a regression problem. Comparatively,
+the output of the forward pass for a single sample $x$ for a binary classification
+problem is always a single value for the probability of the sample $x$ belonging
+to the $class = 1$.
+Thus, the partial derivative of BCE for a single sample is shown below:
+
+\begin{equation}
+	\frac{\partial C_i}{\partial a_{0}^{L}} = \frac{y}{a^{L}} - \frac{ 1 - y}{ 1 - a^{L} }
+\end{equation}
+
+The architecture of the network is as follows: a single hidden layer with ReLU
+activation function and 32 neurons; an output layer with sigmoid activation function
+and 1 neuron; the BCE cost function; batch size of 32; trained for 8 epochs;
+update parameters with stochastic gradient descent; and learning rate of 0.001.
+
 
 \subsubsection{Multi-Class}
 
