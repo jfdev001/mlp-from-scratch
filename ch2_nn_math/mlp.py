@@ -41,6 +41,7 @@ class DenseLayer:
             input_dims: Number of units in the previous layer.
             num_units: Number of hidden units.
             activation_function: Activation function for neurons.
+            debug: Bool for printing debug information.
         """
 
         # Save function arg
@@ -229,7 +230,12 @@ class MLP:
 
         return self.sequential[1:]
 
-    def fit(self, x: np.ndarray, y: np.ndarray, batch_size: int, epochs: int) -> None:
+    def fit(
+        self, 
+        x: np.ndarray, 
+        y: np.ndarray, 
+        batch_size: int, 
+        epochs: int) -> defaultdict[list]:
         """Fit the MLP to data.
 
         Args:
@@ -238,6 +244,9 @@ class MLP:
             batch_size: Size of batch for mini-batch gradient descent.
                 Drops remainder batch by default.
             epochs: Number of epochs to train neural network.
+
+        Returns:
+            History dictionary with loss values per epoch.
         """
 
         # Get the number of samples
@@ -280,11 +289,11 @@ class MLP:
                 weight_grads, bias_grads = self._backward_pass(
                     y_true=y_batch)
 
-                # # Use gradient weights to descend cost function
-                # # (i.e., apply grads)
-                # self._gradient_descent(
-                #     weight_grads=weight_grads,
-                #     bias_grads=bias_grads)
+                # Use gradient weights to descend cost function
+                # (i.e., apply grads)
+                self._gradient_descent(
+                    weight_grads=weight_grads,
+                    bias_grads=bias_grads)
 
             # Update performance over epoch
             mean_of_batch_losses = np.mean(losses)
@@ -293,7 +302,7 @@ class MLP:
 
 
         # Validation loop where predictions and losses only are calculated
-        # no gradient descent
+        # no gradient descent... this would have to be called per epoch...
         pass
 
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
@@ -350,14 +359,11 @@ class MLP:
         to compute cost function gradients. The algorithm proceeds
         as follows:
 
-        1. delta^{L} = grad_a(C) * deriv_activation(weighted_input_of_lyr)
-                     = `self._compute_output_layer_error`.
-                     = dCost/dBias
+        1. delta^{L} = dCost/dBias
             1.1 Compute cost w.r.t weight matrix using delta^{L}.
         2. for L - 1 to 0:  # This is 'backpropagation' part.
             2.1 Compute delta^{l} \
                 == dCost/dBias for the current layer
-                == self._compute_hidden_layer_error
             2.2  Compute cost w.r.t weight matrix using delta^{l}
         3. Make sure to save the delta computations for biases
             and weights for each layer as these will be needed
@@ -447,12 +453,14 @@ class MLP:
                 dCost_dW_lyrs_samples.append(dCost_dW_lyr_sample)
 
             # Update layer list
-            dCost_dW_lyrs[lyr] = dCost_dW_lyrs_samples
-            dCost_dBias_lyrs[lyr] = dCost_dBias_lyrs_samples
+            dCost_dW_lyrs[lyr] = np.array(dCost_dW_lyrs_samples)
+            dCost_dBias_lyrs[lyr] = np.array(dCost_dBias_lyrs_samples)
 
         # Convert to ndarray
-        dCost_dW_lyrs, dCost_dBias_lyrs = np.array(dCost_dW_lyrs), np.array(dCost_dBias_lyrs)
+        dCost_dW_lyrs = np.array(dCost_dW_lyrs, dtype=object)
+        dCost_dBias_lyrs = np.array(dCost_dBias_lyrs, dtype=object)
 
+        # Debugging and printing shapes
         if self.debug:
             print('MLP._backward_pass')
             print('Length of error tensors... \
@@ -489,8 +497,8 @@ class MLP:
         """Uses gradient to minimize loss.
 
         Args:
-            weight_grads: List of weight gradient vectors
-            bias_grads: List of bias gradient vectors.
+            weight_grads: Tensor of weight gradient vectors
+            bias_grads: Tensor of bias gradient vectors.
         """
 
         # Zipped model and gradients iterator
@@ -501,15 +509,30 @@ class MLP:
 
         # Update gradients
         for cnt, (lyr, wt_grad, bias_grad) in enumerate(grad_iterator):
+            
+            if self.debug:
+                print('_gradient_descent for lyr =', cnt+1)
+                print(f'W = {lyr.W.shape} - a * {np.mean(wt_grad, axis=0).shape}')
+                print(f'b = {lyr.b.shape} - a * {np.mean(bias_grad, axis=0).shape}')
+                breakpoint()
+
+            # Update parameters... does this do reference or copy....
             lyr.W -= self.learning_rate * np.mean(wt_grad, axis=0)
             lyr.b -= self.learning_rate * np.mean(bias_grad, axis=0)
+
+        # Check if update worked... will refer to last layers weights and biases
+        if self.debug:
+            print('_gradient descent... check if update of weights worked.')
+            print(lyr.W == self.sequential[-1].W, lyr.W is self.sequential[-1].W)
+            print(lyr.b == self.sequential[-1].b, lyr.b is self.sequential[-1].b)
+            breakpoint()
 
     def _cache(self, activations: np.ndarray, weighted_inputs: np.ndarray) -> None:
         """Caches activations and weighted inputs from layer for backprop.
 
         Args:
-            activations:
-            weighted_inputs:
+            activations: Matrix of activations a (m, n_h)
+            weighted_inputs: Matrix of weighted inputs z (m, n_h)
         """
 
         self.activations_cache.append(activations)
@@ -588,18 +611,24 @@ class MLP:
         Uses activation of previous layer and delta of current layer to
         compute dC/dw_jk.
 
-        TODO: Is dot product appropriate here?
-
         Args:
-            activations_prev_lyr: Activations of previous layer.
-            delta_cur_lyr:
+            activations_prev_lyr: Activation vector of shape (n_a, ) of previous layer.
+            delta_cur_lyr: Error vector of shape (n_d, ).
 
         Returns:
             Derivative cost w.r.t to weight matrix vector.
         """
 
-        # Operations assume column vector (d, 1)
+        # Must expand dims because vectors here are assumed to be column
+        # vectors...
+        # (j, 1)
         delta_cur_lyr = np.expand_dims(delta_cur_lyr, axis=-1)
+
+        # (k, 1)
         activations_prev_lyr = np.expand_dims(activations_prev_lyr, axis=-1)
 
-        return np.dot(delta_cur_lyr, np.transpose(activations_prev_lyr))
+        # Matches weight matrix shape
+        # (jk)
+        dCost_dWeight_lyr = np.dot(delta_cur_lyr, np.transpose(activations_prev_lyr))
+
+        return dCost_dWeight_lyr

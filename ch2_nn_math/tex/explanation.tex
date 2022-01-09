@@ -423,11 +423,12 @@ accompanying implementation, one does not compute the gradient vectors of these 
 directly, rather the components of these gradient vectors $\nabla_{W}C$ or $\nabla_{b}C$
 are computed using other outputs of the network such as $a^{l}$ and $z^{l}$.
 
+
 \begin{align}
-	\delta^{L}                             & = \nabla_{a^{L}} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})         \\
-	\delta^{l}                             & = ((W^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l}) \\
-	\frac{\partial C}{\partial b_j^{l}}    & = \delta_j^{l}                                                                  \\
-	\frac{\partial C}{\partial W_{jk}^{l}} & = \delta_{j}^{l} (a_{k}^{l-1})^{\top}
+	\delta^{L}                            & = \nabla_{a^{L}} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})                                                                                                         \\
+	\delta^{l}                            & = ((W^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l})                                                                                                 \\
+	\frac{\partial C}{\partial b_j^{l}}   & = \delta_j^{l}                                                                                                                                                                  \\
+	\frac{ \partial C }{ \partial W^{l} } & = \delta^{l} (a^{l-1})^{\top}                                                   & \text{$\delta^{l} \in \mathbb{R}^{j \times 1}; (a^{l-1})^{\top} \in \mathbb{R}^{1 \times k}$}
 \end{align}
 
 Before explaining the meaning of the above equations,
@@ -461,9 +462,9 @@ where $n_y$ is the number of targets (or output classes).
 	\begin{bmatrix}
 		\dfrac{\partial C}{\partial a_{0}^{L}}(a_{0}^{L}) \dfrac{\partial \phi}{\partial z}(z_{0}^{L}) \\
 		\dfrac{\partial C}{\partial a_{1}^{L}}(a_{1}^{L}) \dfrac{\partial \phi}{\partial z}(z_{1}^{L}) \\
-		\dfrac{\partial C}{\partial a_{2}^{L}}(a_{2}^{L}) \dfrac{\partial \phi}{\partial z}(z_{1}^{L}) \\
+		\dfrac{\partial C}{\partial a_{2}^{L}}(a_{2}^{L}) \dfrac{\partial \phi}{\partial z}(z_{2}^{L}) \\
 		\vdots                                                                                         \\
-		\dfrac{\partial C}{\partial a_{(n_{y} - 1)}^{L}}(a_{(n_{y} - 1)}^{L}) \dfrac{\partial \phi}{\partial z}(z_{0}^{L})
+		\dfrac{\partial C}{\partial a_{(n_{y} - 1)}^{L}}(a_{(n_{y} - 1)}^{L}) \dfrac{\partial \phi}{\partial z}(z_{(n_{y} - 1)}^{L})
 	\end{bmatrix}
 \end{align}
 
@@ -555,7 +556,7 @@ refer to the below statements.
 \end{align}
 
 With these comments about backpropagation,
-the practical implementation of the four equations for can be discussed.
+the practical implementation of the four equations can be discussed.
 Since the above equations focus on the computation of gradients,
 they must be used in the \textit{gradient descent} equations below.
 
@@ -595,11 +596,14 @@ the weight matrix $W \in \mathbb{R}^{n_h \times n_x}$, and the bias
 ${b \in \mathbb{R}^{n_h}}$. The \codeword{DenseLayer} is correspondingly passed
 arguments for $n_x$, $n_h$, and a \codeword{Callable}
 that will be used as the vectorized activation function $\phi(\cdot)$ for a given layer.
+
 The \codeword{__init__} method saves the \codeword{Callable} and passes
 the $n_x$ and $n_h$ arguments to initialize the weight matrix and bias vector.
 The \codeword{glorot_uniform} method initializes the values of the weight matrix
 using Glorot Uniform initialization \cite{Glorot2010}. The bias vector is
-initialized with zeros. The activations and weighted inputs of the \codeword{DenseLayer}
+initialized with zeros.
+
+The activations and weighted inputs of the \codeword{DenseLayer}
 are computed with the \codeword{__call__} method defined as
 
 \begin{align}
@@ -612,7 +616,7 @@ Note that $x$ can be $x \in \mathbb{R}^{n_x}$, which
 is equivalent to ${X \in \mathbb{R}^{1 \times n_x}}$ for the purposes of matrix
 multiplication. However, the training dataset $\mathcal{D}$ is commonly
 $\mathcal{D} \in \mathbb{R}^{N \times n_x}$ where $N$ is the total number of
-training examples. Therefore, a subset $m$ of $N$ means that
+training examples. Therefore, a subset (aka batch) $m$ of $N$ means that
 $X \in \mathbb{R}^{m \times n_x}$.
 
 Consider now the shapes of the affine transformation and the subsequent activation:
@@ -641,7 +645,7 @@ The \codeword{__init__} method takes as arguments the dimension of the input
 $n_x$, the number of units $n_h$ per hidden layer, the number of targets or
 classes $n_y$, the learning rate $\eta$, the total number of hidden layers $l_h$,
 the cost function $C$ as a string, activation function $\phi$ for hidden layers as a string,
-the activation function for the target layer $\varphi$ as a string. This method
+and the activation function for the target layer $\varphi$ as a string. This method
 also creates three \codeword{list} objects of particular important:
 \codeword{sequential}, \codeword{activations_cache}, and
 \codeword{weighted_inputs_cache}. These \codeword{list} objects are used to
@@ -662,12 +666,16 @@ loss\footnote{Only used to track model performance, not used to
 
 The \codeword{_forward_pass} first clears the cache of saved activations and
 weighted input vectors from the previous pass. Then each layer in the
-\codeword{sequential} list is to compute and the cache weighted inputs and
-activations for each layer. Finally, it returns the last activation vector
-representing the predictions the model made given the samples.
+\codeword{sequential} list is called to compute and the cache weighted inputs and
+activations $a^{l-1}$ as the input to the \codeword{__call__} method of each \codeword{DenseLayer}.
+Finally, the \codeword{__call__} of the last \codeword{DenseLayer} returns the
+last activation vector $a^{L}$ representing the predictions the model made given the samples.
 
 The \codeword{_backward_pass} is the only pseudocode I will provide since
-it is really the only step that cannot figure
+it is really the only step that is somewhat muddled due to the use of local $list$
+objects and the creation of ragged tensors, which are just nested variable
+length lists. The ragged tensors are the natural result of different weight
+and bias tensor shapes of hidden layers and the output layer.
 
 \pagebreak
 \printbibliography
