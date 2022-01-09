@@ -44,10 +44,10 @@
   <internal package="biblatex" priority="9" active="0">
     <generic>latex</generic>
     <provides type="dynamic">
-      <file>explanation.bcf</file>
+      <file>report.bcf</file>
     </provides>
     <requires type="dynamic">
-      <file>explanation.bbl</file>
+      <file>report.bbl</file>
     </requires>
     <requires type="static">
       <file>blx-dm.def</file>
@@ -64,19 +64,19 @@
     <generic>biber</generic>
     <cmdline>
       <binary>biber</binary>
-      <infile>explanation</infile>
+      <infile>report</infile>
     </cmdline>
     <input>
-      <file>explanation.bcf</file>
+      <file>report.bcf</file>
     </input>
     <output>
-      <file>explanation.bbl</file>
+      <file>report.bbl</file>
     </output>
     <provides type="dynamic">
-      <file>explanation.bbl</file>
+      <file>report.bbl</file>
     </provides>
     <requires type="dynamic">
-      <file>explanation.bcf</file>
+      <file>report.bcf</file>
     </requires>
     <requires type="editable">
       <file>sources.bib</file>
