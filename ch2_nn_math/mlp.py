@@ -211,7 +211,6 @@ class MLP:
         # where there is a single value per epoch
         self.history = defaultdict(list)
 
-
     @property
     def cache(self,) -> tuple[list[np.ndarray], list[np.ndarray]]:
         """Returns activation and weighted inputs caches."""
@@ -286,8 +285,7 @@ class MLP:
                 losses.append(loss)
 
                 # Compute gradients
-                weight_grads, bias_grads = self._backward_pass(
-                    y_true=y_batch)
+                weight_grads, bias_grads = self._backward_pass(y_true=y_batch)
 
                 # Use gradient weights to descend cost function
                 # (i.e., apply grads)
@@ -300,10 +298,12 @@ class MLP:
             self.history['train_loss'].append(mean_of_batch_losses)
             print(f'Epoch {epoch+1}/{epochs} -- Loss: {mean_of_batch_losses}')
 
-
         # Validation loop where predictions and losses only are calculated
         # no gradient descent... this would have to be called per epoch...
         pass
+
+        # Model performances
+        return self.history
 
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network.
@@ -326,8 +326,7 @@ class MLP:
         self._cache(activations=activations, weighted_inputs=None)
         for lyr in range(1, self.num_layers):
             activations, weighted_inputs = self.sequential[lyr](activations)
-            self._cache(activations=activations,
-                        weighted_inputs=weighted_inputs)
+            self._cache(activations=activations, weighted_inputs=weighted_inputs)
 
         if self.debug:
             print('end _forward_pass')
