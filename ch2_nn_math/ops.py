@@ -215,7 +215,7 @@ class BinaryCrossEntropy(Operation):
         if self.from_logits:
             predictions = self.sigmoid(predictions)
 
-        return (targets/predictions) - ((1-targets) / (1-predictions))
+        return -1 * ((targets/predictions) - ((1-targets) / (1-predictions)))
 
     def __call__(self,
                  inputs: tuple[np.ndarray, np.ndarray],) -> np.ndarray:

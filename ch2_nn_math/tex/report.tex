@@ -772,8 +772,8 @@ since there are not multiple neurons in the last layer of the network.
 % Binary cross entropy
 \begin{equation}
 	\begin{aligned}
-		C & = \frac{1}{m} \sum_{i = 0}^{m-1} {C_{i}}                                                     \\
-		  & = \frac{1}{m} \sum_{i = 0}^{m-1}{ y_{i} \ln{(a_{i}^{L})} + (1 - y_{i}) \ln{(1 - a_{i}^{L})}}
+		C & = \frac{-1}{m} \sum_{i = 0}^{m-1} {C_{i}}                                                     \\
+		  & = \frac{-1}{m} \sum_{i = 0}^{m-1}{ y_{i} \ln{(a_{i}^{L})} + (1 - y_{i}) \ln{(1 - a_{i}^{L})}}
 	\end{aligned}
 \end{equation}
 
@@ -794,7 +794,7 @@ to the $class = 1$.
 Thus, the partial derivative of BCE for a single sample is shown below:
 
 \begin{equation}
-	\frac{\partial C_i}{\partial a_{0}^{L}} = \frac{y}{a_{0}^{L}} - \frac{ 1 - y}{ 1 - a_{0}^{L} }
+	\frac{\partial C_i}{\partial a_{0}^{L}} = -1(\frac{y}{a_{0}^{L}} - \frac{ 1 - y}{ 1 - a_{0}^{L} })
 \end{equation}
 
 The architecture of the network is as follows: a single hidden layer with ReLU
