@@ -88,7 +88,8 @@ class DenseLayer:
         # shapes
         if self.debug:
             print('__call__ inputs')
-            print('x:', x.shape, '@ W^{T}:', self.W.shape[::-1], '+ b', self.b.shape)
+            print('x:', x.shape, '@ W^{T}:',
+                  self.W.shape[::-1], '+ b', self.b.shape)
             breakpoint()
 
         # Affine transformation
@@ -106,7 +107,6 @@ class DenseLayer:
             print('z:', weighted_input_z.shape)
             print('a:', activation_a.shape)
             breakpoint()
-
 
         # Result of layer computation
         # a (samples, hidden units), (samples, hidden units)
@@ -156,7 +156,7 @@ class MLP:
             self.target_activation = Linear()
         else:
             self.target_activation = target_activation
-    
+
         # Set default hidden layer activation functions
         if hidden_activation is None:
             self.hidden_activation = ReLU()
@@ -220,11 +220,11 @@ class MLP:
         return self.sequential[1:]
 
     def fit(
-        self, 
-        x: np.ndarray, 
-        y: np.ndarray, 
-        batch_size: int, 
-        epochs: int) -> defaultdict[list]:
+            self,
+            x: np.ndarray,
+            y: np.ndarray,
+            batch_size: int,
+            epochs: int) -> defaultdict[list]:
         """Fit the MLP to data.
 
         Args:
@@ -251,23 +251,23 @@ class MLP:
 
         # Create batch data generator
         # https://stackoverflow.com/questions/50465966/re-using-zip-iterator-in-python-3/50466346
-        batch_data = lambda: zip(x[batch_indices], y[batch_indices])
+        def batch_data(): return zip(x[batch_indices], y[batch_indices])
 
         # Training loop
         for epoch in range(epochs):
-            
+
             # Track losses per epoch over batches
             losses = []
             for batch_step, (x_batch, y_batch) in enumerate(batch_data()):
 
-                # This is a single training step and could be 
+                # This is a single training step and could be
                 # refactored as training iteration
 
                 if self.debug:
                     print('MLP.fit batch step')
                     print(f'{batch_step+1}/{num_batches}')
 
-                # Predictions for sample 
+                # Predictions for sample
                 preds = self._forward_pass(x_batch)
 
                 # Loss metric, not used for grad descent
@@ -297,10 +297,10 @@ class MLP:
 
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network.
-        
+
         Args:
             inputs: Array of x data.
-        
+
         Returns:
             Predictions (aka activations) given inputs.
         """
@@ -316,7 +316,8 @@ class MLP:
         self._cache(activations=activations, weighted_inputs=None)
         for lyr in range(1, self.num_layers):
             activations, weighted_inputs = self.sequential[lyr](activations)
-            self._cache(activations=activations, weighted_inputs=weighted_inputs)
+            self._cache(activations=activations,
+                        weighted_inputs=weighted_inputs)
 
         if self.debug:
             print('end _forward_pass')
@@ -373,7 +374,7 @@ class MLP:
 
         # Make ground truth a row vector if single sample
         y_true = np.atleast_2d(y_true)
-        
+
         # One delta_L vector with a number of columns
         # equal to the number of targets for each row (training example)
         # (batch_size, num_targets)
@@ -498,11 +499,13 @@ class MLP:
 
         # Update gradients
         for cnt, (lyr, wt_grad, bias_grad) in enumerate(grad_iterator):
-            
+
             if self.debug:
                 print('_gradient_descent for lyr =', cnt+1)
-                print(f'W = {lyr.W.shape} - a * {np.mean(wt_grad, axis=0).shape}')
-                print(f'b = {lyr.b.shape} - a * {np.mean(bias_grad, axis=0).shape}')
+                print(
+                    f'W = {lyr.W.shape} - a * {np.mean(wt_grad, axis=0).shape}')
+                print(
+                    f'b = {lyr.b.shape} - a * {np.mean(bias_grad, axis=0).shape}')
                 breakpoint()
 
             # Update parameters... does this do reference or copy....
@@ -512,8 +515,10 @@ class MLP:
         # Check if update worked... will refer to last layers weights and biases
         if self.debug:
             print('_gradient descent... check if update of weights worked.')
-            print(lyr.W == self.sequential[-1].W, lyr.W is self.sequential[-1].W)
-            print(lyr.b == self.sequential[-1].b, lyr.b is self.sequential[-1].b)
+            print(lyr.W == self.sequential[-1].W,
+                  lyr.W is self.sequential[-1].W)
+            print(lyr.b == self.sequential[-1].b,
+                  lyr.b is self.sequential[-1].b)
             breakpoint()
 
     def _cache(self, activations: np.ndarray, weighted_inputs: np.ndarray) -> None:
@@ -617,6 +622,7 @@ class MLP:
 
         # Matches weight matrix shape
         # (jk)
-        dCost_dWeight_lyr = np.dot(delta_cur_lyr, np.transpose(activations_prev_lyr))
+        dCost_dWeight_lyr = np.dot(
+            delta_cur_lyr, np.transpose(activations_prev_lyr))
 
         return dCost_dWeight_lyr
