@@ -122,10 +122,10 @@ class MLP:
             hidden_units: int,
             targets: int,
             learning_rate: float,
+            loss_function: Operation[object],
             l_layers: int = 1,
-            loss_function: str = 'mse',
-            hidden_activation: str = 'relu',
-            target_activation: Optional[str] = None,
+            hidden_activation: Operation[object] = None,
+            target_activation: Operation[object] = None,
             debug: Optional[bool] = False):
         """Define state for Multilayer Perceptron.
 
@@ -134,17 +134,14 @@ class MLP:
         function parametrized by the weights and biases.
 
         Args:
-            input_dims:
+            input_dims: Number of features in training data.
             hidden_units: Number of neurons in hidden layer.
-            targets: Target dimensional output.
-            learning_rate: Learning rate(eta) for weight updates.
-            l_layers: Number of layers
+            targets: Number of neurons in output layer.
+            learning_rate: Learning rate (eta) for weight updates.
             loss_function: Specify loss function.
-                NOTE: Only supports 'mse'.
+            l_layers: Number of hidden layers.
             hidden_activation: Activation function for hidden layers.
-                NOTE: Only supports 'relu'.
             target_activation: Activation function for target layers.
-                NOTE: Only support 'sigmoid' or None for now.
             debug: Bool to debug or not... print shapes of inputs, etc.
         """
 
@@ -154,27 +151,20 @@ class MLP:
         self.batch_size = None
         self.debug = debug
 
-        # Set final layer activation function
+        # Set default final layer activation function
         if target_activation is None:
             self.target_activation = Linear()
-        elif target_activation == 'sigmoid':
-            self.target_activation = Sigmoid()
         else:
-            raise ValueError
-
-        # Set hidden layer activation functions
+            self.target_activation = target_activation
+    
+        # Set default hidden layer activation functions
         if hidden_activation is None:
-            self.hidden_activation = Linear()
-        elif hidden_activation == 'relu':
             self.hidden_activation = ReLU()
         else:
-            raise ValueError
+            self.hidden_activation = hidden_activation
 
-        # Set loss function
-        if loss_function == 'mse':
-            self.loss_function = MeanSquaredError()
-        else:
-            raise ValueError
+        # Set loss
+        self.loss_function = loss_function
 
         # Define layers
         self.hidden = DenseLayer(
@@ -590,7 +580,6 @@ class MLP:
             The delta vector of the current layer.
         """
 
-        # np.transpose if wt matrix is (output_dim, input_dim)...
         wted_err = np.dot(np.transpose(
             wt_matrix_of_lyr_plus_one), delta_of_lyr_plus_one)
 

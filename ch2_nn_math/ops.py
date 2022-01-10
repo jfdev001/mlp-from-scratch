@@ -28,6 +28,20 @@ class Operation(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def gradient(
+            self,
+            inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+        """Derivative of the cost operation with respect to each activation.
+
+        Args:
+            inputs: targets, prediction vectors.
+
+        Returns:
+            Gradient (vector) of values.
+        """
+        pass
+
+    @abstractmethod
     def __call__(
             self,
             inputs: Union[tuple[np.ndarray, np.ndarray],
@@ -68,6 +82,9 @@ class ReLU(Operation):
         greater_than_zero_tensor = np.greater(inputs, 0).astype(np.float64)
         return greater_than_zero_tensor
 
+    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+        return super().gradient(inputs)
+
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
 
         # Compute a boolean tensor where the elements
@@ -93,6 +110,9 @@ class Sigmoid(Operation):
     def derivative(self, inputs: np.ndarray) -> np.ndarray:
         return self(inputs=inputs) * (1 - self(inputs=inputs))
 
+    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+        return super().gradient(inputs)
+
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
         return 1 / (1 + np.exp(-1 * inputs))
 
@@ -102,6 +122,9 @@ class Linear(Operation):
 
     def derivative(self, inputs: np.ndarray) -> np.ndarray:
         return np.ones_like(inputs)
+
+    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+        return super().gradient(inputs)
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
         return inputs
@@ -124,7 +147,7 @@ class MeanSquaredError(Operation):
 
     def gradient(
             self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
-        """Computes the gradient with respect to activation (preds).
+        """Computes the gradient with respect to all activations (preds).
 
         This is a vectorized function and is called on each element of 
         an activation vector in order to compute the partial derivative
@@ -145,7 +168,7 @@ class MeanSquaredError(Operation):
             self,
             inputs: tuple[np.ndarray, np.ndarray]) -> np.float64:
         """Compute cost given inputs.
-        
+
         Args:
             inputs: Targets and predictions vectors.
 
@@ -160,42 +183,58 @@ class MeanSquaredError(Operation):
 class BinaryCrossEntropy(Operation):
     """Binary cross entropy loss (cost) function."""
 
-    def __init__(self,):
-        """Initializes sigmoid function for binary cross entropy."""
+    def __init__(self, from_logits: bool = False):
+        """Initializes sigmoid function for binary cross entropy.
+
+        Args:
+         from_logits: True for logits, false for normalized log 
+                probabilities (i.e., used sigmoid activation function).
+                Assumes not from logits.
+        """
 
         self.sigmoid = Sigmoid()
+        self.from_logits = from_logits
 
     def derivative(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         return super().derivative(inputs)
 
     def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
-        """"""
-        pass
+        """Derivative with respect to a single activation (same as derivative).
 
-    def __call__(self, 
-        inputs: tuple[np.ndarray, np.ndarray],
-        from_logits: bool = False) -> np.ndarray:
+        Should there be a from logits check here??
+
+        Args:
+            inputs: Targets, predictions vectors. Presumably, the inputs 
+            here also have to be normalized log probabilities.
+
+        Returns:
+            Vector (gradient) of values.
+        """
+        targets, predictions = inputs
+
+        if self.from_logits:
+            predictions = self.sigmoid(predictions)
+
+        return (targets/predictions) - ((1-targets) / (1-predictions))
+
+    def __call__(self,
+                 inputs: tuple[np.ndarray, np.ndarray],) -> np.ndarray:
         """Compute cost given inputs.
-        
+
         Args:
             inputs: Targets and predictions vectors. 
                 Assumes predictions are not from logits.
-            from_logits: True for logits, false for normalized log 
-                probabilities (i.e., used sigmoid activation function).
-                Assumes not from logits.
 
         Return:
             Scalar cost.
         """
-        
+
         targets, predictions = inputs
 
-        if from_logits:
+        if self.from_logits:
             predictions = self.sigmoid(predictions)
 
         return -1 * np.mean(targets * np.log(predictions) + (1 - targets) * np.log(1 - predictions))
-
-    
 
 
 class CategoricalCrossEntropy(Operation):
@@ -203,6 +242,9 @@ class CategoricalCrossEntropy(Operation):
 
     def derivative(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         return super().derivative(inputs)
+
+    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+        return super().gradient(inputs)
 
     def __call__(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         return super().__call__(inputs)

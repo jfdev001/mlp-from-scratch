@@ -562,10 +562,9 @@ cost functions) and layers.
 The activation functions and cost functions are children of the Python
 abstract base class I define as \codeword{Operation}. The
 \codeword{Operation} has no arguments and initializes no attributes, but
-does have a \codeword{__call__} method and \codeword{derivative} method. All
-children of the \codeword{Operation} must implement these methods; however, if
-the child is a \textit{cost function}, then this child class must also
-implement a \codeword{gradient} method ($\nabla_{a^{l}}\text{C}$). The
+does have a \codeword{__call__} method, a \codeword{derivative} method, and
+a \codeword{gradient} method. All
+children of the \codeword{Operation} must implement these methods.
 
 \subsection{DenseLayer}
 
@@ -766,13 +765,15 @@ $\hat{y}$ that is the probability (or logit, aka unscaled log probability) that
 $x$ belongs to the class $y \in \set{0, 1}$.
 
 The binary cross entropy (BCE) cost function for a problem such as this over
-$m$ examples in a batch is shown below.
+$m$ examples in a batch is shown below. Note that $i$ denotes
+the $i^{th} $prediction of batch \textit{not} the $i^{th}$ neuron of a layer
+since there are not multiple neurons in the last layer of the network.
 
 % Binary cross entropy
 \begin{equation}
 	\begin{aligned}
-		C & = \frac{1}{m} \sum_{i = 0}^{m-1} {C_{i}}                                                       \\
-		  & = \frac{1}{m} \sum_{i = 0}^{m-1}{ y_{i} \ln{\hat{y}_{i}} + (1 - y_{i}) \ln{(1 - \hat{y}_{i})}}
+		C & = \frac{1}{m} \sum_{i = 0}^{m-1} {C_{i}}                                                     \\
+		  & = \frac{1}{m} \sum_{i = 0}^{m-1}{ y_{i} \ln{(a_{i}^{L})} + (1 - y_{i}) \ln{(1 - a_{i}^{L})}}
 	\end{aligned}
 \end{equation}
 
@@ -793,14 +794,13 @@ to the $class = 1$.
 Thus, the partial derivative of BCE for a single sample is shown below:
 
 \begin{equation}
-	\frac{\partial C_i}{\partial a_{0}^{L}} = \frac{y}{a^{L}} - \frac{ 1 - y}{ 1 - a^{L} }
+	\frac{\partial C_i}{\partial a_{0}^{L}} = \frac{y}{a_{0}^{L}} - \frac{ 1 - y}{ 1 - a_{0}^{L} }
 \end{equation}
 
 The architecture of the network is as follows: a single hidden layer with ReLU
 activation function and 32 neurons; an output layer with sigmoid activation function
 and 1 neuron; the BCE cost function; batch size of 32; trained for 8 epochs;
 update parameters with stochastic gradient descent; and learning rate of 0.001.
-
 
 \subsubsection{Multi-Class}
 
