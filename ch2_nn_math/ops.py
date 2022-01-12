@@ -154,8 +154,8 @@ class MeanSquaredError(Operation):
         of the cost with respect to the j^{th} activation for the 
         l^{th} layer.
 
-        MSE = 1/2 (pred - true)^{2}
-        dMSE/dPred = pred - true
+        MSE = (1/dims) * (pred - true)^{2}
+        dMSE/dPred =  (2/dim) * (pred - true)
 
         Args:
             inputs: Targets, predictions vectors.
@@ -165,7 +165,7 @@ class MeanSquaredError(Operation):
         """
 
         targets, predictions = inputs
-        return (predictions - targets)
+        return (2 / targets.shape[-1]) * (predictions - targets)
 
     def __call__(
             self,
