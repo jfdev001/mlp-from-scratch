@@ -222,7 +222,8 @@ class BinaryCrossEntropy(Operation):
         return -1 * ((targets/predictions) - ((1-targets) / (1-predictions)))
 
     def __call__(self,
-                 inputs: tuple[np.ndarray, np.ndarray],) -> np.ndarray:
+                 inputs: tuple[np.ndarray, np.ndarray],
+                 axis: Optional[int] = None) -> np.ndarray:
         """Compute cost given inputs.
 
         Args:
@@ -238,7 +239,7 @@ class BinaryCrossEntropy(Operation):
         if self.from_logits:
             predictions = self.sigmoid(predictions)
 
-        return -1 * np.mean(targets * np.log(predictions) + (1 - targets) * np.log(1 - predictions))
+        return -1 * np.mean(targets * np.log(predictions) + (1 - targets) * np.log(1 - predictions), axis=axis)
 
 
 class CategoricalCrossEntropy(Operation):
