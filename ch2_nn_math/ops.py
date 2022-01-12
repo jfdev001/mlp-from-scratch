@@ -2,7 +2,7 @@
 
 
 from abc import ABCMeta, abstractmethod
-from typing import Union
+from typing import Optional, Union
 
 import numpy as np
 
@@ -154,6 +154,9 @@ class MeanSquaredError(Operation):
         of the cost with respect to the j^{th} activation for the 
         l^{th} layer.
 
+        MSE = 1/2 (pred - true)^{2}
+        dMSE/dPred = pred - true
+
         Args:
             inputs: Targets, predictions vectors.
 
@@ -162,11 +165,12 @@ class MeanSquaredError(Operation):
         """
 
         targets, predictions = inputs
-        return 2 * (predictions - targets)
+        return (predictions - targets)
 
     def __call__(
             self,
-            inputs: tuple[np.ndarray, np.ndarray]) -> np.float64:
+            inputs: tuple[np.ndarray, np.ndarray],
+            axis: Optional[int] = None) -> np.float64:
         """Compute cost given inputs.
 
         Args:
@@ -177,7 +181,7 @@ class MeanSquaredError(Operation):
         """
 
         targets, predictions = inputs
-        return np.mean(np.square(targets - predictions))
+        return np.mean(np.square(targets - predictions), axis=axis)
 
 
 class BinaryCrossEntropy(Operation):
