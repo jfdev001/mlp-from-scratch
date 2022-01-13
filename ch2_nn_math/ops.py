@@ -2,7 +2,7 @@
 
 
 from abc import ABCMeta, abstractmethod
-from typing import Optional, Union
+from typing import Optional, Union, Tuple, List
 
 import numpy as np
 
@@ -13,7 +13,7 @@ class Operation(metaclass=ABCMeta):
     @abstractmethod
     def derivative(
             self,
-            inputs: Union[tuple[np.ndarray, np.ndarray],
+            inputs: Union[Tuple[np.ndarray, np.ndarray],
                           np.ndarray]) -> np.ndarray:
         """Call using derivative of operation.
 
@@ -30,7 +30,7 @@ class Operation(metaclass=ABCMeta):
     @abstractmethod
     def gradient(
             self,
-            inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+            inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
         """Derivative of the cost operation with respect to each activation.
 
         Args:
@@ -44,7 +44,7 @@ class Operation(metaclass=ABCMeta):
     @abstractmethod
     def __call__(
             self,
-            inputs: Union[tuple[np.ndarray, np.ndarray],
+            inputs: Union[Tuple[np.ndarray, np.ndarray],
                           np.ndarray]) -> np.ndarray:
         """Normal call of operation.
 
@@ -82,7 +82,7 @@ class ReLU(Operation):
         greater_than_zero_tensor = np.greater(inputs, 0).astype(np.float64)
         return greater_than_zero_tensor
 
-    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+    def gradient(self, inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
         return super().gradient(inputs)
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
@@ -110,7 +110,7 @@ class Sigmoid(Operation):
     def derivative(self, inputs: np.ndarray) -> np.ndarray:
         return self(inputs=inputs) * (1 - self(inputs=inputs))
 
-    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+    def gradient(self, inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
         return super().gradient(inputs)
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
@@ -123,7 +123,7 @@ class Linear(Operation):
     def derivative(self, inputs: np.ndarray) -> np.ndarray:
         return np.ones_like(inputs)
 
-    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+    def gradient(self, inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
         return super().gradient(inputs)
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
@@ -142,11 +142,11 @@ class MeanSquaredError(Operation):
 
     def derivative(
             self,
-            inputs: tuple[np.ndarray, np.ndarray]) -> np.float64:
+            inputs: Tuple[np.ndarray, np.ndarray]) -> np.float64:
         return super().derivative(inputs)
 
     def gradient(
-            self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+            self, inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
         """Computes the gradient with respect to all activations (preds).
 
         This is a vectorized function and is called on each element of 
@@ -169,7 +169,7 @@ class MeanSquaredError(Operation):
 
     def __call__(
             self,
-            inputs: tuple[np.ndarray, np.ndarray],
+            inputs: Tuple[np.ndarray, np.ndarray],
             axis: Optional[int] = None) -> np.float64:
         """Compute cost given inputs.
 
@@ -199,10 +199,10 @@ class BinaryCrossEntropy(Operation):
         self.sigmoid = Sigmoid()
         self.from_logits = from_logits
 
-    def derivative(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+    def derivative(self, inputs: Union[Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         return super().derivative(inputs)
 
-    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+    def gradient(self, inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
         """Derivative with respect to a single activation (same as derivative).
 
         Should there be a from logits check here??
@@ -222,7 +222,7 @@ class BinaryCrossEntropy(Operation):
         return -1 * ((targets/predictions) - ((1-targets) / (1-predictions)))
 
     def __call__(self,
-                 inputs: tuple[np.ndarray, np.ndarray],
+                 inputs: Tuple[np.ndarray, np.ndarray],
                  axis: Optional[int] = None) -> np.ndarray:
         """Compute cost given inputs.
 
@@ -245,24 +245,24 @@ class BinaryCrossEntropy(Operation):
 class CategoricalCrossEntropy(Operation):
     """Categorical cross entropy (aka, NLL) loss (cost) function."""
 
-    def derivative(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+    def derivative(self, inputs: Union[Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         return super().derivative(inputs)
 
-    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+    def gradient(self, inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
         return super().gradient(inputs)
 
-    def __call__(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+    def __call__(self, inputs: Union[Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         return super().__call__(inputs)
 
 
 class Softmax(Operation):
     """Softmax function."""
 
-    def derivative(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+    def derivative(self, inputs: Union[Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         return super().derivative(inputs)
 
-    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+    def gradient(self, inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
         return super().gradient(inputs)
 
-    def __call__(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+    def __call__(self, inputs: Union[Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         return super().__call__(inputs)

@@ -19,9 +19,10 @@ Derivative of Activation Fxns: https://www.analyticsvidhya.com/blog/2021/04/acti
 
 from __future__ import annotations
 from collections import defaultdict
-from typing import Callable, Optional
+from typing import Callable, Optional, List, Tuple, DefaultDict
 
 import numpy as np
+from numpy.random.mtrand import logseries
 
 from ops import Operation, Sigmoid, ReLU, Linear, MeanSquaredError
 
@@ -72,7 +73,7 @@ class DenseLayer:
         return np.random.uniform(-1/np.sqrt(input_dims), 1/np.sqrt(input_dims),
                                  size=(num_units, input_dims))
 
-    def __call__(self, x: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def __call__(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """Compute layer activations and weighted inputs.
 
         Args:
@@ -214,7 +215,7 @@ class MLP:
         self.history = defaultdict(list)
 
     @property
-    def cache(self,) -> tuple[list[np.ndarray], list[np.ndarray]]:
+    def cache(self,) -> Tuple[List[np.ndarray], List[np.ndarray]]:
         """Returns activation and weighted inputs caches."""
 
         return self.activations_cache, self.weighted_inputs_cache
@@ -226,7 +227,7 @@ class MLP:
         return len(self.sequential)
 
     @property
-    def layers(self,) -> list[DenseLayer]:
+    def layers(self,) -> List[DenseLayer]:
         """Returns a list of dense layers in the network."""
 
         return self.sequential[1:]
@@ -236,7 +237,7 @@ class MLP:
             x: np.ndarray,
             y: np.ndarray,
             batch_size: int,
-            epochs: int) -> defaultdict[list]:
+            epochs: int) -> DefaultDict[List]:
         """Fit the MLP to data.
 
         Args:
@@ -354,7 +355,7 @@ class MLP:
 
     def _backward_pass(
             self,
-            y_true: np.ndarray) -> tuple[list[np.ndarray], list[np.ndarray]]:
+            y_true: np.ndarray) -> Tuple[List[np.ndarray], List[np.ndarray]]:
         """Compute the gradient of the cost function.
 
         After forward the pass occurs, use the cached outputs
@@ -384,8 +385,12 @@ class MLP:
         # Get cached activations and weighted inputs
         activations, weighted_inputs = self.cache
 
-        # Make ground truth a row vector if single sample
-        y_true = np.atleast_2d(y_true)
+        # Make ground truth a row vector if single regression sample...
+        # otherwise make into column vector
+        if 'Entropy' not in self.loss_function.__class__.__name__:
+            y_true = np.atleast_2d(y_true)
+        else:
+            y_true = np.expand_dims(y_true, axis=-1)
 
         # One delta_L vector with a number of columns
         # equal to the number of targets for each row (training example)
@@ -494,8 +499,8 @@ class MLP:
 
     def _gradient_descent(
             self,
-            weight_grads: list[np.ndarray],
-            bias_grads: list[np.ndarray]) -> None:
+            weight_grads: List[np.ndarray],
+            bias_grads: List[np.ndarray]) -> None:
         """Uses gradient to minimize loss.
 
         Args:
