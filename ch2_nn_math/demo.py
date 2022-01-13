@@ -5,7 +5,8 @@ from distutils.util import strtobool
 
 import numpy as np
 
-from mlp import MLP
+from mlp import MLP  # nopep8
+from ops import MeanSquaredError, BinaryCrossEntropy, Linear, ReLU, Sigmoid  # nopep8
 
 
 def main():
@@ -35,6 +36,9 @@ def main():
             hidden_units=args.num_hidden_units,
             targets=args.t_targets,
             learning_rate=args.learning_rate,
+            loss_function=MeanSquaredError(),
+            hidden_activation=ReLU(),
+            target_activation=Linear(),
             l_layers=args.num_layers,
             debug=args.debug)
 
@@ -47,6 +51,9 @@ def main():
             hidden_units=args.num_hidden_units,
             targets=args.c_categories,
             learning_rate=args.learning_rate,
+            loss_function=BinaryCrossEntropy(),
+            hidden_activation=ReLU(),
+            target_activation=Sigmoid(),
             l_layers=args.num_layers,
             debug=args.debug)
 

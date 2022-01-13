@@ -253,3 +253,16 @@ class CategoricalCrossEntropy(Operation):
 
     def __call__(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         return super().__call__(inputs)
+
+
+class Softmax(Operation):
+    """Softmax function."""
+
+    def derivative(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+        return super().derivative(inputs)
+
+    def gradient(self, inputs: tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+        return super().gradient(inputs)
+
+    def __call__(self, inputs: Union[tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+        return super().__call__(inputs)

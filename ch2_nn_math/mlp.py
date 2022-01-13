@@ -166,6 +166,18 @@ class MLP:
         # Set loss
         self.loss_function = loss_function
 
+        # Validate binary cross entropy
+        if self.loss_function.__class__.__name__ == 'BinaryCrossEntropy' \
+                and targets != 2:
+            raise ValueError(
+                'Binary classification problems can have only have 2 target.')
+
+        elif self.loss_function.__class__.__name__ == 'BinaryCrossEntropy' \
+                and targets == 2:
+
+            # Output will be probability of sample x belonging to class 1.
+            targets = 1
+
         # Define layers
         self.hidden = DenseLayer(
             input_dims=input_dims,
