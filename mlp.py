@@ -22,7 +22,8 @@ from collections import defaultdict
 from typing import Callable, Optional, List, Tuple, DefaultDict
 
 import numpy as np
-from numpy.random.mtrand import logseries
+
+from sklearn.model_selection import train_test_split
 
 from ops import Operation, Sigmoid, ReLU, Linear, MeanSquaredError
 
@@ -237,8 +238,10 @@ class MLP:
             x: np.ndarray,
             y: np.ndarray,
             batch_size: int,
-            epochs: int) -> DefaultDict[List]:
-        """Fit the MLP to data.
+            epochs: int,
+            test_size: float = 0.2,
+            random_state: int = 42) -> DefaultDict[List]:
+        """Fit the MLP to data and print training/validation metrics.
 
         Args:
             x: Input data with `n` samples and `m` features.
@@ -251,34 +254,29 @@ class MLP:
             History dictionary with loss values per epoch.
         """
 
-        # Get the number of samples
-        num_samples = x.shape[0]
-
-        # Save the batch size for computations later
+        # Saving batch size for use later
         self.batch_size = batch_size
-        num_batches = num_samples//batch_size
 
-        # Get batch indices
-        batch_indices = np.random.choice(
-            a=num_samples, size=(num_batches, batch_size), replace=False)
+        # Splitting batch indices
+        x_train, x_test, y_train, y_test = train_test_split(
+            x, y, test_size=test_size, random_state=random_state)
 
-        # Create batch data generator
-        # https://stackoverflow.com/questions/50465966/re-using-zip-iterator-in-python-3/50466346
-        def batch_data(): return zip(x[batch_indices], y[batch_indices])
+        train_batch_indices = self.batch_indices(
+            x=x_train, batch_size=batch_size)
 
         # Training loop
         for epoch in range(epochs):
 
             # Track losses per epoch over batches
             losses = []
-            for batch_step, (x_batch, y_batch) in enumerate(batch_data()):
-
-                # This is a single training step and could be
-                # refactored as training iteration
+            for batch_step, (x_batch, y_batch) in enumerate(
+                self.batch_data(x=x_train,
+                                y=y_train,
+                                batch_indices=train_batch_indices)):
 
                 if self.debug:
                     print('MLP.fit batch step')
-                    print(f'{batch_step+1}/{num_batches}')
+                    print(f'{batch_step+1}')
 
                 # Predictions for sample
                 preds = self._forward_pass(x_batch)
@@ -296,17 +294,62 @@ class MLP:
                     weight_grads=weight_grads,
                     bias_grads=bias_grads)
 
-            # Update performance over epoch
-            mean_of_batch_losses = np.mean(losses)
-            self.history['train_loss'].append(mean_of_batch_losses)
-            print(f'Epoch {epoch+1}/{epochs} -- Loss: {mean_of_batch_losses}')
+            # Update performance for training over epoch
+            mean_of_train_batch_losses = np.mean(losses)
+            self.history['train_loss'].append(mean_of_train_batch_losses)
 
-        # Validation loop where predictions and losses only are calculated
-        # no gradient descent... this would have to be called per epoch...
-        pass
+            # Validation loop where predictions and losses only are calculated
+            # no gradient descent... this would have to be called per epoch...
+            val_losses = []
+            val_batch_indices = self.batch_indices(
+                x=x_test, batch_size=batch_size)
+
+            for (x_val_batch, y_val_batch) in self.batch_data(
+                    x=x_test, y=y_test, batch_indices=val_batch_indices):
+
+                val_preds = self._forward_pass(inputs=x_val_batch)
+                val_loss = self._compute_loss(
+                    y_true=y_val_batch, y_pred=val_preds)
+
+                val_losses.append(val_loss)
+
+            mean_of_val_batch_losses = np.mean(val_losses)
+            self.history['val_loss'].append(mean_of_val_batch_losses)
+
+            # Print performance
+            out_str = f'Epoch {epoch+1}/{epochs}'
+            out_str += f' -- Loss: {round(mean_of_train_batch_losses, 3)}'
+            out_str += f' -- Validation Loss: {round(mean_of_val_batch_losses, 3)}'
+            print(out_str)
 
         # Model performances
         return self.history
+
+    def batch_indices(
+            self,
+            x: np.ndarray,
+            batch_size: int) -> np.ndarray:
+        # Get the number of samples
+        num_samples = x.shape[0]
+
+        num_batches = num_samples//batch_size
+
+        # Get batch indices
+        batch_indices = np.random.choice(
+            a=num_samples, size=(num_batches, batch_size), replace=False)
+
+        return batch_indices
+
+    def batch_data(
+            self,
+            x: np.ndarray,
+            y: np.ndarray,
+            batch_indices: np.ndarray) -> zip:
+        """Create batch data generator for use with iteration.
+
+        https://stackoverflow.com/questions/50465966/re-using-zip-iterator-in-python-3/50466346
+        """
+        return zip(x[batch_indices], y[batch_indices])
 
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network.
@@ -401,8 +444,6 @@ class MLP:
                 print(f'Classification Problem...{y_true.shape}')
                 print(y_true)
                 breakpoint()
-
-        print(y_true.shape)
 
         # One delta_L vector with a number of columns
         # equal to the number of targets for each row (training example)
