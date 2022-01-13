@@ -65,6 +65,7 @@ class ReLU(Operation):
     """ReLU activation function.
 
     https://en.wikipedia.org/wiki/Rectifier_(neural_networks) and
+
     @MISC {333400,
         TITLE = {What is the derivative of the ReLU activation function?},
         AUTHOR = {Jim (https://stats.stackexchange.com/users/67042/jim)},
@@ -91,8 +92,9 @@ class ReLU(Operation):
         # Compute a boolean tensor where the elements
         # that are greater than 0 are set to true while
         # elements <= 0 are set to false.
-        greater_than_zero_tensor = np.greater(inputs, 0)
-        return greater_than_zero_tensor * inputs
+        zeros = np.zeros_like(inputs)
+        max_inputs_and_zeros = np.maximum(inputs, zeros)
+        return max_inputs_and_zeros
 
 
 class Sigmoid(Operation):
@@ -115,7 +117,7 @@ class Sigmoid(Operation):
         return super().gradient(inputs)
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
-        return 1 / (1 + np.exp(-1 * inputs))
+        return 1 / (1 + np.exp(-inputs))
 
 
 class Linear(Operation):
@@ -199,7 +201,30 @@ class SigmoidCrossEntropyWithLogits(Operation):
     def gradient(self, inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
         """Gradient of cross entropy with respect to each element."""
 
-        return super().gradient(inputs)
+        targets, logits = inputs
+
+        cce_grads = np.where(
+            logits >= 0,
+            self.deriv_logits_greater_eq_zero(targets, logits),
+            self.deriv_logits_less_zero(targets, logits))
+
+        return cce_grads
+
+    def deriv_logits_greater_eq_zero(self, targets, logits):
+        """When logits is greater than or equal to zero, apply this function.
+
+        See report.pdf for derivative.
+        """
+
+        return 1 - targets - (np.exp(-logits) / (1 + np.exp(-logits)))
+
+    def deriv_logits_less_zero(self, targets, logits):
+        """When logits is less than zero, apply this function.
+
+        See report.pdf for derivative.
+        """
+
+        return (np.exp(logits) / (np.exp(logits) + 1)) - targets
 
     def __call__(
             self,
