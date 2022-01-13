@@ -5,6 +5,8 @@ from distutils.util import strtobool
 
 import numpy as np
 
+from sklearn import datasets
+
 from mlp import MLP  # nopep8
 from ops import MeanSquaredError, BinaryCrossEntropy, Linear, ReLU, Sigmoid  # nopep8
 
@@ -57,11 +59,35 @@ def main():
             l_layers=args.num_layers,
             debug=args.debug)
 
-    elif args.task == 'boston-housing-regression':
-        raise NotImplementedError
+    elif args.task == 'diabetes-regression':
+        x, y = datasets.load_diabetes(return_X_y=True)
 
-    elif args.task == 'iris-classification':
-        raise NotImplementedError
+        y = np.expand_dims(y, axis=-1)
+
+        model = MLP(
+            input_dims=x.shape[-1],
+            hidden_units=args.num_hidden_units,
+            targets=1,
+            learning_rate=args.learning_rate,
+            loss_function=MeanSquaredError(),
+            hidden_activation=ReLU(),
+            target_activation=Linear(),
+            l_layers=args.num_layers,
+            debug=args.debug)
+
+    elif args.task == 'breast-cancer-classification':
+        x, y = datasets.load_breast_cancer(return_X_y=True)
+
+        model = MLP(
+            input_dims=x.shape[-1],
+            hidden_units=args.num_hidden_units,
+            targets=2,
+            learning_rate=args.learning_rate,
+            loss_function=BinaryCrossEntropy(),
+            hidden_activation=ReLU(),
+            target_activation=Sigmoid(),
+            l_layers=args.num_layers,
+            debug=args.debug)
 
     # Traing the model
     model.fit(x, y, batch_size=args.batch_size, epochs=args.num_epochs)
@@ -74,8 +100,8 @@ def cli(description: str):
     parser.add_argument(
         'task',
         choices=[
-            'iris-classification',
-            'boston-housing-regression',
+            'breast-cancer-classification',
+            'diabetes-regression',
             'random-regression',
             'random-classification'],
         help='specify supervised learning task.')

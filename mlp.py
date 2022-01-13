@@ -402,6 +402,8 @@ class MLP:
                 print(y_true)
                 breakpoint()
 
+        print(y_true.shape)
+
         # One delta_L vector with a number of columns
         # equal to the number of targets for each row (training example)
         # (batch_size, num_targets)
