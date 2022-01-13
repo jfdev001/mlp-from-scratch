@@ -488,6 +488,37 @@
       \verb https://numpy.org/doc/stable/user/basics.broadcasting.html
       \endverb
     \endentry
+    \entry{Khan2020}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=5886810e57e4941b39302d55644574dc}{%
+           family={Khan},
+           familyi={K\bibinitperiod},
+           given={Rafay},
+           giveni={R\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Medium}%
+      }
+      \strng{namehash}{5886810e57e4941b39302d55644574dc}
+      \strng{fullhash}{5886810e57e4941b39302d55644574dc}
+      \strng{bibnamehash}{5886810e57e4941b39302d55644574dc}
+      \strng{authorbibnamehash}{5886810e57e4941b39302d55644574dc}
+      \strng{authornamehash}{5886810e57e4941b39302d55644574dc}
+      \strng{authorfullhash}{5886810e57e4941b39302d55644574dc}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{month}{12}
+      \field{title}{How do tensorflow and Keras implement binary classification and the binary cross-entropy function?}
+      \field{year}{2020}
+      \verb{urlraw}
+      \verb https://rafayak.medium.com/how-do-tensorflow-and-keras-implement-binary-classification-and-the-binary-cross-entropy-function-e9413826da7
+      \endverb
+      \verb{url}
+      \verb https://rafayak.medium.com/how-do-tensorflow-and-keras-implement-binary-classification-and-the-binary-cross-entropy-function-e9413826da7
+      \endverb
+    \endentry
   \enddatalist
 \endrefsection
 \endinput

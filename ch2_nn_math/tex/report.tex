@@ -24,7 +24,7 @@
     citecolor=black,
     filecolor=black,
     linkcolor=black,
-    urlcolor=black
+    urlcolor=magenta
 }
 
 % Use with dfrac
@@ -468,9 +468,8 @@ you are finding the rate of change of the cost function for an infinitesimally
 small change in the $j^{th}$ activation of a layer.
 
 \begin{align}
-	C                                     & = \frac{1}{n_h} \sum_{j=0}^{(n_h - 1)} { (a_{j}^{L} - y_j)^{2} }                \\
-	\frac{\partial C}{\partial a^{L}}     & = \frac{1}{n_h} \sum_{j=0}^{(n_h - 1)} { \frac{\partial C}{\partial a_{j}^{L}}} \\
-	\frac{\partial C}{\partial a_{j}^{L}} & = 2(a_{j}^{L} - y_j)
+	C                                     & = \frac{1}{n_h} \sum_{j=0}^{(n_h - 1)} { (a_{j}^{L} - y_j)^{2} } \\
+	\frac{\partial C}{\partial a_{j}^{L}} & = \frac{2}{n_h} (a_{j}^{L} - y_j)
 \end{align}
 
 You might ask yourself, "how do I actually get
@@ -799,6 +798,10 @@ The architecture of the network is as follows: a single hidden layer with ReLU
 activation function and 32 neurons; an output layer with sigmoid activation function
 and 1 neuron; the BCE cost function; batch size of 32; trained for 8 epochs;
 update parameters with stochastic gradient descent; and learning rate of 0.001.
+
+Note that my implementation is not the optimized implementation used by
+TensorFlow, see \cite{Khan2020} and the binary cross entropy TensorFlow backend
+\href{https://github.com/keras-team/keras/blob/2c48a3b38b6b6139be2da501982fd2f61d7d48fe/keras/backend.py#L5129}{source code}.
 
 \section{Conclusions}
 
