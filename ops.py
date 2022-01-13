@@ -3,6 +3,7 @@
 
 from abc import ABCMeta, abstractmethod
 from typing import Optional, Union, Tuple, List
+from webbrowser import Opera
 
 import numpy as np
 
@@ -182,6 +183,22 @@ class MeanSquaredError(Operation):
 
         targets, predictions = inputs
         return np.mean(np.square(targets - predictions), axis=axis)
+
+
+class SigmoidCrossEntropyWithLogits(Operation):
+    """Cross entropy function based on tensorflow implementation.
+
+    https://rafayak.medium.com/how-do-tensorflow-and-keras-implement-binary-classification-and-the-binary-cross-entropy-function-e9413826da7
+    """
+
+    def derivative(self, inputs: Union[Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+        return super().derivative(inputs)
+
+    def gradient(self, inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+        return super().gradient(inputs)
+
+    def __call__(self, inputs: Union[Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+        return super().__call__(inputs)
 
 
 class BinaryCrossEntropy(Operation):
