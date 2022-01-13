@@ -16,7 +16,7 @@ class Operation(metaclass=ABCMeta):
             self,
             inputs: Union[Tuple[np.ndarray, np.ndarray],
                           np.ndarray]) -> np.ndarray:
-        """Call using derivative of operation.
+        """Call derivative of single variable operation.
 
         Args:
             inputs: Inputs for use during operation derivative call.
@@ -32,7 +32,7 @@ class Operation(metaclass=ABCMeta):
     def gradient(
             self,
             inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
-        """Derivative of the cost operation with respect to each activation.
+        """Relevant for multivariable operations such as cost functions.
 
         Args:
             inputs: targets, prediction vectors.
@@ -177,7 +177,7 @@ class MeanSquaredError(Operation):
         Args:
             inputs: Targets and predictions vectors.
 
-        Return:
+        Returns:
             Scalar cost.
         """
 
@@ -191,14 +191,44 @@ class SigmoidCrossEntropyWithLogits(Operation):
     https://rafayak.medium.com/how-do-tensorflow-and-keras-implement-binary-classification-and-the-binary-cross-entropy-function-e9413826da7
     """
 
-    def derivative(self, inputs: Union[Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+    def derivative(
+            self,
+            inputs: Union[Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
         return super().derivative(inputs)
 
     def gradient(self, inputs: Tuple[np.ndarray, np.ndarray]) -> np.ndarray:
+        """Gradient of cross entropy with respect to each element."""
+
         return super().gradient(inputs)
 
-    def __call__(self, inputs: Union[Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
-        return super().__call__(inputs)
+    def __call__(
+            self,
+            inputs: Union[Tuple[np.ndarray, np.ndarray], np.ndarray]) -> np.ndarray:
+        """Compute cross entropy.
+
+        Args:
+            inputs: Targets (y) and logits (z). Logits are from linear output.
+
+        Returns:
+            Cross entropy tensor.
+        """
+
+        # Extract inputs
+        targets, logits = inputs
+
+        # Pre-loss calculations
+        zeros = np.zeros_like(logits)
+        max_logits_and_zeros = np.maximum(logits, zeros)
+        abs_logits = np.absolute(logits)
+
+        # Single sample cost
+        loss = max_logits_and_zeros - logits * \
+            targets + np.log(1 + np.exp(-abs_logits))
+
+        # Batch sample cost
+        cost = np.mean(loss, axis=-1)
+
+        return cost
 
 
 class BinaryCrossEntropy(Operation):
@@ -247,7 +277,7 @@ class BinaryCrossEntropy(Operation):
             inputs: Targets and predictions vectors. 
                 Assumes predictions are not from logits.
 
-        Return:
+        Returns:
             Scalar cost.
         """
 
