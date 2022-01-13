@@ -420,6 +420,16 @@ class MLP:
                 delta_cur_lyr=dCost_dBias_L_samples[sample])
             for sample in range(self.batch_size)])
 
+        # Print gradient tensors for last layer
+        if self.debug:
+            print('dCost_dW_L_samples:')
+            print(dCost_dW_L_samples)
+            print()
+
+            print('dCost_dBias_L_samples')
+            print(dCost_dBias_L_samples)
+            breakpoint()
+
         # Save deltas, which are equivalent to partial derivatives
         # with respect to biases for a layer...
         # this will end up being a ragged rank-3 tensor
@@ -522,8 +532,6 @@ class MLP:
                 print('Not finite...')
                 print(dCost_dW_lyrs)
 
-        breakpoint()
-
         return dCost_dW_lyrs, dCost_dBias_lyrs
 
     def _gradient_descent(
@@ -605,12 +613,36 @@ class MLP:
         """
 
         grad_cost_wrt_activation = self.loss_function.gradient(
-            (output_activations, y_true))
+            (y_true, output_activations))
 
         deriv_activation_of_z = self.target_activation.derivative(
             wted_input_of_final_lyr)
 
         delta_lyr = grad_cost_wrt_activation * deriv_activation_of_z
+
+        if self.debug and 'Entropy' in self.loss_function.__class__.__name__:
+            print('_compute_delta_last_lyr')
+
+            print('Output Activations')
+            print(output_activations)
+            print()
+
+            print('y_true')
+            print(y_true)
+            print()
+
+            print('dCost/dActivation')
+            print(grad_cost_wrt_activation)
+            print()
+
+            print('dPhi/dz (z)')
+            print(deriv_activation_of_z)
+            print()
+
+            print('dC/dbias')
+            print(delta_lyr)
+
+            breakpoint()
 
         return delta_lyr
 

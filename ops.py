@@ -190,6 +190,8 @@ class MeanSquaredError(Operation):
 class SigmoidCrossEntropyWithLogits(Operation):
     """Cross entropy function based on tensorflow implementation.
 
+    Derivative does not seem to match that of TensorFlows.
+
     https://rafayak.medium.com/how-do-tensorflow-and-keras-implement-binary-classification-and-the-binary-cross-entropy-function-e9413826da7
     """
 
