@@ -389,8 +389,18 @@ class MLP:
         # otherwise make into column vector
         if 'Entropy' not in self.loss_function.__class__.__name__:
             y_true = np.atleast_2d(y_true)
+            if self.debug:
+                print('MLP _backward_pass')
+                print(f'Regression Problem...{y_true.shape}')
+                print(y_true)
+                breakpoint()
         else:
             y_true = np.expand_dims(y_true, axis=-1)
+            if self.debug:
+                print('MLP _backward_pass')
+                print(f'Classification Problem...{y_true.shape}')
+                print(y_true)
+                breakpoint()
 
         # One delta_L vector with a number of columns
         # equal to the number of targets for each row (training example)
@@ -472,28 +482,47 @@ class MLP:
             print('MLP._backward_pass')
             print('Length of error tensors... \
                 one per layer where first element is None for placeholding input layer')
-            print(dCost_dW_lyrs.shape)
-            print(dCost_dBias_lyrs.shape)
+            print(dCost_dW_lyrs.shape, dCost_dW_lyrs.dtype)
+            print(dCost_dBias_lyrs.shape, dCost_dBias_lyrs.dtype)
 
             print()
             print('Shapes of dC arrays:')
             print('Shapes of dC/dB arrays')
-            for dcdb in dCost_dBias_lyrs:
-                if dcdb is not None:
-                    print(np.array(dcdb).shape)
-                else:
-                    print('None')
-                print()
+
+            # Check if all layers are finite
+            dCost_dBias_is_finite = np.all([
+                np.all(np.isfinite(dcdb))
+                for dcdb in dCost_dBias_lyrs if dcdb is not None])
+
+            dCost_dW_is_finite = np.all([
+                np.all(np.isfinite(dcdw))
+                for dcdw in dCost_dW_lyrs if dcdw is not None])
+
+            if dCost_dBias_is_finite:
+
+                for dcdb in dCost_dBias_lyrs:
+                    if dcdb is not None:
+                        print(np.array(dcdb).shape)
+                    else:
+                        print('None')
+                    print()
+            else:
+                print('Not finite....')
+                print(dCost_dBias_lyrs)
 
             print('Shapes of dC/dW arrays')
-            for dcdw in dCost_dW_lyrs:
-                if dcdw is not None:
-                    print(np.array(dcdw).shape)
-                else:
-                    print('None')
-                print()
+            if dCost_dW_is_finite:
+                for dcdw in dCost_dW_lyrs:
+                    if dcdw is not None:
+                        print(np.array(dcdw).shape)
+                    else:
+                        print('None')
+                    print()
+            else:
+                print('Not finite...')
+                print(dCost_dW_lyrs)
 
-            breakpoint()
+        breakpoint()
 
         return dCost_dW_lyrs, dCost_dBias_lyrs
 
@@ -533,9 +562,13 @@ class MLP:
         if self.debug:
             print('_gradient descent... check if update of weights worked.')
             print(lyr.W == self.sequential[-1].W,
-                  lyr.W is self.sequential[-1].W)
+                  lyr.W is self.sequential[-1].W,
+                  lyr.W,
+                  self.sequential[-1].W)
             print(lyr.b == self.sequential[-1].b,
-                  lyr.b is self.sequential[-1].b)
+                  lyr.b is self.sequential[-1].b,
+                  lyr.b,
+                  self.sequential[-1].b)
             breakpoint()
 
     def _cache(self, activations: np.ndarray, weighted_inputs: np.ndarray) -> None:
