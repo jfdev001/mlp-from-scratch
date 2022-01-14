@@ -137,7 +137,7 @@ class MultiModelHistory:
 
                 # Compute summary statistics for a metrics values
                 mean_metric_values = np.mean(metric_values)
-                ci_err = self.confidence_interval_err(
+                ci_err = confidence_interval_err(
                     vector=metric_values, alpha=alpha, verbose=verbose)
 
                 # Populate the CI dict with the summary statistic tuple
@@ -152,6 +152,7 @@ class MultiModelHistory:
     def set_key_to_metric_major(self,) -> None:
         """Reformats the conf. interval dict to metric as parent key."""
 
+        # Make the ci dict metric major if first time being called
         if self._conf_interval_dict_metric_major is None:
             self._conf_interval_dict_metric_major = defaultdict(dict)
             for model_ix, performance in enumerate(self.model_performance):
@@ -159,9 +160,9 @@ class MultiModelHistory:
                     self._conf_interval_dict_metric_major[metric_name][
                         self.model_keys[model_ix]] = metric_stats
 
-        else:
-            self._conf_interval_dict = deepcopy(
-                self._conf_interval_dict_metric_major)
+        # Set the main ci dict
+        self._conf_interval_dict = deepcopy(
+            self._conf_interval_dict_metric_major)
 
     def set_key_to_model_major(self,) -> None:
         """Reformats the conf. interval dict to model as parent key."""
@@ -184,58 +185,58 @@ class MultiModelHistory:
 
         return len(list(self._conf_interval_dict.keys())) == 0
 
-    def confidence_interval_err(
-            self,
-            vector: np.ndarray,
-            alpha: float = 0.95,
-            verbose: bool = False) -> float:
-        """Computes desired confidence interval error for figures.
 
-        https://en.wikipedia.org/wiki/Confidence_interval
+def confidence_interval_err(
+        vector: np.ndarray,
+        alpha: float = 0.95,
+        verbose: bool = False) -> float:
+    """Computes desired confidence interval error for figures.
 
-        Args:
-            vector: List of values over which a confidence interval will be computed.
-            alpha: Confidence level.
-            verbose: Prints whether central limit theorem is assumed.
+    https://en.wikipedia.org/wiki/Confidence_interval
 
-        Returns:
-            The confidence level error
-        """
+    Args:
+        vector: List of values over which a confidence interval will be computed.
+        alpha: Confidence level.
+        verbose: Prints whether central limit theorem is assumed.
 
-        # Cast input ndarray
-        if not isinstance(vector, np.ndarray):
-            vector = np.array(vector)
+    Returns:
+        The confidence level error
+    """
 
-        # Validate
-        if not(alpha > 0. and alpha < 1,):
-            raise ValueError(':param alpha: must be between 0 and 100.')
+    # Cast input ndarray
+    if not isinstance(vector, np.ndarray):
+        vector = np.array(vector)
 
-        # Compute estimators
-        mean = np.mean(vector)
-        scale = st.sem(vector)  # standard error mean (how close to pop. mean)
+    # Validate
+    if not(alpha > 0. and alpha < 1,):
+        raise ValueError(':param alpha: must be between 0 and 100.')
 
-        # Determine central limit theorem assumption
-        if vector.shape[0] >= 30:
-            if verbose:
-                print('Assume CLT...')
-            interval = st.norm.interval(alpha=alpha, loc=mean, scale=scale)
+    # Compute estimators
+    mean = np.mean(vector)
+    scale = st.sem(vector)  # standard error mean (how close to pop. mean)
 
-        else:
-            if verbose:
-                print('Not assuming CLT...')
-            interval = st.t.interval(alpha=alpha, df=len(
-                vector)-1, loc=mean, scale=scale)
+    # Determine central limit theorem assumption
+    if vector.shape[0] >= 30:
+        if verbose:
+            print('Assume CLT...')
+        interval = st.norm.interval(alpha=alpha, loc=mean, scale=scale)
 
-        # Confidence intervals are m +- h
-        # from left_bound = mean - h and right_bound = mean + h
-        # From the 'Example' at https://en.wikipedia.org/wiki/Confidence_interval
-        # it is clear that [mean - cs/sqrt(n), mean + cs/sqrt(n)] means that the
-        # value of cs/sqrt(n), denoted err can be computed with simple rearrangement.
-        left_bound, right_bound = interval
-        err = right_bound - mean
+    else:
+        if verbose:
+            print('Not assuming CLT...')
+        interval = st.t.interval(alpha=alpha, df=len(
+            vector)-1, loc=mean, scale=scale)
 
-        # Resulting err for errorbars
-        return err
+    # Confidence intervals are m +- h
+    # from left_bound = mean - h and right_bound = mean + h
+    # From the 'Example' at https://en.wikipedia.org/wiki/Confidence_interval
+    # it is clear that [mean - cs/sqrt(n), mean + cs/sqrt(n)] means that the
+    # value of cs/sqrt(n), denoted err can be computed with simple rearrangement.
+    left_bound, right_bound = interval
+    err = right_bound - mean
+
+    # Resulting err for errorbars
+    return err
 
 
 def plot_train_val_loss(
@@ -277,6 +278,9 @@ def plot_train_val_loss(
             ax.plot(metric_values, label=metric_name)
 
     # Labeling
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
     ax.legend()
 
     # Return the plot
@@ -287,9 +291,9 @@ def plot_bar_charts(
         multi_model_history: MultiModelHistory,
         bar_width: float,
         title: str,
-        xlabel: str = 'Model',
+        xlabel: str = 'Metric',
         ylabel: str = 'Performance',
-        scatter: bool = False,
+        model_xaxis: bool = False,
         style: str = './report.mplstyle',) -> Figure:
     """Plots bar charts of different metrics and with error bars.
 
@@ -306,22 +310,63 @@ def plot_bar_charts(
     if multi_model_history.is_conf_interval_dict_empty():
         multi_model_history.build_conf_interval_dict()
 
+    # Set plot format
+    if model_xaxis:
+        # aka {metric1: {model1: stats, model2: stats}, ...}
+        # The xtick labels will be model based
+        multi_model_history.set_key_to_metric_major()
+        xticks = np.arange(len(multi_model_history.model_keys))
+        xticklabels = multi_model_history.model_keys
+        bar_labels = multi_model_history.metric_keys
+
+    else:
+        # aka {model1: {metric1: stats, metric2: stats}, ...}
+        # The xtick labels will be metric based
+        multi_model_history.set_key_to_model_major()
+        xticks = np.arange(len(multi_model_history.metric_keys))
+        xticklabels = multi_model_history.metric_keys
+        bar_labels = multi_model_history.model_keys
+
     # MPL set up
     plt.style.use(style)
     fig, ax = plt.subplots()
 
-    # Compute the number of indices... there is one index per
-    # model
-    indices = len(multi_model_history.model_keys)
-
-    # Compute the number of "groups", (i.e., the number of
-    # metrics per "model" index
-    groups_per_index = len(multi_model_history.metric_keys)
-
+    # Plotting bar charts
     barcontainers = []
-    model_keys = multi_model_history.model_keys
-    for model_ix, performance in enumerate(multi_model_history.model_performance):
-        pass
+    for ix, performance in enumerate(multi_model_history.model_performance):
+        means = [v.mean for v in performance.values()]
+        errs = [v.error for v in performance.values()]
+
+        barcontainer = ax.bar(
+            xticks + bar_width * ix,
+            means,
+            yerr=errs,
+            ecolor='black',
+            width=bar_width,
+            alpha=0.5,
+            capsize=10,
+            label=bar_labels[ix],
+            align='edge'
+        )
+
+        barcontainers.append(barcontainer)
+
+    # Labeling
+    ax.set_xlabel(xlabel)
+    ax.set_xticks(xticks + bar_width)
+    ax.set_xticklabels(xticklabels)
+    ax.set_ylabel(ylabel)
+    ax.set_title(title)
+    ax.legend()
+    ax.yaxis.grid(True)
+
+    for barcontainer in barcontainers:
+        autolabel_err_bars(
+            ax=ax,
+            barcontainer=barcontainer,
+            ha='left',)
+
+    return fig
 
 
 def autolabel_err_bars(
