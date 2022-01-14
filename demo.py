@@ -259,7 +259,7 @@ def cli(description: str):
 
     figures.add_argument(
         '--path-to-save-figures',
-        help='path where all figure plots will be saved.',
+        help='path where all figure plots will be saved. (default: ./tex/figures)',
         type=str,
         default='./tex/figures')
 
