@@ -1,26 +1,80 @@
 """Module for plotting and statistical functions."""
 
+from __future__ import annotations
+from typing import Optional, Dict
+
 import numpy as np
 
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.container import BarContainer
+from matplotlib.figure import Figure
 
 import scipy.stats as st
 
 
-def plot_train_val_loss():
-    """Plots training and validation losses"""
-    return
+def plot_train_val_loss(
+        history_dictionary: Dict,
+        title: str,
+        xlabel: str = 'Epoch',
+        ylabel: str = 'Metric',
+        scatter: bool = False,
+        style: str = './report.mplstyle',) -> Figure:
+    """Plots training and validation losses using model history dict.
+
+    Args:
+        history_dictionary: A dictionary whose keys are the metrics
+            of the model during fitting and whose values are the losses
+            per epoch. An epoch consists of (num_samples//batch_size)
+            batches and the average of the losses of these batches is
+            the loss for an epoch.
+        title: Title for figure.
+        xlabel: Label of x-axis for figure.
+        ylabel: Label of y-axis for figure.
+        scatter: True for figure to be scatter plot for each metric, false 
+            for line plot.
+        style: Path to matplotlib style file.
+
+    Returns:
+        A figure for the model performance.
+    """
+
+    plt.style.use(style)
+
+    fig, ax = plt.subplots()
+    for metric_name, metric_values in history_dictionary.items():
+        if scatter:
+            ax.scatter(np.arange(1, len(metric_values)+1),
+                       metric_values, label=metric_name)
+        else:
+            ax.plot(metric_values, label=metric_name)
+
+    ax.legend()
+
+    return fig
 
 
 def plot_bar_charts():
-    """Plots bar charts of different metrics and with error bars."""
+    """Plots bar charts of different metrics and with error bars.
+
+    Args:
+        pass
+
+    Returns:
+        pass
+    """
     return
 
 
-def confidence_interval_err(vector: np.ndarray, alpha: float = 0.95):
-    """Computes desired confidence interval error."""
+def confidence_interval_err(vector: np.ndarray, alpha: float = 0.95) -> float:
+    """Computes desired confidence interval error.
+
+    Args:
+        pass
+
+    Returns:
+        pass
+    """
 
     # Validate
     if not(alpha > 0. and alpha < 1,):
