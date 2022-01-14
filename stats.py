@@ -1,9 +1,10 @@
 """Module for plotting and statistical functions."""
 
 from __future__ import annotations
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from copy import deepcopy
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Union
+from xml.dom.pulldom import parseString
 
 import numpy as np
 
@@ -16,13 +17,19 @@ import scipy.stats as st
 
 
 class MultiModelHistory:
-    """Class for containing histories of multiple models."""
+    """Class for containing histories of multiple models.
+
+    NOTE: The nested dictionary structure itself probably warranted
+    its own class because the same methods apply to the conf. interval. dict.
+    """
 
     def __init__(self):
         """Initialize dictionaries for MultiModelHistory."""
 
         self._nested_dict = dict()
         self._conf_interval_dict = defaultdict(dict)
+        self._conf_interval_dict_model_major = None
+        self._conf_interval_dict_metric_major = None
 
     @property
     def model_keys(self,) -> List[str]:
@@ -30,6 +37,8 @@ class MultiModelHistory:
 
     @property
     def metric_keys(self,) -> List[str]:
+        """Assumes models all have the same metrics."""
+
         return list(list(self.model_histories)[0].keys())
 
     @property
@@ -63,6 +72,15 @@ class MultiModelHistory:
 
         return self._conf_interval_dict
 
+    @property
+    def model_performance(self,) -> Union[List[Dict[str, List[float]]], None]:
+        """List of dictionaries for statistical model performance."""
+
+        if not self.is_conf_interval_dict_empty():
+            return list(self._conf_interval_dict.values())
+        else:
+            return None
+
     def append_model_history(
             self, model_history: Dict[str, List[float]], model_key: str) -> None:
         """Append a model history and the desired key name to the nested dict.
@@ -83,7 +101,7 @@ class MultiModelHistory:
             model_key: The name of the model.
         """
 
-        if self._is_nested_dict_empty():
+        if self.is_nested_dict_empty():
             self.append_model_history(
                 model_history=model_history, model_key=model_key)
         else:
@@ -101,7 +119,7 @@ class MultiModelHistory:
             verbose: Prints whether central limit theorem is assumed.
         """
 
-        if not self._is_conf_interval_dict_empty():
+        if not self.is_conf_interval_dict_empty():
             raise ValueError(
                 'Cannot build the confidence interval dict multiple times')
 
@@ -123,20 +141,45 @@ class MultiModelHistory:
                     vector=metric_values, alpha=alpha, verbose=verbose)
 
                 # Populate the CI dict with the summary statistic tuple
-                stat_tuple = (mean_metric_values, ci_err)
-                self._conf_interval_dict[model_keys[ix]][metric] = stat_tuple
+                Stats = namedtuple('Stats', ['mean', 'error'])
+                metric_stats = Stats(mean=mean_metric_values, error=ci_err)
+                self._conf_interval_dict[model_keys[ix]][metric] = metric_stats
+
+        # Save a copy of the confidence interval dictionary
+        self._conf_interval_dict_model_major = deepcopy(
+            self._conf_interval_dict)
+
+    def set_key_to_metric_major(self,) -> None:
+        """Reformats the conf. interval dict to metric as parent key."""
+
+        if self._conf_interval_dict_metric_major is None:
+            self._conf_interval_dict_metric_major = defaultdict(dict)
+            for model_ix, performance in enumerate(self.model_performance):
+                for metric_name, metric_stats in performance.items():
+                    self._conf_interval_dict_metric_major[metric_name][
+                        self.model_keys[model_ix]] = metric_stats
+
+        else:
+            self._conf_interval_dict = deepcopy(
+                self._conf_interval_dict_metric_major)
+
+    def set_key_to_model_major(self,) -> None:
+        """Reformats the conf. interval dict to model as parent key."""
+
+        self._conf_interval_dict = deepcopy(
+            self._conf_interval_dict_model_major)
 
     def _symmetric_metrics(self,) -> bool:
         """True if all models have the same metrics, False otherwise."""
 
         raise NotImplementedError
 
-    def _is_nested_dict_empty(self,) -> bool:
+    def is_nested_dict_empty(self,) -> bool:
         """True if nested history dictionary is not populated."""
 
         return len(list(self._nested_dict.keys())) == 0
 
-    def _is_conf_interval_dict_empty(self,) -> bool:
+    def is_conf_interval_dict_empty(self,) -> bool:
         """True if confidence interfval dictionary is not populated."""
 
         return len(list(self._conf_interval_dict.keys())) == 0
@@ -244,7 +287,8 @@ def plot_bar_charts(
         multi_model_history: MultiModelHistory,
         bar_width: float,
         title: str,
-        ylabel: str = 'Metric',
+        xlabel: str = 'Model',
+        ylabel: str = 'Performance',
         scatter: bool = False,
         style: str = './report.mplstyle',) -> Figure:
     """Plots bar charts of different metrics and with error bars.
@@ -257,6 +301,10 @@ def plot_bar_charts(
     Returns:
         pass
     """
+
+    # Check to build confidence interval dictionary
+    if multi_model_history.is_conf_interval_dict_empty():
+        multi_model_history.build_conf_interval_dict()
 
     # MPL set up
     plt.style.use(style)
@@ -271,7 +319,8 @@ def plot_bar_charts(
     groups_per_index = len(multi_model_history.metric_keys)
 
     barcontainers = []
-    for model_ix, model_history in enumerate(multi_model_history.model_histories):
+    model_keys = multi_model_history.model_keys
+    for model_ix, performance in enumerate(multi_model_history.model_performance):
         pass
 
 
