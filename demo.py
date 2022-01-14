@@ -173,14 +173,24 @@ def main():
             multi_model_history.append_kth_fold_model_history(
                 model_history=tf_history.history, model_key='tf_model')
 
+    # Can be used to observe whether vanishing or exploding gradient
+    # issues occurred
+    if args.inspect_model_history:
+        print(multi_model_history.nested_dict)
+        breakpoint()
+
     # Bar chart
-    # Testing multi bar char plot
-    chart = plot_bar_charts(
+    bar_chart = plot_bar_charts(
         multi_model_history=multi_model_history,
         bar_width=0.25,
         title=f'{args.n_kfold_iterations}, K-Fold Comparison of Model Metrics at {int(args.confidence_level * 100)}% Confidence Level',)
 
-    chart.savefig('./chart.svg', bbox_inches='tight')
+    bar_chart.savefig('./chart.svg', bbox_inches='tight')
+
+    # Loss curves
+    multi_model_history.reshape_metrics_to_nkfolds_by_epochs(
+        nkfolds=args.n_kfold_iterations*5, epochs=args.num_epochs)
+    loss_curve = None
 
 
 def cli(description: str):
@@ -200,6 +210,13 @@ def cli(description: str):
         '--debug',
         choices=[True, False],
         help='bool to debug',
+        type=lambda x: bool(strtobool(x)),
+        default=False)
+
+    parser.add_argument(
+        '--inspect-model-history',
+        choices=[True, False],
+        help='bool to print model history at the end of N, KFold CV',
         type=lambda x: bool(strtobool(x)),
         default=False)
 
@@ -224,7 +241,7 @@ def cli(description: str):
         '--m-examples',
         help='number of training examples. (default: 32)',
         type=int,
-        default=16)
+        default=64)
 
     random_data.add_argument(
         '--n-features',

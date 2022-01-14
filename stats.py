@@ -104,6 +104,7 @@ class MultiModelHistory:
         if model_key not in self.model_keys:
             self.append_model_history(
                 model_history=model_history, model_key=model_key)
+
         else:
             for metric_name, metric_values in model_history.items():
                 self._nested_dict[model_key][metric_name] += metric_values
@@ -170,6 +171,16 @@ class MultiModelHistory:
         self._conf_interval_dict = deepcopy(
             self._conf_interval_dict_model_major)
 
+    def reshape_metrics_to_nkfolds_by_epochs(self, nkfolds: int, epochs: int) -> None:
+        """Converts the lists in the nested dict to a matrix."""
+
+        for model_name, metric_dicts in self._nested_dict.items():
+            for metric_name, metric_list in metric_dicts.items():
+                reshaped_metric_list = np.array(metric_list).reshape(
+                    nkfolds, epochs)
+
+                self._nested_dict[model_name][metric_name] = reshaped_metric_list
+
     def _symmetric_metrics(self,) -> bool:
         """True if all models have the same metrics, False otherwise."""
 
@@ -212,7 +223,7 @@ def confidence_interval_err(
         raise ValueError(':param alpha: must be between 0 and 100.')
 
     # Compute estimators
-    mean = np.mean(vector)
+    mean = np.nanmean(vector)
     scale = st.sem(vector)  # standard error mean (how close to pop. mean)
 
     # Determine central limit theorem assumption

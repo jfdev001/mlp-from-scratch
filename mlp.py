@@ -213,7 +213,7 @@ class MLP:
 
         # Dictionary {'train_loss': [], 'val_loss': []}
         # where there is a single value per epoch
-        self.history = defaultdict(list)
+        self.history = None
 
     @property
     def cache(self,) -> Tuple[List[np.ndarray], List[np.ndarray]]:
@@ -263,6 +263,9 @@ class MLP:
         Returns:
             History dictionary with loss values per epoch.
         """
+
+        # Reset the history for the fitting process
+        self.history = defaultdict(list)
 
         # Saving batch size for use later
         self.batch_size = batch_size
