@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
 
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
@@ -84,6 +85,13 @@ def main():
 
         y = np.expand_dims(y, axis=-1)
 
+        # Scale datasets
+        x_scaler = StandardScaler()
+        x = x_scaler.fit_transform(x)
+
+        y_scaler = StandardScaler()
+        y = y_scaler.fit_transform(y)
+
         model = MLP(
             input_dims=x.shape[-1],
             hidden_units=args.num_hidden_units,
@@ -100,6 +108,7 @@ def main():
     elif args.task == 'breast-cancer-classification':
         x, y = datasets.load_breast_cancer(return_X_y=True)
 
+        # Targets is 2 to indicate two categories for special case...
         model = MLP(
             input_dims=x.shape[-1],
             hidden_units=args.num_hidden_units,
@@ -111,7 +120,8 @@ def main():
             l_layers=args.num_layers,
             debug=args.debug)
 
-        baseline_model.add(Dense(units=2, activation='sigmoid'))
+        # One output unit
+        baseline_model.add(Dense(units=1, activation='sigmoid'))
 
     # Traing the hand implemented model
     my_history = model.fit(
