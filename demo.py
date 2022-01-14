@@ -19,6 +19,7 @@ from tensorflow.keras.losses import BinaryCrossentropy as TFBinaryCrossEntropy
 
 from mlp import MLP  # nopep8
 from ops import MeanSquaredError, BinaryCrossEntropy, Linear, ReLU, Sigmoid  # nopep8
+from stats import MultiModelHistory, plot_bar_charts, plot_train_val_loss  # nopep8
 
 
 def main():
@@ -121,13 +122,8 @@ def main():
             l_layers=args.num_layers,
             debug=args.debug)
 
-        # One output unit
-        baseline_model.add(Dense(units=1, activation='sigmoid'))
-
-    # Traing the hand implemented model
-    my_history = model.fit(
-        x, y, batch_size=args.batch_size, epochs=args.num_epochs,
-        test_size=args.test_size, random_state=args.random_seed)
+    # One output unit
+    baseline_model.add(Dense(units=1, activation='sigmoid'))
 
     # Compile reference model
     if 'classification' in args.task:
@@ -139,10 +135,52 @@ def main():
             loss=TFMeanSquaredError(),
             optimizer='sgd')
 
-    # Train reference model
-    tf_history = baseline_model.fit(
-        x=x, y=y, batch_size=args.batch_size, epochs=args.num_epochs,
-        validation_split=args.test_size)
+    # Cross validation and building of models
+    multi_model_history = MultiModelHistory()
+    for n in range(args.n_kfold_iterations):
+
+        # Instantiate kfold object
+        kfold = KFold(shuffle=True, random_state=n)
+
+        # i^{th} kfold cv
+        for train_ix, test_ix in kfold.split(x):
+
+            x_train, x_test = x[train_ix], x[test_ix]
+            y_train, y_test = y[train_ix], y[test_ix]
+
+            # Training the hand implemented model
+            my_history = model.fit(
+                x_train=x_train, y_train=y_train,
+                x_test=x_test, y_test=y_test,
+                batch_size=args.batch_size,
+                epochs=args.num_epochs,
+                test_size=args.test_size,
+                random_state=args.random_seed,
+                verbose=args.verbose)
+
+            # Train reference model
+            tf_history = baseline_model.fit(
+                x=x_train, y=y_train,
+                validation_data=(x_test, y_test),
+                batch_size=args.batch_size,
+                epochs=args.num_epochs,
+                verbose=args.verbose)
+
+            # Update the multimodel history dictionary
+            multi_model_history.append_kth_fold_model_history(
+                model_history=my_history, model_key='my_model',)
+
+            multi_model_history.append_kth_fold_model_history(
+                model_history=tf_history.history, model_key='tf_model')
+
+    # Bar chart
+    # Testing multi bar char plot
+    chart = plot_bar_charts(
+        multi_model_history=multi_model_history,
+        bar_width=0.25,
+        title=f'{args.n_kfold_iterations}, K-Fold Comparison of Model Metrics at {int(args.confidence_level * 100)}% Confidence Level',)
+
+    chart.savefig('./chart.svg', bbox_inches='tight')
 
 
 def cli(description: str):
@@ -170,6 +208,13 @@ def cli(description: str):
         help='random seed for reproducibility. (default: 0)',
         type=int,
         default=0)
+
+    parser.add_argument(
+        '--verbose',
+        choices=[True, False],
+        help='whether to print model fitting output. (default: False)',
+        type=lambda x: bool(strtobool(x)),
+        default=False)
 
     random_data = parser.add_argument_group(
         'random-data-params',
@@ -250,8 +295,9 @@ def cli(description: str):
         default=0.95)
 
     stats.add_argument(
-        '--n-k-fold-iterations',
-        help='number of times to conduct k-fold cross validation. (default: 1)',
+        '--n-kfold-iterations',
+        help='number of times to conduct k-fold cross validation. Also \
+            changes random state for shuffling n times. (default: 1)',
         type=int,
         default=1)
 

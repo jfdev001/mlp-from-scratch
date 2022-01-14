@@ -235,10 +235,14 @@ class MLP:
 
     def fit(
             self,
-            x: np.ndarray,
-            y: np.ndarray,
             batch_size: int,
             epochs: int,
+            x: np.ndarray = None,
+            y: np.ndarray = None,
+            x_train: np.ndarray = None,
+            y_train: np.ndarray = None,
+            x_test: np.ndarray = None,
+            y_test: np.ndarray = None,
             test_size: float = 0.2,
             random_state: int = 42,
             verbose: bool = True) -> DefaultDict[List]:
@@ -247,6 +251,10 @@ class MLP:
         Args:
             x: Input data with `n` samples and `m` features.
             y: Target data with `n` samples, and `m` features.
+            x_train: Pre-split input data for training.
+            y_train: Pre-split target data for training.
+            x_test: Pre-split input data for testing.
+            y_test: Pre-split target data for testing.
             batch_size: Size of batch for mini-batch gradient descent.
                 Drops remainder batch by default.
             epochs: Number of epochs to train neural network.
@@ -259,12 +267,17 @@ class MLP:
         # Saving batch size for use later
         self.batch_size = batch_size
 
-        # Splitting batch indices
-        x_train, x_test, y_train, y_test = train_test_split(
-            x, y, test_size=test_size, random_state=random_state)
+        # Split dataset if not already split
+        if x is not None and y is not None:
+            x_train, x_test, y_train, y_test = train_test_split(
+                x, y, test_size=test_size, random_state=random_state)
 
+        # Compute batch indices
         train_batch_indices = self.batch_indices(
             x=x_train, batch_size=batch_size)
+
+        val_batch_indices = self.batch_indices(
+            x=x_test, batch_size=batch_size)
 
         # Training loop
         for epoch in range(epochs):
@@ -303,9 +316,6 @@ class MLP:
             # Validation loop where predictions and losses only are calculated
             # no gradient descent... this would have to be called per epoch...
             val_losses = []
-            val_batch_indices = self.batch_indices(
-                x=x_test, batch_size=batch_size)
-
             for (x_val_batch, y_val_batch) in self.batch_data(
                     x=x_test, y=y_test, batch_indices=val_batch_indices):
 

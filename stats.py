@@ -101,7 +101,7 @@ class MultiModelHistory:
             model_key: The name of the model.
         """
 
-        if self.is_nested_dict_empty():
+        if model_key not in self.model_keys:
             self.append_model_history(
                 model_history=model_history, model_key=model_key)
         else:
