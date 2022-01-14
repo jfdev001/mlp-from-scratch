@@ -1,6 +1,7 @@
 """Module for plotting and statistical functions."""
 
 from __future__ import annotations
+from copy import deepcopy
 from typing import List, Dict, Tuple
 
 import numpy as np
@@ -17,7 +18,7 @@ class MultiModelHistory:
     """Class for containing histories of multiple models."""
 
     def __init__(self):
-        """Initialize nested dictionary for MultiModelHistory."""
+        """Initialize dictionaries for MultiModelHistory."""
 
         self._nested_dict = dict()
         self._conf_interval_dict = dict()
@@ -88,9 +89,41 @@ class MultiModelHistory:
             for metric_name, metric_values in model_history.items():
                 self._nested_dict[model_key][metric_name] += metric_values
 
-    def build_conf_interval_dict(self, ) -> None:
-        """Builds the confidence interval dictionary."""
-        return
+    def build_conf_interval_dict(
+            self,
+            alpha: float = 0.95,
+            verbose: bool = False) -> None:
+        """Builds the confidence interval dictionary.
+
+        Args:
+            alpha: Confidence level for error.
+            verbose: Prints whether central limit theorem is assumed.
+        """
+
+        if not self._is_conf_interval_dict_empty():
+            raise ValueError(
+                'Cannot build the confidence interval dict multiple times')
+
+        # Prevents overwriting nested dict model histories
+        model_histories = deepcopy(self.model_histories)
+
+        # For less verbosity
+        model_keys = self.model_keys
+
+        # Iterate through histories in model
+        for ix, history in enumerate(model_histories):
+
+            # Iterate through metrics and values in history
+            for metric, metric_values in history.items():
+
+                # Compute summary statistics for a metrics values
+                mean_metric_values = np.mean(metric_values)
+                ci_err = self.confidence_interval_err(
+                    vector=metric_values, alpha=alpha, verbose=verbose)
+
+                # Populate the CI dict with the summary statistic tuple
+                stat_tuple = (mean_metric_values, ci_err)
+                self._conf_interval_dict[model_keys[ix]][metric] = stat_tuple
 
     def _symmetric_metrics(self,) -> bool:
         """True if all models have the same metrics, False otherwise."""
@@ -106,6 +139,55 @@ class MultiModelHistory:
         """True if confidence interfval dictionary is not populated."""
 
         return len(list(self._conf_interval_dict.keys())) == 0
+
+    def confidence_interval_err(
+            self,
+            vector: np.ndarray,
+            alpha: float = 0.95,
+            verbose: bool = False) -> float:
+        """Computes desired confidence interval error for figures.
+
+        https://en.wikipedia.org/wiki/Confidence_interval
+
+        Args:
+            vector: List of values over which a confidence interval will be computed.
+            alpha: Confidence level.
+            verbose: Prints whether central limit theorem is assumed.
+
+        Returns:
+            The confidence level error
+        """
+
+        # Validate
+        if not(alpha > 0. and alpha < 1,):
+            raise ValueError(':param alpha: must be between 0 and 100.')
+
+        # Compute estimators
+        mean = np.mean(vector)
+        scale = st.sem(vector)  # standard error mean (how close to pop. mean)
+
+        # Determine central limit theorem assumption
+        if vector.shape[0] >= 30:
+            if verbose:
+                print('Assume CLT...')
+            interval = st.norm.interval(alpha=alpha, loc=mean, scale=scale)
+
+        else:
+            if verbose:
+                print('Not assuming CLT...')
+            interval = st.t.interval(alpha=alpha, df=len(
+                vector)-1, loc=mean, scale=scale)
+
+        # Confidence intervals are m +- h
+        # from left_bound = mean - h and right_bound = mean + h
+        # From the 'Example' at https://en.wikipedia.org/wiki/Confidence_interval
+        # it is clear that [mean - cs/sqrt(n), mean + cs/sqrt(n)] means that the
+        # value of cs/sqrt(n), denoted err can be computed with simple rearrangement.
+        left_bound, right_bound = interval
+        err = right_bound - mean
+
+        # Resulting err for errorbars
+        return err
 
 
 def plot_train_val_loss(
@@ -186,46 +268,6 @@ def plot_bar_charts(
     barcontainers = []
     for model_ix, model_history in enumerate(multi_model_history.model_histories):
         pass
-
-
-def confidence_interval_err(vector: np.ndarray, alpha: float = 0.95) -> float:
-    """Computes desired confidence interval error.
-
-    Args:
-        pass
-
-    Returns:
-        pass
-    """
-
-    # Validate
-    if not(alpha > 0. and alpha < 1,):
-        raise ValueError(':param alpha: must be between 0 and 100.')
-
-    # Compute estimators
-    mean = np.mean(vector)
-    scale = st.sem(vector)  # standard error mean (how close to pop. mean)
-
-    # Determine central limit theorem assumption
-    if vector.shape[0] >= 30:
-        print('Assume CLT...')
-        interval = st.norm.interval(alpha=alpha, loc=mean, scale=scale)
-
-    else:
-        print('Not assuming CLT...')
-        interval = st.t.interval(alpha=alpha, df=len(
-            vector)-1, loc=mean, scale=scale)
-
-    # Confidence intervals are m +- h
-    # from left_bound = mean - h and right_bound = mean + h
-    # From the 'Example' at https://en.wikipedia.org/wiki/Confidence_interval
-    # it is clear that [mean - cs/sqrt(n), mean + cs/sqrt(n)] means that the
-    # value of cs/sqrt(n), denoted err can be computed with simple rearrangement.
-    left_bound, right_bound = interval
-    err = right_bound - mean
-
-    # Resulting err for errorbars
-    return err
 
 
 def autolabel_err_bars(
