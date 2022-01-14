@@ -140,10 +140,10 @@ class MLP:
             hidden_units: Number of neurons in hidden layer.
             targets: Number of neurons in output layer.
             learning_rate: Learning rate (eta) for weight updates.
-            loss_function: Specify loss function.
+            loss_function: Specify loss function object.
             l_layers: Number of hidden layers.
-            hidden_activation: Activation function for hidden layers.
-            target_activation: Activation function for target layers.
+            hidden_activation: Activation function object for hidden layers.
+            target_activation: Activation function object for target layers.
             debug: Bool to debug or not... print shapes of inputs, etc.
         """
 
@@ -296,7 +296,7 @@ class MLP:
 
             # Update performance for training over epoch
             mean_of_train_batch_losses = np.mean(losses)
-            self.history['train_loss'].append(mean_of_train_batch_losses)
+            self.history['loss'].append(mean_of_train_batch_losses)
 
             # Validation loop where predictions and losses only are calculated
             # no gradient descent... this would have to be called per epoch...
