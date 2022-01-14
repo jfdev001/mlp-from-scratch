@@ -23,23 +23,23 @@ class MultiModelHistory:
         self._nested_dict = dict()
 
     @property
-    def model_keys(self,) -> list:
+    def model_keys(self,) -> List[str]:
         return list(self._nested_dict.keys())
 
     @property
-    def metric_keys(self,) -> list:
+    def metric_keys(self,) -> List[str]:
         return list(list(self.model_histories)[0].keys())
 
     @property
-    def model_histories(self,) -> Dict[str, ]:
-        return self._nested_dict.values()
+    def model_histories(self,) -> List[Dict[str, List[float]]]:
+        return list(self._nested_dict.values())
 
     @property
     def nested_dict(self,) -> Dict[str, Dict[str, list[float]]]:
         return self._nested_dict
 
     def append_model_history(
-            self, model_history: Dict[str, List[float]], model_key: str):
+            self, model_history: Dict[str, List[float]], model_key: str) -> None:
         """Append a model history and the desired key name to the nested dict.
 
         Args:
@@ -49,9 +49,31 @@ class MultiModelHistory:
 
         self._nested_dict[model_key] = model_history
 
+    def append_kth_fold_model_history(
+            self, model_history: Dict[str, List[float]], model_key: str) -> None:
+        """Append model history metrics with the current nested dict metrics.
+
+        Args:
+            model_history: The history dictionary of the model.
+            model_key: The name of the model.
+        """
+
+        if self._is_empty():
+            self.append_model_history(
+                model_history=model_history, model_key=model_key)
+        else:
+            for metric_name, metric_values in model_history.items():
+                self._nested_dict[model_key][metric_name] += metric_values
+
     def _symmetric_metrics(self,) -> bool:
         """True if all models have the same metrics, False otherwise."""
-        return
+
+        raise NotImplementedError
+
+    def _is_empty(self,) -> bool:
+        """True if nested history dictionary is not populated."""
+
+        return len(list(self._nested_dict.keys())) == 0
 
 
 def plot_train_val_loss(
