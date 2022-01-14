@@ -1,8 +1,7 @@
 """Module for plotting and statistical functions."""
 
 from __future__ import annotations
-from ast import Mult
-from typing import Optional, Mapping, List, Dict
+from typing import List, Dict, Tuple
 
 import numpy as np
 
@@ -21,6 +20,7 @@ class MultiModelHistory:
         """Initialize nested dictionary for MultiModelHistory."""
 
         self._nested_dict = dict()
+        self._conf_interval_dict = dict()
 
     @property
     def model_keys(self,) -> List[str]:
@@ -35,8 +35,31 @@ class MultiModelHistory:
         return list(self._nested_dict.values())
 
     @property
-    def nested_dict(self,) -> Dict[str, Dict[str, list[float]]]:
+    def nested_dict(self,) -> Dict[str, Dict[str, List[float]]]:
+        """Returns nested dictionary.
+
+        The format of the dictionary is thus:
+
+        {
+            model_name1: {metric_1: [epoch1, epoch2, ..], ...},
+            model_name2: ...
+        }
+        """
+
         return self._nested_dict
+
+    @property
+    def conf_interval_dict(self,) -> Dict[str, Dict[str, Tuple[float, float]]]:
+        """Returns the confidence interval dictionary.
+
+        The format of the dictionary is thus:
+        {
+            model_name1: {metric_name1: (mean, conf_err), metric_name2: ...},
+            model_name2: ...
+        }
+        """
+
+        return self._conf_interval_dict
 
     def append_model_history(
             self, model_history: Dict[str, List[float]], model_key: str) -> None:
@@ -58,22 +81,31 @@ class MultiModelHistory:
             model_key: The name of the model.
         """
 
-        if self._is_empty():
+        if self._is_nested_dict_empty():
             self.append_model_history(
                 model_history=model_history, model_key=model_key)
         else:
             for metric_name, metric_values in model_history.items():
                 self._nested_dict[model_key][metric_name] += metric_values
 
+    def build_conf_interval_dict(self, ) -> None:
+        """Builds the confidence interval dictionary."""
+        return
+
     def _symmetric_metrics(self,) -> bool:
         """True if all models have the same metrics, False otherwise."""
 
         raise NotImplementedError
 
-    def _is_empty(self,) -> bool:
+    def _is_nested_dict_empty(self,) -> bool:
         """True if nested history dictionary is not populated."""
 
         return len(list(self._nested_dict.keys())) == 0
+
+    def _is_conf_interval_dict_empty(self,) -> bool:
+        """True if confidence interfval dictionary is not populated."""
+
+        return len(list(self._conf_interval_dict.keys())) == 0
 
 
 def plot_train_val_loss(
