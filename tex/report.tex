@@ -751,9 +751,17 @@ refers to the number of neurons in the previous layer.
 
 \clearpage
 
-\section{Testing}
+\section{Applications}
 
 \subsection{Regression Tasks}
+
+Real number prediction.
+
+\subsubsection{Diabetes Dataset}
+
+1 target $n_x$ features.
+
+\subsubsection{Regressor Architecture}
 
 \subsection{Binary Classification Tasks}
 
@@ -794,6 +802,12 @@ Thus, the partial derivative of BCE for a single sample is shown below:
 	\frac{\partial C_i}{\partial a_{0}^{L}} = -1(\frac{y}{a_{0}^{L}} - \frac{ 1 - y}{ 1 - a_{0}^{L} })
 \end{equation}
 
+\subsubsection{Breast Cancer Dataset}
+
+Binary with 30 features etc. Use stack exchange notes on $y \in ...$
+
+\subsubsection{Classifier Architecture}
+
 The architecture of the network is as follows: a single hidden layer with ReLU
 activation function and 32 neurons; an output layer with sigmoid activation function
 and 1 neuron; the BCE cost function; batch size of 32; trained for 8 epochs;
@@ -803,7 +817,20 @@ Note that my implementation is not the optimized implementation used by
 TensorFlow, see \cite{Khan2020} and the binary cross entropy TensorFlow backend
 \href{https://github.com/keras-team/keras/blob/2c48a3b38b6b6139be2da501982fd2f61d7d48fe/keras/backend.py#L5129}{source code}.
 
-\section{Conclusions}
+\subsection{Model Comparison}
+
+\subsubsection{Cross-Validation and Confidence Intervals}
+
+Cross validation and confidence intervals using K-fold pg 118 from deep learning.
+
+\section{Results and Discussion}
+
+Train-Validation curves as well as bar chart labeled confidence intervals
+for train validation loss.
+
+\section{Conclusion}
+
+What I accomplished and learned.
 
 \pagebreak
 \printbibliography
