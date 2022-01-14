@@ -43,9 +43,9 @@
 % Titular information
 % https://en.wikibooks.org/wiki/LaTeX/Title_Creation
 \title{
-	An Undergraduate's Explanation of the Multilayer Perceptron: 
-	Mathematical Concepts and a Python3 Implementation}
-\date{2022 \\ January}
+	The Multilayer Perceptron \\ 
+	\large Mathematical Concepts, a Python3 Implementation, \\ and Selected Applications}
+\date{2022 January 14}
 \author{Jared Frazier\thanks{Department of Computer Science (2021-2022),
 Middle Tennessee State University.} \thanks{Department of Chemistry (2018-2021),
 Middle Tennessee State University.} \thanks{Not endorsed by or affiliated with any of the 
@@ -64,9 +64,13 @@ authors or entities listed in the References section.}}
 
 The purpose of the present document is to explain and implement the major mathematical
 constructs/concepts behind feedforward neural networks, specifically the multilayer perceptron.
-This includes the layers that compose such networks, the cost (aka loss, error, or objective) function
-and activation functions, the forward pass through the network,
-the computation of gradients via backpropagation (a concept that is often "handwaved" to the extreme
+Following this implementation, I test the network I have built "from scratch" using
+\codeword{NumPy} and compare it with a reference implementation in \codeword{TensorFlow}.
+The concepts I will cover include the layers that compose such networks,
+the cost (aka loss, error, or objective) function and activation functions,
+the forward pass through the network,
+the computation of gradients via backpropagation (a concept that is often
+"handwaved" to the extreme
 or explained in so much detail as to be utterly confusing--at least in my experience),
 and the update of model parameters via mini-batch stochastic gradient descent.
 If the ideas such as \textit{layer} and \textit{backpropagation} are entirely unfamiliar
