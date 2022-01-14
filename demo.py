@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 from sklearn import datasets
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import KFold
 
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
@@ -238,6 +239,55 @@ def cli(description: str):
         help='learning rate for gradient descent. (default: 1e-2)',
         type=float,
         default=1e-2)
+
+    stats = parser.add_argument_group(
+        'stats', 'parameters for report statistics.')
+
+    stats.add_argument(
+        '--confidence-level',
+        help='confidence level for intervals (aka alpha). (default: 0.95)',
+        type=float,
+        default=0.95)
+
+    stats.add_argument(
+        '--n-k-fold-iterations',
+        help='number of times to conduct k-fold cross validation. (default: 1)',
+        type=int,
+        default=1)
+
+    figures = parser.add_argument_group('figures', 'parameters for figures.')
+
+    figures.add_argument(
+        '--path-to-save-figures',
+        help='path where all figure plots will be saved.',
+        type=str,
+        default='./tex/figures')
+
+    figures.add_argument(
+        '--learning-curve-title',
+        help='title for train-validation plot. (default: Learning Curve for Model)',
+        type=str,
+        default='Learning Curve for Model')
+
+    figures.add_argument(
+        '--learning-curve-scatter',
+        choices=[True, False],
+        help='True for scatter plotted learning curve, False for smooth curve. \
+            (default: False)',
+        type=lambda x: bool(strtobool(x)),
+        default=False)
+
+    figures.add_argument(
+        '--bar-plot-title',
+        help='title for bar plot. (default: N, K-Fold CV Model Performance Comparison)',
+        type=str,
+        default='N, K-Fold CV Model Performance Comparison')
+
+    figures.add_argument(
+        '--bar-width',
+        help='width of bars in bar charts. (default: 0.25)',
+        type=float,
+        default=0.25)
 
     return parser
 
