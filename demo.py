@@ -5,7 +5,15 @@ from distutils.util import strtobool
 
 import numpy as np
 
+import matplotlib.pyplot as plt
+
 from sklearn import datasets
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.losses import MeanSquaredError as TFMeanSquaredError
+from tensorflow.keras.losses import BinaryCrossentropy as TFBinaryCrossEntropy
 
 from mlp import MLP  # nopep8
 from ops import MeanSquaredError, BinaryCrossEntropy, Linear, ReLU, Sigmoid  # nopep8
@@ -25,9 +33,16 @@ def main():
 
     # Set random seed
     np.random.seed(args.random_seed)
+    tf.random.set_seed(args.random_seed)
 
     # Generate random data just in case
     x = np.random.normal(size=(args.m_examples, args.n_features))
+
+    # Tensorflow model
+    baseline_model = Sequential()
+    for lyr in range(args.num_layers):
+        baseline_model.add(
+            Dense(units=args.num_hidden_units, activation='relu'))
 
     # Determine task
     if args.task == 'random-regression':
@@ -44,6 +59,8 @@ def main():
             l_layers=args.num_layers,
             debug=args.debug)
 
+        baseline_model.add(Dense(units=args.t_targets))
+
     elif args.task == 'random-classification':
         y = np.random.choice(a=args.c_categories, size=(
             args.m_examples,), replace=True)
@@ -58,6 +75,9 @@ def main():
             target_activation=Sigmoid(),
             l_layers=args.num_layers,
             debug=args.debug)
+
+        baseline_model.add(
+            Dense(units=args.c_categories, activation='sigmoid'))
 
     elif args.task == 'diabetes-regression':
         x, y = datasets.load_diabetes(return_X_y=True)
@@ -75,6 +95,8 @@ def main():
             l_layers=args.num_layers,
             debug=args.debug)
 
+        baseline_model.add(Dense(units=1))
+
     elif args.task == 'breast-cancer-classification':
         x, y = datasets.load_breast_cancer(return_X_y=True)
 
@@ -89,8 +111,27 @@ def main():
             l_layers=args.num_layers,
             debug=args.debug)
 
-    # Traing the model
-    model.fit(x, y, batch_size=args.batch_size, epochs=args.num_epochs)
+        baseline_model.add(Dense(units=2, activation='sigmoid'))
+
+    # Traing the hand implemented model
+    my_history = model.fit(
+        x, y, batch_size=args.batch_size, epochs=args.num_epochs,
+        test_size=args.test_size, random_state=args.random_seed)
+
+    # Compile reference model
+    if 'classification' in args.task:
+        baseline_model.compile(
+            loss=TFBinaryCrossEntropy(),
+            optimizer='sgd')
+    else:
+        baseline_model.compile(
+            loss=TFMeanSquaredError(),
+            optimizer='sgd')
+
+    # Train reference model
+    tf_history = baseline_model.fit(
+        x=x, y=y, batch_size=args.batch_size, epochs=args.num_epochs,
+        validation_split=args.test_size)
 
 
 def cli(description: str):
@@ -163,6 +204,12 @@ def cli(description: str):
         help='number of hidden units in hidden layers. (default: 2)',
         type=int,
         default=2)
+
+    hparams.add_argument(
+        '--test-size',
+        help='percent of data to devote to testing. (default: 0.2)',
+        type=float,
+        default=0.2)
 
     hparams.add_argument(
         '--batch-size',
