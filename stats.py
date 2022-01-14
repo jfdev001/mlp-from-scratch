@@ -1,7 +1,8 @@
 """Module for plotting and statistical functions."""
 
 from __future__ import annotations
-from typing import Optional, Dict
+from ast import Mult
+from typing import Optional, Mapping, List, Dict
 
 import numpy as np
 
@@ -13,8 +14,48 @@ from matplotlib.figure import Figure
 import scipy.stats as st
 
 
+class MultiModelHistory:
+    """Class for containing histories of multiple models."""
+
+    def __init__(self):
+        """Initialize nested dictionary for MultiModelHistory."""
+
+        self._nested_dict = dict()
+
+    @property
+    def model_keys(self,) -> list:
+        return list(self._nested_dict.keys())
+
+    @property
+    def metric_keys(self,) -> list:
+        return list(list(self.model_histories)[0].keys())
+
+    @property
+    def model_histories(self,) -> Dict[str, ]:
+        return self._nested_dict.values()
+
+    @property
+    def nested_dict(self,) -> Dict[str, Dict[str, list[float]]]:
+        return self._nested_dict
+
+    def append_model_history(
+            self, model_history: Dict[str, List[float]], model_key: str):
+        """Append a model history and the desired key name to the nested dict.
+
+        Args:
+            model_history: The history dictionary of the model.
+            model_key: The name of the model.
+        """
+
+        self._nested_dict[model_key] = model_history
+
+    def _symmetric_metrics(self,) -> bool:
+        """True if all models have the same metrics, False otherwise."""
+        return
+
+
 def plot_train_val_loss(
-        history_dictionary: Dict,
+        history_dictionary: Dict[str, List[float]],
         title: str,
         xlabel: str = 'Epoch',
         ylabel: str = 'Metric',
@@ -39,9 +80,11 @@ def plot_train_val_loss(
         A figure for the model performance.
     """
 
+    # MPL setup
     plt.style.use(style)
-
     fig, ax = plt.subplots()
+
+    # Plot history
     for metric_name, metric_values in history_dictionary.items():
         if scatter:
             ax.scatter(np.arange(1, len(metric_values)+1),
@@ -49,21 +92,46 @@ def plot_train_val_loss(
         else:
             ax.plot(metric_values, label=metric_name)
 
+    # Labeling
     ax.legend()
 
+    # Return the plot
     return fig
 
 
-def plot_bar_charts():
+def plot_bar_charts(
+        multi_model_history: MultiModelHistory,
+        bar_width: float,
+        title: str,
+        ylabel: str = 'Metric',
+        scatter: bool = False,
+        style: str = './report.mplstyle',) -> Figure:
     """Plots bar charts of different metrics and with error bars.
 
+    On the use of multiple bars in bar charts
+    https://stackoverflow.com/questions/14270391/python-matplotlib-multiple-bars
     Args:
         pass
 
     Returns:
         pass
     """
-    return
+
+    # MPL set up
+    plt.style.use(style)
+    fig, ax = plt.subplots()
+
+    # Compute the number of indices... there is one index per
+    # model
+    indices = len(multi_model_history.model_keys)
+
+    # Compute the number of "groups", (i.e., the number of
+    # metrics per "model" index
+    groups_per_index = len(multi_model_history.metric_keys)
+
+    barcontainers = []
+    for model_ix, model_history in enumerate(multi_model_history.model_histories):
+        pass
 
 
 def confidence_interval_err(vector: np.ndarray, alpha: float = 0.95) -> float:
