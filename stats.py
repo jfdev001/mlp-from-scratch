@@ -1,6 +1,7 @@
 """Module for plotting and statistical functions."""
 
 from __future__ import annotations
+from collections import defaultdict
 from copy import deepcopy
 from typing import List, Dict, Tuple
 
@@ -21,7 +22,7 @@ class MultiModelHistory:
         """Initialize dictionaries for MultiModelHistory."""
 
         self._nested_dict = dict()
-        self._conf_interval_dict = dict()
+        self._conf_interval_dict = defaultdict(dict)
 
     @property
     def model_keys(self,) -> List[str]:
@@ -157,6 +158,10 @@ class MultiModelHistory:
         Returns:
             The confidence level error
         """
+
+        # Cast input ndarray
+        if not isinstance(vector, np.ndarray):
+            vector = np.array(vector)
 
         # Validate
         if not(alpha > 0. and alpha < 1,):

@@ -240,7 +240,8 @@ class MLP:
             batch_size: int,
             epochs: int,
             test_size: float = 0.2,
-            random_state: int = 42) -> DefaultDict[List]:
+            random_state: int = 42,
+            verbose: bool = True) -> DefaultDict[List]:
         """Fit the MLP to data and print training/validation metrics.
 
         Args:
@@ -249,6 +250,7 @@ class MLP:
             batch_size: Size of batch for mini-batch gradient descent.
                 Drops remainder batch by default.
             epochs: Number of epochs to train neural network.
+            verbose: True to print loss-val_loss at end of epochs, else no print.
 
         Returns:
             History dictionary with loss values per epoch.
@@ -317,10 +319,11 @@ class MLP:
             self.history['val_loss'].append(mean_of_val_batch_losses)
 
             # Print performance
-            out_str = f'Epoch {epoch+1}/{epochs}'
-            out_str += f' -- Loss: {round(mean_of_train_batch_losses, 3)}'
-            out_str += f' -- Validation Loss: {round(mean_of_val_batch_losses, 3)}'
-            print(out_str)
+            if verbose:
+                out_str = f'Epoch {epoch+1}/{epochs}'
+                out_str += f' -- Loss: {round(mean_of_train_batch_losses, 3)}'
+                out_str += f' -- Validation Loss: {round(mean_of_val_batch_losses, 3)}'
+                print(out_str)
 
         # Model performances
         return self.history
