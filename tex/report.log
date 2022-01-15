@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  14 JAN 2022 23:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2021.1.31)  15 JAN 2022 00:37
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -613,7 +613,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has b
                    \relax 
 l.62 
       [1] [2] [3] [4]
-<figures//mlp_larger_font_croppped.jpg, id=201, 621.07031pt x 271.0125pt>
+<figures//mlp_larger_font_croppped.jpg, id=196, 621.07031pt x 271.0125pt>
 File: figures//mlp_larger_font_croppped.jpg Graphic file (type jpg)
 <use figures//mlp_larger_font_croppped.jpg>
 Package pdftex.def Info: figures//mlp_larger_font_croppped.jpg  used on input line 257.
@@ -639,40 +639,74 @@ LaTeX Warning: Float too large for page by 47.90204pt on input line 754.
 [14] [15] [16
 
 ] [17]
-Overfull \hbox (2.6634pt too wide) in paragraph at lines 841--841
+<figures//one_layer_regressor_bar_chart.jpg, id=323, 1328.3226pt x 544.9158pt>
+File: figures//one_layer_regressor_bar_chart.jpg Graphic file (type jpg)
+<use figures//one_layer_regressor_bar_chart.jpg>
+Package pdftex.def Info: figures//one_layer_regressor_bar_chart.jpg  used on input line 877.
+(pdftex.def)             Requested size: 464.91988pt x 190.72337pt.
+
+Overfull \hbox (119.91988pt too wide) in paragraph at lines 877--878
+ [][] 
+ []
+
+<figures//one_layer_classifier_bar_chart.jpg, id=324, 1328.3226pt x 544.9158pt>
+File: figures//one_layer_classifier_bar_chart.jpg Graphic file (type jpg)
+<use figures//one_layer_classifier_bar_chart.jpg>
+Package pdftex.def Info: figures//one_layer_classifier_bar_chart.jpg  used on input line 882.
+(pdftex.def)             Requested size: 464.91988pt x 190.72337pt.
+
+Overfull \hbox (119.91988pt too wide) in paragraph at lines 882--883
+ [][] 
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[18pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  
+l.886 \clearpage
+                 <c:/Dev/python/ml/mlp_from_scratch/tex/figures//one_layer_regressor_bar_chart.jpg>] [19pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  
+l.886 \clearpage
+                 <c:/Dev/python/ml/mlp_from_scratch/tex/figures//one_layer_classifier_bar_chart.jpg>] [20
+
+]
+Overfull \hbox (2.6634pt too wide) in paragraph at lines 924--924
 \OT1/cmr/m/n/10 Press, 2015. \OT1/cmr/m/sc/10 url\OT1/cmr/m/n/10 : [][]$\OT1/cmtt/m/n/10 http : / / neuralnetworksanddeeplearning . com / index .
  []
 
 
-Overfull \hbox (12.79057pt too wide) in paragraph at lines 841--841
+Overfull \hbox (12.79057pt too wide) in paragraph at lines 924--924
 []\OT1/cmr/m/n/10 nmasanta (https://math.stackexchange.com/users/623924/nmasanta). \OT1/cmr/m/it/10 What
  []
 
 
-Overfull \hbox (0.55829pt too wide) in paragraph at lines 841--841
+Overfull \hbox (0.55829pt too wide) in paragraph at lines 924--924
 []\OT1/cmr/m/it/10 The Gra-di-ent\OT1/cmr/m/n/10 . 2021. \OT1/cmr/m/sc/10 url\OT1/cmr/m/n/10 : [][]$\OT1/cmtt/m/n/10 https : / / math . libretexts . org / Bookshelves /
  []
 
-[18] (c:/Dev/python/ml/mlp_from_scratch/tex/report.aux)
+[21] (c:/Dev/python/ml/mlp_from_scratch/tex/report.aux)
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: AC057A404DBC94008CDFDFC9B09BEDBE;1900.
+(rerunfilecheck)             Checksum: F59BE23F1B478E40B6FF9715893B777D;1799.
 Package logreq Info: Writing requests to 'report.run.xml'.
 \openout1 = `report.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 15162 strings out of 479304
- 262336 string characters out of 5871219
+ 15184 strings out of 479304
+ 262954 string characters out of 5871219
  1006272 words of memory out of 5000000
- 32037 multiletter control sequences out of 15000+600000
+ 32046 multiletter control sequences out of 15000+600000
  413473 words of font info for 66 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  81i,17n,88p,777b,1277s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}<c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmti8.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb><c:/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb>
-Output written on c:/Dev/python/ml/mlp_from_scratch/tex/report.pdf (19 pages, 431401 bytes).
+Output written on c:/Dev/python/ml/mlp_from_scratch/tex/report.pdf (22 pages, 609015 bytes).
 PDF statistics:
- 447 PDF objects out of 1000 (max. 8388607)
- 396 compressed objects within 4 object streams
- 101 named destinations out of 1000 (max. 500000)
- 222 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 471 PDF objects out of 1000 (max. 8388607)
+ 414 compressed objects within 5 object streams
+ 112 named destinations out of 1000 (max. 500000)
+ 224 words of extra memory for PDF output out of 10000 (max. 10000000)
 

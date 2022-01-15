@@ -2360,6 +2360,7 @@
     <bcf:citekey order="14">Goodfellow2016</bcf:citekey>
     <bcf:citekey order="14">NumPyBroadcasting2021</bcf:citekey>
     <bcf:citekey order="15">Khan2020</bcf:citekey>
+    <bcf:citekey order="16">Goodfellow2016</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="none">

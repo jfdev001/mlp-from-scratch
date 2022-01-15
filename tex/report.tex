@@ -757,15 +757,39 @@ refers to the number of neurons in the previous layer.
 
 \section{Applications}
 
+Equally important as theory, applications and experimentation demonstrate
+potential uses for the universal function approximator called the neural network.
+Here I describe a regression task and binary classification task, as well as
+the means by which implementations can be compared.
+
 \subsection{Regression Tasks}
 
-Real number prediction.
+The derivative of the cost function and discussion in previous parts of this
+paper is focused on supervised learning problems in $\mathbb{R}$, so no
+extensive explanation of the regression task shall be broached. Suffice to say,
+the regression task is concerned with outputting a prediction tensor whose
+elements are in $\mathbb{R}$.
 
 \subsubsection{Diabetes Dataset}
 
-1 target $n_x$ features.
+The diabetes dataset is available through \codeword{Scikit-Learn}, though the
+original data is available from \href{https://www4.stat.ncsu.edu/~boos/var.select/diabetes.html}{Efron et al.}.
+
+\begin{align}
+	\mathbb{X} & \in (-0.2, 0.2)                \\
+	\mathbb{Y} & \in [25..\ 346]                \\
+	X          & \in \mathbb{X}^{442 \times 10} \\
+	y          & \in \mathbb{Y}^{442 \times 1}
+\end{align}
+
+Data was standard scaled using \codeword{Scikit-Learn}.
 
 \subsubsection{Regressor Architecture}
+
+The architecture of the network is as follows: a single hidden layer with ReLU
+activation function and 32 neurons; an output layer with linear activation function
+and 1 neuron; the MSE cost function; batch size of 32; trained for 5 epochs;
+update parameters with stochastic gradient descent; and learning rate of 0.01.
 
 \subsection{Binary Classification Tasks}
 
@@ -808,7 +832,16 @@ Thus, the partial derivative of BCE for a single sample is shown below:
 
 \subsubsection{Breast Cancer Dataset}
 
-Binary with 30 features etc. Use stack exchange notes on $y \in ...$
+The breast cancer dataset is available through \codeword{Scikit-Learn}, and
+the original data is available from
+
+\begin{align}
+	X          & \in \mathbb{R}^{569 \times 30} \\
+	\mathbb{Y} & \in \set{0, 1}                 \\
+	y          & \in \mathbb{Y}^{569}
+\end{align}
+
+The input data $X$ was standard scaled using \codeword{Scikit-Learn}.
 
 \subsubsection{Classifier Architecture}
 
@@ -823,18 +856,68 @@ TensorFlow, see \cite{Khan2020} and the binary cross entropy TensorFlow backend
 
 \subsection{Model Comparison}
 
-\subsubsection{Cross-Validation and Confidence Intervals}
-
-Cross validation and confidence intervals using K-fold pg 118 from deep learning.
+Cross validation using K-fold cross validation,
+which is detailed on page 118 of \cite{Goodfellow2016}, allows one to compute
+a mean of losses across $K$ folds rather than just a single sample. The
+randomization of training and testing data allows for a better estimate of the
+generalization error of the model, that is the capability of the model
+to perform well on data it has never seen before. Likewise, confidence intervals
+indicate how likely the population mean of a particular metric falls within a
+given range. Cross validation and the subsequent construction of confidence
+intervals allows for robust model comparison.
 
 \section{Results and Discussion}
 
-Train-Validation curves as well as bar chart labeled confidence intervals
-for train validation loss.
+The performance of my implementation of the multilayer perceptron on the
+regression and classification tasks is shown below.
+
+\afterpage
+
+\begin{figure}[h]
+	\includegraphics[scale=0.35]{one_layer_regressor_bar_chart.jpg}
+	\caption{Performance of model on diabetes regression task.}
+\end{figure}
+
+\begin{figure}[h]
+	\includegraphics[scale=0.35]{one_layer_classifier_bar_chart.jpg}
+	\caption{Performance of model on breast cancer classification task.}
+\end{figure}
+
+\clearpage
+
+My implementation with respect to the regression task is within the bounds
+of the \codeword{TensorFlow} reference implementation, which indicates that
+my implementation sufficiently approximates that of a known, optimized
+implementation.
+
+My implementation with respect to the classification task is well outside the
+bounds of the \codeword{TensorFlow} reference implementation, but this is likely
+due to optimization and smoothing considerations that I did not implement for
+the sake of simplicity. Nevertheless, my model's performance is \textit{reasonable},
+if not ideal, and sufficiently demonstrates the concepts such as the
+derivative of a given cost function with respect to
+its weights, activations, biases, etc.
 
 \section{Conclusion}
 
-What I accomplished and learned.
+In this report, I elucidate the data types and language of neural networks, as
+well as employ fairly standard notation that adheres to that suggested by
+\textit{notation.pdf} taken from Stanford's Deep Learning course cs230. The
+elementary operations of the neural network such as affine transformations,
+activation functions, and cost functions are also discussed. The relevance of
+these functions with respect to neural network learning via backpropagation
+and gradient descent is also illustrated with an admittedly long-winded explanation
+of the fundamental equations of backpropagation and the relevant shapes of the
+operands. The neural network theory is followed by an overview of the Python
+implementation, as well as the pseudocode supplied for an unoptimized
+backpropagation algorithm. The applications of the multilayer perceptron to
+simple regression and classification tasks, as well as a brief discussion on
+comparing models is demonstrated. This work served as introspective evaluation
+of my understanding of neural network operations, and its writing helped
+clarify many previously abstracted concepts. Future work could entail
+optimization of the algorithm by calling C programming language code from Python,
+as well as the addition of multi-class or multi-class multi-label classification
+problems.
 
 \pagebreak
 \printbibliography

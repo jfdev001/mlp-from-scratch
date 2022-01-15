@@ -94,6 +94,7 @@ def main():
         x_scaler = StandardScaler()
         x = x_scaler.fit_transform(x)
 
+        y = np.expand_dims(y, axis=-1)
         y_scaler = StandardScaler()
         y = y_scaler.fit_transform(y)
 
