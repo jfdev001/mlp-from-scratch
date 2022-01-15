@@ -113,6 +113,10 @@ def main():
     elif args.task == 'breast-cancer-classification':
         x, y = datasets.load_breast_cancer(return_X_y=True)
 
+        # Scale x
+        x_scaler = StandardScaler()
+        x = x_scaler.fit_transform(x)
+
         # Targets is 2 to indicate two categories for special case...
         model = MLP(
             input_dims=x.shape[-1],
