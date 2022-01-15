@@ -2,6 +2,7 @@
 
 import argparse
 from distutils.util import strtobool
+import warnings
 
 import numpy as np
 
@@ -79,13 +80,15 @@ def main():
             l_layers=args.num_layers,
             debug=args.debug)
 
+        # Set shape
+        if args.c_categories == 2:
+            args.c_categories = 1
+
         baseline_model.add(
             Dense(units=args.c_categories, activation='sigmoid'))
 
     elif args.task == 'diabetes-regression':
         x, y = datasets.load_diabetes(return_X_y=True)
-
-        y = np.expand_dims(y, axis=-1)
 
         # Scale datasets
         x_scaler = StandardScaler()
@@ -122,8 +125,11 @@ def main():
             l_layers=args.num_layers,
             debug=args.debug)
 
-    # One output unit
-    baseline_model.add(Dense(units=1, activation='sigmoid'))
+        # One output unit
+        baseline_model.add(Dense(units=1, activation='sigmoid'))
+
+    # Log shapes
+    print('x, y shapes:', x.shape, y.shape)
 
     # Compile reference model
     if 'classification' in args.task:
@@ -179,18 +185,30 @@ def main():
         print(multi_model_history.nested_dict)
         breakpoint()
 
+    # Check to see if any nan values are contained in the nested
+    # dictionaries... this can occur when batching is too large for
+    # epochs
+    for model_name, metric_key_value_list_dict in multi_model_history.nested_dict.items():
+        for metric_key, value_list in metric_key_value_list_dict.items():
+            nan_array = np.isnan(value_list)
+            if nan_array.any():
+                num_nans = np.count_nonzero(nan_array)
+                warnings.warn(
+                    f'{model_name}: {metric_key} has `{num_nans}` np.nan')
+
     # Bar chart
     bar_chart = plot_bar_charts(
         multi_model_history=multi_model_history,
-        bar_width=0.25,
-        title=f'{args.n_kfold_iterations}, K-Fold Comparison of Model Metrics at {int(args.confidence_level * 100)}% Confidence Level',)
+        bar_width=args.bar_width,
+        title=args.bar_plot_title,
+        alpha=args.confidence_level)
 
-    bar_chart.savefig('./chart.svg', bbox_inches='tight')
+    bar_chart.savefig(args.bar_chart_path, bbox_inches='tight')
 
-    # Loss curves
-    multi_model_history.reshape_metrics_to_nkfolds_by_epochs(
-        nkfolds=args.n_kfold_iterations*5, epochs=args.num_epochs)
-    loss_curve = None
+    # # Loss curves
+    # multi_model_history.reshape_metrics_to_nkfolds_by_epochs(
+    #     nkfolds=args.n_kfold_iterations*5, epochs=args.num_epochs)
+    # loss_curve = None
 
 
 def cli(description: str):
@@ -321,10 +339,16 @@ def cli(description: str):
     figures = parser.add_argument_group('figures', 'parameters for figures.')
 
     figures.add_argument(
-        '--path-to-save-figures',
-        help='path where all figure plots will be saved. (default: ./tex/figures)',
+        '--bar-chart-path',
+        help='path to save bar chart. (default: ./tex/figures/bar_chart.svg)',
         type=str,
-        default='./tex/figures')
+        default='./tex/figures/bar_chart.svg')
+
+    figures.add_argument(
+        '--learning-curve-path',
+        help='path to save learning curve. (default: ./tex/figures/learning_curve.svg)',
+        type=str,
+        default='./tex/figures/learning_curve.svg')
 
     figures.add_argument(
         '--learning-curve-title',

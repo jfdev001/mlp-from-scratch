@@ -259,6 +259,7 @@ def plot_train_val_loss(
         style: str = './report.mplstyle',) -> Figure:
     """Plots training and validation losses using model history dict.
 
+    NOTE: Not in use.
     Args:
         history_dictionary: A dictionary whose keys are the metrics
             of the model during fitting and whose values are the losses
@@ -305,6 +306,7 @@ def plot_bar_charts(
         xlabel: str = 'Metric',
         ylabel: str = 'Performance',
         model_xaxis: bool = False,
+        alpha=0.95,
         style: str = './report.mplstyle',) -> Figure:
     """Plots bar charts of different metrics and with error bars.
 
@@ -319,7 +321,7 @@ def plot_bar_charts(
 
     # Check to build confidence interval dictionary
     if multi_model_history.is_conf_interval_dict_empty():
-        multi_model_history.build_conf_interval_dict()
+        multi_model_history.build_conf_interval_dict(alpha=alpha)
 
     # Set plot format
     if model_xaxis:
@@ -357,8 +359,7 @@ def plot_bar_charts(
             alpha=0.5,
             capsize=10,
             label=bar_labels[ix],
-            align='edge'
-        )
+            align='edge')
 
         barcontainers.append(barcontainer)
 

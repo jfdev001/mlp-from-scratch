@@ -20,6 +20,7 @@ Derivative of Activation Fxns: https://www.analyticsvidhya.com/blog/2021/04/acti
 from __future__ import annotations
 from collections import defaultdict
 from typing import Callable, Optional, List, Tuple, DefaultDict
+import warnings
 
 import numpy as np
 
@@ -350,6 +351,10 @@ class MLP:
 
         num_batches = num_samples//batch_size
 
+        if num_samples < batch_size:
+            warnings.warn(
+                f'num_samples < batch_size: {num_samples} < {batch_size}')
+
         # Get batch indices
         batch_indices = np.random.choice(
             a=num_samples, size=(num_batches, batch_size), replace=False)
@@ -365,7 +370,12 @@ class MLP:
 
         https://stackoverflow.com/questions/50465966/re-using-zip-iterator-in-python-3/50466346
         """
-        return zip(x[batch_indices], y[batch_indices])
+
+        # Batch data
+        x_batched = x[batch_indices]
+        y_batched = y[batch_indices]
+
+        return zip(x_batched, y_batched)
 
     def _forward_pass(self, inputs: np.ndarray) -> np.ndarray:
         """Perform forward pass through network.
