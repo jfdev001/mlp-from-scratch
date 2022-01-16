@@ -15,7 +15,7 @@ conda install -c conda-forge tensorflow matplotlib
 
 You can copy and paste the first or second line of `experiments.txt` into the terminal to reproduce my results.
 
-The script `demo.py` was used to run experiments as well as debug the multilayer perceptron. The list of arguments to `demo.py` can be shown by runnning `python demo.py -h`, though I list the arguments below as well. Note that the `random-classification` task only supports binary classification for now.
+The script `demo.py` was used to run experiments as well as debug the multilayer perceptron. The list of arguments to `demo.py` can be shown by running `python demo.py -h`, though I list the arguments below as well. Note that the `random-classification` task only supports binary classification for now.
 
 ```
 $ python demo.py -h
