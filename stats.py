@@ -4,7 +4,6 @@ from __future__ import annotations
 from collections import defaultdict, namedtuple
 from copy import deepcopy
 from typing import List, Dict, Tuple, Union
-from xml.dom.pulldom import parseString
 
 import numpy as np
 

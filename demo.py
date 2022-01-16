@@ -66,13 +66,13 @@ def main():
         baseline_model.add(Dense(units=args.t_targets))
 
     elif args.task == 'random-classification':
-        y = np.random.choice(a=args.c_categories, size=(
+        y = np.random.choice(a=2, size=(
             args.m_examples,), replace=True)
 
         model = MLP(
             input_dims=args.n_features,
             hidden_units=args.num_hidden_units,
-            targets=args.c_categories,
+            targets=2,
             learning_rate=args.learning_rate,
             loss_function=BinaryCrossEntropy(),
             hidden_activation=ReLU(),
@@ -80,12 +80,12 @@ def main():
             l_layers=args.num_layers,
             debug=args.debug)
 
-        # Set shape
-        if args.c_categories == 2:
-            args.c_categories = 1
+        # # Set shape
+        # if args.c_categories == 2:
+        #     args.c_categories = 1
 
         baseline_model.add(
-            Dense(units=args.c_categories, activation='sigmoid'))
+            Dense(units=1, activation='sigmoid'))
 
     elif args.task == 'diabetes-regression':
         x, y = datasets.load_diabetes(return_X_y=True)
@@ -278,12 +278,12 @@ def cli(description: str):
         type=int,
         default=1)
 
-    random_data.add_argument(
-        '--c-categories',
-        help='number of categories for classification. \
-            NOTE: Only supports binary classification. (default: 2)',
-        type=int,
-        default=2)
+    # random_data.add_argument(
+    #     '--c-categories',
+    #     help='number of categories for classification. \
+    #         NOTE: Only supports binary classification. (default: 2)',
+    #     type=int,
+    #     default=2)
 
     hparams = parser.add_argument_group(
         'hyperparameters',
@@ -349,25 +349,25 @@ def cli(description: str):
         type=str,
         default='./tex/figures/bar_chart.svg')
 
-    figures.add_argument(
-        '--learning-curve-path',
-        help='path to save learning curve. (default: ./tex/figures/learning_curve.svg)',
-        type=str,
-        default='./tex/figures/learning_curve.svg')
+    # figures.add_argument(
+    #     '--learning-curve-path',
+    #     help='path to save learning curve. (default: ./tex/figures/learning_curve.svg)',
+    #     type=str,
+    #     default='./tex/figures/learning_curve.svg')
 
-    figures.add_argument(
-        '--learning-curve-title',
-        help='title for train-validation plot. (default: Learning Curve for Model)',
-        type=str,
-        default='Learning Curve for Model')
+    # figures.add_argument(
+    #     '--learning-curve-title',
+    #     help='title for train-validation plot. (default: Learning Curve for Model)',
+    #     type=str,
+    #     default='Learning Curve for Model')
 
-    figures.add_argument(
-        '--learning-curve-scatter',
-        choices=[True, False],
-        help='True for scatter plotted learning curve, False for smooth curve. \
-            (default: False)',
-        type=lambda x: bool(strtobool(x)),
-        default=False)
+    # figures.add_argument(
+    #     '--learning-curve-scatter',
+    #     choices=[True, False],
+    #     help='True for scatter plotted learning curve, False for smooth curve. \
+    #         (default: False)',
+    #     type=lambda x: bool(strtobool(x)),
+    #     default=False)
 
     figures.add_argument(
         '--bar-plot-title',

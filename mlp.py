@@ -26,7 +26,7 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 
-from ops import Operation, Sigmoid, ReLU, Linear, MeanSquaredError
+from ops import Operation, ReLU, Linear
 
 
 class DenseLayer:

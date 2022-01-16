@@ -3,7 +3,6 @@
 
 from abc import ABCMeta, abstractmethod
 from typing import Optional, Union, Tuple, List
-from webbrowser import Opera
 
 import numpy as np
 
