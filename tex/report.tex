@@ -409,10 +409,10 @@ are computed using other outputs of the network such as $a^{l}$ and $z^{l}$.
 
 
 \begin{align}
-	\delta^{L}                            & = \nabla_{a^{L}} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})                                                                                                         \\
-	\delta^{l}                            & = ((W^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l})                                                                                                 \\
-	\frac{\partial C}{\partial b_j^{l}}   & = \delta_j^{l}                                                                                                                                                                  \\
-	\frac{ \partial C }{ \partial W^{l} } & = \delta^{l} (a^{l-1})^{\top}                                                   & \text{$\delta^{l} \in \mathbb{R}^{j \times 1}; (a^{l-1})^{\top} \in \mathbb{R}^{1 \times k}$}
+	\delta^{L}                            & = \nabla_{a^{L}} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})                                                                                                             \\
+	\delta^{l}                            & = ((W^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l})                                                                                                     \\
+	\frac{\partial C}{\partial b_j^{l}}   & = \delta_j^{l}                                                                                                                                                                      \\
+	\frac{ \partial C }{ \partial W^{l} } & = \delta^{l} (a^{l-1})^{\top}                                                   & \text{$\delta^{l} \in \mathbb{R}^{n_h \times 1}; (a^{l-1})^{\top} \in \mathbb{R}^{1 \times n_x}$}
 \end{align}
 
 Before explaining the meaning of the above equations,
@@ -876,14 +876,14 @@ regression and classification tasks is shown below.
 
 \begin{figure}[h]
 	\includegraphics[scale=0.35]{one_layer_regressor_bar_chart_2.jpg}
-	\caption{Performance (mean squared error) comparison of single hidden 
-	layer neural networks on diabetes regression task.}
+	\caption{Performance (mean squared error) comparison of single hidden
+		layer neural networks on diabetes regression task.}
 \end{figure}
 
 \begin{figure}[h]
 	\includegraphics[scale=0.35]{one_layer_classifier_bar_chart_2.jpg}
-	\caption{Performance (binary cross entropy) comparison of single hidden layer 
-	neural networks on breast cancer classification task.}
+	\caption{Performance (binary cross entropy) comparison of single hidden layer
+		neural networks on breast cancer classification task.}
 \end{figure}
 
 \clearpage
