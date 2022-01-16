@@ -303,7 +303,7 @@ and using gradient vectors (discussed later) rather than the scalar cost.
 where $x$ and $y$ are in $\mathbb{R}^{n_x}$ and
 
 \begin{equation}
-	||x - y||^{n} = \sum_{i=0}^{n_{x}-1} { (x_{i} - y_{i})^{2} }
+	||x - y||^{n} = \frac{1}{n_x} \sum_{i=0}^{n_{x}-1} { (x_{i} - y_{i})^{2} }
 \end{equation}
 
 The cost function for a single sample $C_x$ is a multivariable function

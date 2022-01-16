@@ -1,0 +1,26 @@
+\BOOKMARK [1][-]{section.1}{Preamble}{}% 1
+\BOOKMARK [1][-]{section.2}{Introduction}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Parametrized Functions}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Operand Types}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{The Multilayer Perceptron}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{The Dense/Fully Connected Layer}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{The Forward Pass and Cost Function}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.3}{Backpropagation}{section.3}% 8
+\BOOKMARK [3][-]{subsubsection.3.3.1}{Parameters Revisited}{subsection.3.3}% 9
+\BOOKMARK [3][-]{subsubsection.3.3.2}{Typical Mathematical Notation for Gradient Descent}{subsection.3.3}% 10
+\BOOKMARK [3][-]{subsubsection.3.3.3}{The Four Fundamental Equations of Backpropagation}{subsection.3.3}% 11
+\BOOKMARK [1][-]{section.4}{Implementation}{}% 12
+\BOOKMARK [2][-]{subsection.4.1}{Operation}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.2}{DenseLayer}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.3}{MLP}{section.4}% 15
+\BOOKMARK [3][-]{subsubsection.4.3.1}{Backpropagation Pseudocode}{subsection.4.3}% 16
+\BOOKMARK [1][-]{section.5}{Applications}{}% 17
+\BOOKMARK [2][-]{subsection.5.1}{Regression Tasks}{section.5}% 18
+\BOOKMARK [3][-]{subsubsection.5.1.1}{Diabetes Dataset}{subsection.5.1}% 19
+\BOOKMARK [3][-]{subsubsection.5.1.2}{Regressor Architecture}{subsection.5.1}% 20
+\BOOKMARK [2][-]{subsection.5.2}{Binary Classification Tasks}{section.5}% 21
+\BOOKMARK [3][-]{subsubsection.5.2.1}{Breast Cancer Dataset}{subsection.5.2}% 22
+\BOOKMARK [3][-]{subsubsection.5.2.2}{Classifier Architecture}{subsection.5.2}% 23
+\BOOKMARK [2][-]{subsection.5.3}{Model Comparison}{section.5}% 24
+\BOOKMARK [1][-]{section.6}{Results and Discussion}{}% 25
+\BOOKMARK [1][-]{section.7}{Conclusion}{}% 26
