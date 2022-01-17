@@ -6,6 +6,7 @@
 \usepackage{hyperref} % https://tex.stackexchange.com/questions/73862/how-can-i-make-a-clickable-table-of-contents
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{amssymb}  % https://www.physicsread.com/latex-therefore/
 \usepackage{xcolor}
 \usepackage{xparse}
 \usepackage{algorithm}
@@ -102,7 +103,7 @@ layers (e.g., dense/fully connected layers) together. A neural network has $L$ t
 layers and the current layer $l$ receives the output from the previous layer $(l-1)$.
 Note that $n_x$ is the number of features (or independent variables) in the input
 and $n_h$ is the number of hidden units in the current layer. The following subsections will
-briefly elucidate both the claims and notation of the first sentence of this section.
+elucidate both the claims and notation of the first sentence of this section.
 
 \subsection{Parametrized Functions}
 
@@ -196,8 +197,8 @@ $n_x$ elements will be $(n_x - 1)$... and woe is the programmer who commits an
 off-by-one error.
 
 A matrix $W$ represents the weight of edges between the $k^{th}$
-input neuron of $n_x^{l-1}$ total input neurons (i.e., neurons in the previous layer $(l-1)$)
-and the $j^{th}$ hidden neuron of $n_h^{l}$ total hidden neurons in the current layer $l$.
+input neuron of $n_x$ total input neurons (i.e., neurons in the previous layer $(l-1)$)
+and the $j^{th}$ hidden neuron of $n_h$ total hidden neurons in the current layer $l$.
 A weight matrix looks similar to the vector, except rather than having a single
 column, a matrix has a rows and columns--looking like a table. Vectors can
 be referred to as rank-1 tensors, matrices as rank-2 tensors, so-on and so-forth
@@ -236,8 +237,8 @@ Here, the activation $a_k^{l-1}$ denotes the activation of the $k^{th}$ neuron o
 previous layer $(l-1)$. Importantly, the input layer has no activation function $\phi$
 associated with it, so the activation vector $a^{0}$ equals the input vector $x$.
 Moreover, the inner dimensions of the matrix product
-$Wx$ match, that is the subscripts $k$ are "adjacent" to one another. While you may
-observe that the activation vector $a^{l} \in \mathbb{R}^{n_a}$ is clearly not a matrix,
+$W_{j \colorvar{red}{k}} a_{\colorvar{red}{k}}^{l-1}$ match, that is the subscripts $k$ are "adjacent" to one another. While you may
+observe that the activation vector $a^{l-1} \in \mathbb{R}^{n_a}$ is clearly not a matrix,
 numerical libraries will often treat a vector $v \in \mathbb{R}^{n_v}$ as equivalent
 to a matrix with a single column (i.e., $V \in \mathbb{R}^{n_v \times 1}$) for
 the purposes of performing fast matrix-matrix calculations.
@@ -247,10 +248,11 @@ notation, so now a visual of a single layer (meaning single hidden layer)
 MLP is shown. The activation function $\phi$ is vectorized, meaning it
 applies to each element of a vector, matrix, or rank-n tensor. Vectorized
 activation functions are often denoted $\phi(\cdot)$ or $\sigma(\cdot)$, though I do not like
-the latter notation as $\sigma$ typically references the sigmoid function. The number of
-neurons in a hidden layer (or output layer for that matter) $n_h$ does not have
-to be constant, and this is shown in the Figure 1 below where the output layer
-has only a single neuron while the hidden layer has three neurons.
+the latter notation as $\sigma$ typically references the sigmoid function. Different
+layers can, and often will, have a different number of neurons per layer. This
+is particularly true for the output layer since the output layer will most
+often have $n_y$ neurons. Figure 1 shows this difference where the hidden layer
+has more neurons than the output layer.
 
 % Multilayer perceptron figure
 \begin{figure}[h]
@@ -283,13 +285,14 @@ parameters of the MLP, then there must be some other function that determines
 how well the parameters of the MLP approximate the desired function. This other
 function is called the cost or loss function and is denoted $C$, though sometimes
 it is denoted $\mathcal{L}$ or $J$\footnote{Despite these functions sharing the same notation as
-	a matrix $W$, the result of the function is not a tensor but is rather a scalar.}.
+	a matrix $W$, the result of the function is typically a scalar
+	depending on the axis over which the sum occurs.}.
 For regression problems, the most common
 cost function is the mean squared error. The cost function, unlike previous
 operations, returns a scalar and \textit{not} a vector. The scalar value can be used to estimate
 performance during training; however, when implementing backpropagation, you will
 be more interested in the derivative of the cost with respect to certain variables
-and using gradient vectors (discussed later) rather than the scalar cost.
+and using gradients (discussed later) rather than the scalar cost.
 
 \begin{equation}
 	\begin{aligned}
@@ -335,11 +338,11 @@ is updating the weights $W^{l}$ and biases $b^{l}$ for each layer $l$ such
 that the network performs better with respect to the loss function\footnote{
 Machine learning APIs like TensorFlow tend to formulate cost functions
 such that they can be \textit{minimized} (e.g.,
-$minimize(NegativeLogLikelihood) \equiv maximize(LogLikelihood)$)}.
-Since $W$ and $b$ are tensors, the gradients\footnote{Denoted
-	using the gradients $\nabla$ or sometimes the $\vec{\nabla}$ operator.}
-of the cost function with respect to these parameters ($\frac{\partial C_x}{\partial W_{jk}^{l}}$
-and $\frac{\partial C_x}{\partial b_{j}^{l}}$) are computed to determine how
+$minimize(NegativeLogLikelihood) \equiv maximize(LogLikelihood)$).}.
+Since $W$ and $b$ are tensors, the gradients\footnote{The gradient operator
+	being denoted $\nabla$ or sometimes $\vec{\nabla}$.}
+of the cost function with respect to these parameters ($\nabla_{W^{l}} C$
+and $\nabla_{b^{l}} C$) are computed to determine how
 the elements of the parameter tensors should be modified to produce better predictions.
 
 \subsubsection{Parameters Revisited}
@@ -377,7 +380,7 @@ the reader.
 	\theta^{l} & = \theta^{l} - \eta \nabla_{\theta^{l}}C
 \end{align}
 The equations make quite a lot of sense if you think about exactly
-what they are saying. The first of the three equations says "update the
+what they are saying. Consider the first of the three equations: it says "update the
 weight matrix for a given layer by subtracting from the current weight matrix
 the gradient of the cost function with respect to that same weight matrix." By definition,
 the gradient points in the direction of local maxima, and the
@@ -403,16 +406,16 @@ that are obviously needed for \textit{gradient} descent.
 The fundamental equations of backpropagation, which are critical for \textit{gradient}
 descent, are claimed without proof (see \cite{Nielsen2015} for proofs). While
 the previous equations are the "pretty" form of gradient descent, for the
-accompanying implementation, one does not compute the gradient vectors of these parameters
-directly, rather the components of these gradient vectors $\nabla_{W}C$ or $\nabla_{b}C$
+accompanying implementation, one does not compute the gradients of these parameters
+directly, rather the components of these gradients $\nabla_{W^{l}}C$ or $\nabla_{b^{l}}C$
 are computed using other outputs of the network such as $a^{l}$ and $z^{l}$.
 
 
 \begin{align}
-	\delta^{L}                            & = \nabla_{a^{L}} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})                                                                                                             \\
-	\delta^{l}                            & = ((W^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l})                                                                                                     \\
-	\frac{\partial C}{\partial b_j^{l}}   & = \delta_j^{l}                                                                                                                                                                      \\
-	\frac{ \partial C }{ \partial W^{l} } & = \delta^{l} (a^{l-1})^{\top}                                                   & \text{$\delta^{l} \in \mathbb{R}^{n_h \times 1}; (a^{l-1})^{\top} \in \mathbb{R}^{1 \times n_x}$}
+	\delta^{L}       & = \nabla_{a^{L}} \text{C} \circ \frac{\partial \phi}{\partial z}(z^{L})         & \text{$\delta^{L} \in \mathbb{R}^{n_y}$}                                                                                            \\
+	\delta^{l}       & = ((W^{l+1})^{\top} \delta^{l+1}) \circ \frac{\partial \phi}{\partial z}(z^{l}) & \text{$\delta^{l} \in \mathbb{R}^{n_h \times \colorvar{red}{1}}$}                                                                   \\
+	\nabla_{b^{l}} C & = \delta^{l}                                                                                                                                                                                                          \\
+	\nabla_{W^{l}} C & = \delta^{l} (a^{l-1})^{\top}                                                   & \text{$(a^{l-1})^{\top} \in \mathbb{R}^{\colorvar{red}{1} \times n_x} \therefore \nabla_{W^{l}} C \in \mathbb{R}^{n_h \times n_x}$}
 \end{align}
 
 Before explaining the meaning of the above equations,
@@ -472,15 +475,15 @@ you are finding the rate of change of the cost function for an infinitesimally
 small change in the $j^{th}$ activation of a layer.
 
 \begin{align}
-	C                                     & = \frac{1}{n_h} \sum_{j=0}^{(n_h - 1)} { (a_{j}^{L} - y_j)^{2} } \\
-	\frac{\partial C}{\partial a_{j}^{L}} & = \frac{2}{n_h} (a_{j}^{L} - y_j)
+	C                                     & = \frac{1}{n_y} \sum_{j=0}^{(n_y - 1)} { (a_{j}^{L} - y_j)^{2} } \\
+	\frac{\partial C}{\partial a_{j}^{L}} & = \frac{2}{n_y} (a_{j}^{L} - y_j)
 \end{align}
 
-You might ask yourself, "how do I actually get
-$\frac{\partial C}{\partial a_{j}^{L}}$." Initially, I assumed the answer would
+You might ask yourself, "what is the value of
+$\frac{\partial C}{\partial a_{j}^{L}}$ and how do I get it?" Initially, I assumed the answer would
 be something quite confusing, but when computing such a derivative, you need
 only consider what a function is. If you think of $\frac{\partial C}{\partial a_{j}^{L}}$
-as just another function, which it is, then of what variables is it a function?
+as just another function, which it is, then it is a function of what variables?
 It is simple: $a_{j}^{L}$ and $y_j$! We \textit{know} the values of these variables
 since we know $a_{j}^{L}$ is just the output of a single neuron in a layer
 of neurons. Moreover, $y_j$ is not something we have to compute, but rather it
@@ -508,7 +511,7 @@ only with respect to the activations of the last layer looks like, consider the 
 		\dfrac{\partial C}{\partial a_{1}^{L}} \\
 		\dfrac{\partial C}{\partial a_{2}^{L}} \\
 		\vdots                                 \\
-		\dfrac{\partial C}{\partial a_{(n_{h} - 1)}^{L}}
+		\dfrac{\partial C}{\partial a_{(n_{y} - 1)}^{L}}
 	\end{bmatrix}
 \end{align}
 The above vector is in stark contrast to $\nabla_{\theta^{L}} C$, where
@@ -518,11 +521,11 @@ Such a matrix is called the Jacobian matrix and is shown below.
 \begin{align}
 	\nabla_{\theta^{L}} C & =
 	\begin{bmatrix}
-		\dfrac{\partial C}{\partial a_{0}^{L}}           & \dfrac{\partial C}{\partial W_{00}^{L}}           & \dfrac{\partial C}{\partial W_{01}^{L}}         & \dfrac{\partial C}{\partial W_{0(n_{x}-1)}^{L}}         & \dfrac{\partial C}{\partial b_{0}^{L}}         \\
+		\dfrac{\partial C}{\partial a_{0}^{L}}           & \dfrac{\partial C}{\partial W_{00}^{L}}           & \dfrac{\partial C}{\partial W_{01}^{L}}         & \dfrac{\partial C}{\partial W_{0(n_{h}-1)}^{L}}         & \dfrac{\partial C}{\partial b_{0}^{L}}         \\
 		\dfrac{\partial C}{\partial a_{1}^{L}}           & \dfrac{\partial C}{\partial W_{10}^{L}}           & \dfrac{\partial C}{\partial W_{11}^{L}}         & \cdots                                                  & \dfrac{\partial C}{\partial b_{1}^{L}}         \\
 		\dfrac{\partial C}{\partial a_{2}^{L}}           & \dfrac{\partial C}{\partial W_{20}^{L}}           & \dfrac{\partial C}{\partial W_{21}^{L}}         & \cdots                                                  & \dfrac{\partial C}{\partial b_{2}^{L}}         \\
 		\vdots                                           & \vdots                                            & \vdots                                          & \vdots                                                  & \vdots                                         \\
-		\dfrac{\partial C}{\partial a_{(n_{h} - 1)}^{L}} & \dfrac{\partial C}{\partial W_{(n_{h} - 1)0}^{L}} & \dfrac{\partial C}{\partial W_{(n_{h}-1)1}^{L}} & \dfrac{\partial C}{\partial W_{(n_{h}-1)(n_{x}-1)}^{L}} & \dfrac{\partial C}{\partial b_{(n_{h})-1}^{L}}
+		\dfrac{\partial C}{\partial a_{(n_{y} - 1)}^{L}} & \dfrac{\partial C}{\partial W_{(n_{y} - 1)0}^{L}} & \dfrac{\partial C}{\partial W_{(n_{y}-1)1}^{L}} & \dfrac{\partial C}{\partial W_{(n_{y}-1)(n_{h}-1)}^{L}} & \dfrac{\partial C}{\partial b_{(n_{y}-1)}^{L}}
 	\end{bmatrix}
 \end{align}
 
@@ -548,13 +551,16 @@ they must be used in the \textit{gradient descent} equations below.
 	b^{l} & = b^{l} - \frac{\eta}{m} \sum_{x}{\delta^{x, l}}
 \end{align}
 
-The learning rate $\eta$ is typically $\eta = \set{1^{i}}_{i=-2}^{-4}$, and $m$
+Note that an average of errors (gradients) over a batch of size $m$
+with samples $x$
+is computed in order to reduce variance. The learning rate $\eta$ is typically
+$\eta = \set{1^{i}}_{i=-2}^{-4}$, and $m$
 for mini-batch stochastic gradient descent is typically
 $m = \set{2^{i}}_{i=1}^{10}$.
 
 \section{Implementation}
 
-Here I define the Python classes
+Here I provide an overviewof  the Python classes
 that encapsulate the attributes (data members) and methods (functions) associated
 with the MLP. Since this approach is object oriented, it was helpful to
 define first the subunits of the MLP: operations (i.e., activation functions and
@@ -576,10 +582,10 @@ encapsulates the fully/densely connected layer of the MLP. I define this as
 \codeword{DenseLayer} with attributes for the input dimensions $n_x$,
 the weight matrix $W \in \mathbb{R}^{n_h \times n_x}$, and the bias
 ${b \in \mathbb{R}^{n_h}}$. The \codeword{DenseLayer} is correspondingly passed
-arguments for $n_x$, $n_h$, and a \codeword{Callable}
+arguments for $n_x$, $n_h$, and an \codeword{Operation}
 that will be used as the vectorized activation function $\phi(\cdot)$ for a given layer.
 
-The \codeword{__init__} method saves the \codeword{Callable} and passes
+The \codeword{__init__} method saves the \codeword{Operation} and passes
 the $n_x$ and $n_h$ arguments to initialize the weight matrix and bias vector.
 The \codeword{glorot_uniform} method initializes the values of the weight matrix
 using Glorot Uniform initialization \cite{Glorot2010}. The bias vector is
@@ -623,12 +629,14 @@ since it will be passed onto to the next layer as input.
 The \codeword{MLP} encapsulates the \codeword{DenseLayer} objects and
 implements a number of methods to approximate the function for a system.
 
-The \codeword{__init__} method takes as arguments the dimension of the input
-$n_x$, the number of units $n_h$ per hidden layer, the number of targets or
+The \codeword{__init__} method takes as arguments the dimension $n_x$ of the input,
+the number of units $n_h$ per hidden layer, the number of targets or
 classes $n_y$, the learning rate $\eta$, the total number of hidden layers $l_h$,
-the cost function $C$ as a string, activation function $\phi$ for hidden layers as a string,
-and the activation function for the target layer $\varphi$ as a string. This method
-also creates three \codeword{list} objects of particular important:
+the cost function $C$ as an \codeword{Operation},
+activation function $\phi$ for hidden layers as an \codeword{Operation},
+and the activation function for the target layer $\varphi$ as an \codeword{Operation}.
+This method
+also creates three \codeword{list} objects of particular importance:
 \codeword{sequential}, \codeword{activations_cache}, and
 \codeword{weighted_inputs_cache} stored collectively as a \codeword{@property}
 called \codeword{cache}. These \codeword{list} objects are used to
@@ -649,10 +657,13 @@ loss\footnote{Only used to track model performance, not used to
 
 The \codeword{_forward_pass} first clears the cache of saved activations and
 weighted input vectors from the previous pass. Then each layer in the
-\codeword{sequential} list is called to compute and the cache weighted inputs and
-activations $a^{l-1}$ as the input to the \codeword{__call__} method of each \codeword{DenseLayer}.
+\codeword{sequential} list is called to compute the weighted inputs $z^{l}$ and
+activations $a^{l}$. Both $z^{l}$ and $a^{l}$ are cached for use in the
+backpropagation algorithm later. The activations $a^{l}$ are passed as
+input to the \codeword{__call__} method of each \codeword{DenseLayer}.
 Finally, the \codeword{__call__} of the last \codeword{DenseLayer} returns the
-last activation vector $a^{L}$ representing the predictions the model made given the samples.
+last activation vector $a^{L}$ representing the predictions the model made
+given the samples.
 
 \subsubsection{Backpropagation Pseudocode}
 
@@ -689,13 +700,13 @@ refers to the number of neurons in the previous layer.
 		\State{$A_{L,:,:} \gets A_{-1,:,:}$} \Comment{Get the last layer activation tensor}
 		\State{$Z_{L,:,:} \gets Z_{-1,:,:}$} \Comment{Get the last layer weighted input tensor}
 		\State{$\nabla_{b^{L}} C_{\text{samples}} \gets \set{}$} \Comment{Empty $\nabla_{b^{L}} C_{\text{samples}} \in \mathbb{R}^{m \times n_y}$}
-		\State{$\nabla_{b^{L}} C_{\text{samples}} \gets \text{GradBiases}(A_{L}, Z_{L}, Y)$} \Comment{Bprop eq. 1 $\forall b \in m$}
+		\State{$\nabla_{b^{L}} C_{\text{samples}} \gets \text{GradBiases}(A_{L}, Z_{L}, Y)$} \Comment{Bprop eq. 1 $\forall x \in m$}
 
 		\State{}
 
 		\State{$A_{L-1, :, :} \gets A_{-2,:,:}$} \Comment{Get the second to last layer activation tensor.}
 		\State{$\nabla_{W^{L}} C_{\text{samples}} \gets \set{}$} \Comment{Empty $\nabla_{W^{L}} C_{\text{samples}} \in \mathbb{R}^{m \times n_y \times n_h}$}
-		\State{$\nabla_{W^{L}} C_{\text{samples}} \gets \text{GradWeights}(A_{L-1}, \nabla_{b^{L}} C_{\text{samples}})$} \Comment{Bprop eq. 4 $\forall b \in m$}
+		\State{$\nabla_{W^{L}} C_{\text{samples}} \gets \text{GradWeights}(A_{L-1}, \nabla_{b^{L}} C_{\text{samples}})$} \Comment{Bprop eq. 4 $\forall x \in m$}
 
 		\State{}
 		% Main training loop for backpropagating errors through layers
@@ -799,8 +810,9 @@ $x$ belongs to the class $y \in \set{0, 1}$.
 
 The binary cross entropy (BCE) cost function for a problem such as this over
 $m$ examples in a batch is shown below. Note that $i$ denotes
-the $i^{th} $prediction of batch \textit{not} the $i^{th}$ neuron of a layer
-since there are not multiple neurons in the last layer of the network.
+the $i^{th}$ sample of the batch \textit{not} the $i^{th}$ neuron of a layer
+since there is in one neuron in the last layer of a network approximating the
+the function for a binary classification problem.
 
 % Binary cross entropy
 \begin{equation}
@@ -865,9 +877,12 @@ generalization error of the model, that is the capability of the model
 to perform well on data it has never seen before. Likewise, confidence intervals
 indicate how likely the population mean of a particular metric falls within a
 given range. Cross validation and the subsequent construction of confidence
-intervals allows for robust model comparison.
+intervals allows for robust model comparison. Cross validation can be repeated
+$N$ times to increase the robustness of the statistical measure; however, this
+is computationally expensive and only suitable for small models or small
+datasets.
 
-\section{Results and Discussion}
+\section{Results}
 
 The performance of my implementation of the multilayer perceptron on the
 regression and classification tasks is shown below.
